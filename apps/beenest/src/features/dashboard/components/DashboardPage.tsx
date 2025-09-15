@@ -1,0 +1,292 @@
+import { useDashboard } from '../hooks/useDashboard'
+import { MetricsGrid } from './MetricsGrid'
+import { RevenueChart } from './RevenueChart'
+
+interface DashboardPageProps {
+  className?: string
+}
+
+const LoadingSkeleton = () => (
+  <div className="space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="h-24 bg-gray-200 rounded-lg animate-pulse" />
+      ))}
+    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="h-80 bg-gray-200 rounded-lg animate-pulse" />
+      <div className="h-80 bg-gray-200 rounded-lg animate-pulse" />
+    </div>
+  </div>
+)
+
+const ErrorState = ({ error, onRetry }: { error: string; onRetry: () => void }) => (
+  <div className="text-center py-12">
+    <div className="text-red-600 text-lg mb-4">{error}</div>
+    <button
+      onClick={onRetry}
+      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+    >
+      다시 시도
+    </button>
+  </div>
+)
+
+const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
+  <div className="overflow-x-auto">
+    <table className="w-full">
+      <thead>
+        <tr className="border-b border-gray-200">
+          <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+            Product Details
+          </th>
+          <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+            Order ID
+          </th>
+          <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+            Price
+          </th>
+          <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+            Delivery Status
+          </th>
+          <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {[
+          {
+            name: "Backpack",
+            sku: "25 in stock",
+            orderId: "#ORD100",
+            price: "₩200,000",
+            status: "Completed",
+            statusColor: "bg-green-100 text-green-800",
+          },
+          {
+            name: "T-Shirt",
+            sku: "25 in stock",
+            orderId: "#ORD200",
+            price: "₩89,000",
+            status: "In Progress",
+            statusColor: "bg-yellow-100 text-yellow-800",
+          },
+          {
+            name: "Sunglasses",
+            sku: "15 in stock",
+            orderId: "#ORD300",
+            price: "₩150,000",
+            status: "Pending",
+            statusColor: "bg-gray-100 text-gray-800",
+          },
+        ].map((item, index) => (
+          <tr
+            key={index}
+            className="border-b border-gray-100 hover:bg-gray-50"
+          >
+            <td className="py-4 px-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden">
+                  <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                    <i className="fas fa-image text-gray-500 text-sm"></i>
+                  </div>
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900 text-sm">
+                    {item.name}
+                  </p>
+                  <p className="text-xs text-gray-500">{item.sku}</p>
+                </div>
+              </div>
+            </td>
+            <td className="py-4 px-4 text-sm text-gray-900">
+              {item.orderId}
+            </td>
+            <td className="py-4 px-4 text-sm font-medium text-gray-900">
+              {item.price}
+            </td>
+            <td className="py-4 px-4">
+              <span
+                className={`${item.statusColor} text-xs font-medium px-2 py-1 rounded-full`}
+              >
+                {item.status}
+              </span>
+            </td>
+            <td className="py-4 px-4">
+              <div className="flex items-center space-x-2">
+                <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
+                  <i className="fas fa-edit text-gray-600 text-xs"></i>
+                </button>
+                <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
+                  <i className="fas fa-trash text-red-600 text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)
+
+export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
+  const { metrics, isLoading, error, refreshMetrics } = useDashboard()
+
+  if (isLoading) {
+    return (
+      <div className={`p-6 ${className}`}>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
+          <p className="text-gray-600">비즈니스 현황을 한눈에 확인하세요</p>
+        </div>
+        <LoadingSkeleton />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={`p-6 ${className}`}>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">대시보드</h1>
+        </div>
+        <ErrorState error={error} onRetry={refreshMetrics} />
+      </div>
+    )
+  }
+
+  if (!metrics) {
+    return (
+      <div className={`p-6 ${className}`}>
+        <div className="text-center py-12">
+          <div className="text-gray-500">데이터가 없습니다.</div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`p-6 space-y-6 bg-gray-50 min-h-screen ${className}`}>
+      {/* Metrics Cards */}
+      <MetricsGrid metrics={metrics} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Revenue Chart */}
+        <div className="col-span-2">
+          <RevenueChart data={metrics.monthlyRevenue} />
+        </div>
+
+        {/* Recent Orders */}
+        <div className="bg-white rounded-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Revenue by Locations
+            </h3>
+          </div>
+          <div className="relative h-48 bg-gray-900 rounded-lg overflow-hidden mb-4">
+            <div className="absolute top-4 left-4 bg-white rounded-lg p-2 text-sm">
+              <div className="flex items-center space-x-2">
+                <i className="fas fa-map-marker-alt text-yellow-500"></i>
+                <span className="font-semibold">Korea</span>
+              </div>
+              <p className="text-xs text-gray-600">₩15,420,000 Sales</p>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <i className="fas fa-flag text-yellow-500"></i>
+                <span className="text-sm font-medium">South Korea</span>
+              </div>
+              <span className="text-sm font-semibold">90%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '90%' }}></div>
+            </div>
+          </div>
+          <button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white !rounded-button whitespace-nowrap cursor-pointer py-2 px-4 font-semibold">
+            See All
+          </button>
+        </div>
+      </div>
+
+      {/* Tables Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="col-span-2 bg-white rounded-lg p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Sales & Orders
+            </h3>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <input
+                  placeholder="Search products..."
+                  className="pl-8 pr-4 py-2 w-64 text-sm border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
+                />
+                <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+              </div>
+              <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
+                <i className="fas fa-calendar mr-2"></i>
+                Monthly
+              </button>
+            </div>
+          </div>
+          <RecentOrdersTable orders={metrics.recentOrders} />
+        </div>
+
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Best Selling Products
+              </h3>
+              <button className="border border-gray-200 p-1 rounded cursor-pointer">
+                <i className="fas fa-external-link-alt text-xs"></i>
+              </button>
+            </div>
+            <div className="h-48 bg-gray-100 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
+              <i className="fas fa-chart-line text-gray-400 text-4xl"></i>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Newly Arrived Stock
+            </h3>
+            <div className="space-y-4">
+              {[
+                { sku: "SKU-300", name: "Headphone", qty: 200, price: "₩400,000" },
+                { sku: "SKU-301", name: "Bottle", qty: 240, price: "₩600,000" },
+                { sku: "SKU-302", name: "Helmet", qty: 500, price: "₩1,200,000" },
+                { sku: "SKU-303", name: "Shoes", qty: 100, price: "₩300,000" },
+              ].map((item, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-gray-600 font-medium">
+                      {item.name.charAt(0)}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {item.sku}
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {item.price}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-gray-500">{item.name}</p>
+                      <p className="text-xs text-gray-500">{item.qty}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
