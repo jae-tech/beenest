@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@beenest/ui": ["./packages/ui/src/index.tsx"],
+      "@beenest/eslint-config": ["./packages/eslint-config/index.js"],
+      "@beenest/typescript-config": ["./packages/typescript-config/index.js"]
+    }
+  }
+}
