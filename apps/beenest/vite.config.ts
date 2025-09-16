@@ -6,12 +6,15 @@ import path from "path";
 
 export default defineConfig({
   plugins: [
+    // TanStackRouter를 react보다 먼저 배치
+    TanStackRouterVite({
+      routesDirectory: './src/routes',
+      generatedRouteTree: './src/routeTree.gen.ts',
+      target: 'react',
+      autoCodeSplitting: true,
+    }),
     react(),
     tailwindcss(),
-    TanStackRouterVite({
-      routesDirectory: './src/app/router/routes',
-      generatedRouteTree: './src/app/router/routeTree.gen.ts',
-    })
   ],
   resolve: {
     alias: {

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { InventoryItem } from '../stores/inventoryStore'
+import { Image, Edit, Eye, Trash2 } from 'lucide-react'
 
 interface InventoryTableProps {
   items: InventoryItem[]
@@ -244,7 +245,7 @@ export const InventoryTable = ({
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden">
                     <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                      <i className="fas fa-image text-gray-500 text-sm"></i>
+                      <Image className="w-4 h-4 text-gray-500" />
                     </div>
                   </div>
                   <div>
@@ -279,13 +280,13 @@ export const InventoryTable = ({
               <td className="py-4 px-4">
                 <div className="flex items-center space-x-2">
                   <button className="border border-gray-200 p-2 rounded cursor-pointer hover:bg-gray-50">
-                    <i className="fas fa-edit text-gray-600 text-xs"></i>
+                    <Edit className="w-3 h-3 text-gray-600" />
                   </button>
                   <button className="border border-gray-200 p-2 rounded cursor-pointer hover:bg-gray-50">
-                    <i className="fas fa-eye text-gray-600 text-xs"></i>
+                    <Eye className="w-3 h-3 text-gray-600" />
                   </button>
                   <button className="border border-gray-200 p-2 rounded cursor-pointer hover:bg-gray-50">
-                    <i className="fas fa-trash text-red-600 text-xs"></i>
+                    <Trash2 className="w-3 h-3 text-red-600" />
                   </button>
                 </div>
               </td>

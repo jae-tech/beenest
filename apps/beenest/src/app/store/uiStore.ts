@@ -1,11 +1,9 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { AppView } from '@/shared/types'
 
 interface UIState {
   sidebarCollapsed: boolean
-  currentView: AppView
   theme: 'light' | 'dark'
   isLoading: boolean
   notifications: Notification[]
@@ -13,7 +11,6 @@ interface UIState {
   // Actions
   toggleSidebar: () => void
   setSidebarCollapsed: (collapsed: boolean) => void
-  setCurrentView: (view: AppView) => void
   setTheme: (theme: 'light' | 'dark') => void
   setLoading: (loading: boolean) => void
   addNotification: (notification: Omit<Notification, 'id'>) => void
@@ -34,7 +31,6 @@ export const useUIStore = create<UIState>()(
     persist(
       immer((set, get) => ({
         sidebarCollapsed: false,
-        currentView: 'dashboard',
         theme: 'light',
         isLoading: false,
         notifications: [],
@@ -48,12 +44,6 @@ export const useUIStore = create<UIState>()(
         setSidebarCollapsed: (collapsed: boolean) => {
           set((state) => {
             state.sidebarCollapsed = collapsed
-          })
-        },
-
-        setCurrentView: (view: AppView) => {
-          set((state) => {
-            state.currentView = view
           })
         },
 

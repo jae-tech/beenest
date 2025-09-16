@@ -1,6 +1,17 @@
 import { useDashboard } from '../hooks/useDashboard'
 import { MetricsGrid } from './MetricsGrid'
 import { RevenueChart } from './RevenueChart'
+import {
+  Image,
+  Edit,
+  Trash2,
+  MapPin,
+  Flag,
+  Search,
+  Calendar,
+  ExternalLink,
+  TrendingUp
+} from 'lucide-react'
 
 interface DashboardPageProps {
   className?: string
@@ -89,7 +100,7 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden">
                   <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                    <i className="fas fa-image text-gray-500 text-sm"></i>
+                    <Image className="w-4 h-4 text-gray-500" />
                   </div>
                 </div>
                 <div>
@@ -116,10 +127,10 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
             <td className="py-4 px-4">
               <div className="flex items-center space-x-2">
                 <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
-                  <i className="fas fa-edit text-gray-600 text-xs"></i>
+                  <Edit className="w-3 h-3 text-gray-600" />
                 </button>
                 <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
-                  <i className="fas fa-trash text-red-600 text-xs"></i>
+                  <Trash2 className="w-3 h-3 text-red-600" />
                 </button>
               </div>
             </td>
@@ -131,7 +142,7 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
 )
 
 export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
-  const { metrics, isLoading, error, refreshMetrics } = useDashboard()
+  const { metrics, salesData, newStock, monthlyRevenue, isLoading, error, refreshMetrics } = useDashboard()
 
   if (isLoading) {
     return (
@@ -156,16 +167,6 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
     )
   }
 
-  if (!metrics) {
-    return (
-      <div className={`p-6 ${className}`}>
-        <div className="text-center py-12">
-          <div className="text-gray-500">데이터가 없습니다.</div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className={`p-6 space-y-6 bg-gray-50 min-h-screen ${className}`}>
       {/* Metrics Cards */}
@@ -174,7 +175,7 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Revenue Chart */}
         <div className="col-span-2">
-          <RevenueChart data={metrics.monthlyRevenue} />
+          <RevenueChart data={monthlyRevenue} />
         </div>
 
         {/* Recent Orders */}
@@ -187,7 +188,7 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
           <div className="relative h-48 bg-gray-900 rounded-lg overflow-hidden mb-4">
             <div className="absolute top-4 left-4 bg-white rounded-lg p-2 text-sm">
               <div className="flex items-center space-x-2">
-                <i className="fas fa-map-marker-alt text-yellow-500"></i>
+                <MapPin className="w-4 h-4 text-yellow-500" />
                 <span className="font-semibold">Korea</span>
               </div>
               <p className="text-xs text-gray-600">₩15,420,000 Sales</p>
@@ -196,7 +197,7 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <i className="fas fa-flag text-yellow-500"></i>
+                <Flag className="w-4 h-4 text-yellow-500" />
                 <span className="text-sm font-medium">South Korea</span>
               </div>
               <span className="text-sm font-semibold">90%</span>
@@ -224,15 +225,15 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
                   placeholder="Search products..."
                   className="pl-8 pr-4 py-2 w-64 text-sm border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
                 />
-                <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
               <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
-                <i className="fas fa-calendar mr-2"></i>
+                <Calendar className="w-4 h-4 mr-2 inline" />
                 Monthly
               </button>
             </div>
           </div>
-          <RecentOrdersTable orders={metrics.recentOrders} />
+          <RecentOrdersTable orders={salesData} />
         </div>
 
         <div className="space-y-6">
@@ -242,11 +243,11 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
                 Best Selling Products
               </h3>
               <button className="border border-gray-200 p-1 rounded cursor-pointer">
-                <i className="fas fa-external-link-alt text-xs"></i>
+                <ExternalLink className="w-3 h-3" />
               </button>
             </div>
             <div className="h-48 bg-gray-100 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
-              <i className="fas fa-chart-line text-gray-400 text-4xl"></i>
+              <TrendingUp className="w-16 h-16 text-gray-400" />
             </div>
           </div>
 
@@ -255,12 +256,7 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
               Newly Arrived Stock
             </h3>
             <div className="space-y-4">
-              {[
-                { sku: "SKU-300", name: "Headphone", qty: 200, price: "₩400,000" },
-                { sku: "SKU-301", name: "Bottle", qty: 240, price: "₩600,000" },
-                { sku: "SKU-302", name: "Helmet", qty: 500, price: "₩1,200,000" },
-                { sku: "SKU-303", name: "Shoes", qty: 100, price: "₩300,000" },
-              ].map((item, index) => (
+              {newStock.map((item, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                     <span className="text-xs text-gray-600 font-medium">

@@ -1,5 +1,6 @@
 import { DashboardMetrics } from '../hooks/useDashboard'
 import { MetricCard } from '@/shared/ui/metric-card/MetricCard'
+import { Package, DollarSign, Target, Clock, AlertTriangle } from 'lucide-react'
 
 interface MetricsGridProps {
   metrics: DashboardMetrics
@@ -22,7 +23,7 @@ export const MetricsGrid = ({ metrics, className = '' }: MetricsGridProps) => {
 
   const metricCards = [
     {
-      icon: 'fas fa-boxes',
+      icon: Package,
       title: 'Total Stock',
       value: `${formatNumber(metrics.totalCustomers * 340)} Units`,
       change: '+25%',
@@ -30,7 +31,7 @@ export const MetricsGrid = ({ metrics, className = '' }: MetricsGridProps) => {
       color: 'bg-green-500'
     },
     {
-      icon: 'fas fa-dollar-sign',
+      icon: DollarSign,
       title: 'Total Inventory Value',
       value: formatCurrency(metrics.totalRevenue),
       change: '+25%',
@@ -38,7 +39,7 @@ export const MetricsGrid = ({ metrics, className = '' }: MetricsGridProps) => {
       color: 'bg-yellow-500'
     },
     {
-      icon: 'fas fa-bullseye',
+      icon: Target,
       title: 'Total Picking Accuracy',
       value: '90%',
       change: '+4%',
@@ -46,7 +47,7 @@ export const MetricsGrid = ({ metrics, className = '' }: MetricsGridProps) => {
       color: 'bg-blue-500'
     },
     {
-      icon: 'fas fa-clock',
+      icon: Clock,
       title: 'Pending Orders',
       value: formatNumber(metrics.totalOrders),
       change: '+7%',
@@ -54,7 +55,7 @@ export const MetricsGrid = ({ metrics, className = '' }: MetricsGridProps) => {
       color: 'bg-purple-500'
     },
     {
-      icon: 'fas fa-exclamation-triangle',
+      icon: AlertTriangle,
       title: 'Low Stock Items',
       value: `${formatNumber(metrics.lowStockItems)} Units`,
       change: '-10%',

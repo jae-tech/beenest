@@ -1,141 +1,96 @@
-import { useInventoryStore } from '../stores/inventoryStore'
-import type { InventoryItem, InventoryFilters } from '@/shared/types'
+import { useState } from 'react'
 
-export function useInventory() {
-  const {
-    items,
-    selectedItems,
-    filters,
-    pagination,
-    status,
-    error,
-    isLoading,
-    viewMode,
-    sortBy,
-    sortOrder,
+export interface InventoryItem {
+  id: string
+  name: string
+  sku: string
+  category: string
+  quantity: number
+  price: number
+  status: string
+  statusColor: string
+  lowStockThreshold: number
+}
 
-    // Actions
-    setItems,
-    addItem,
-    updateItem,
-    removeItem,
+export const useInventory = () => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-    // Selection
-    selectItem,
-    deselectItem,
-    selectAllItems,
-    deselectAllItems,
+  const items: InventoryItem[] = [
+    {
+      id: '1',
+      name: "Wireless Headphones",
+      sku: "WH-001",
+      category: "Electronics",
+      quantity: 245,
+      price: 89.99,
+      status: "In Stock",
+      statusColor: "bg-green-100 text-green-800",
+      lowStockThreshold: 50
+    },
+    {
+      id: '2',
+      name: "Gaming Mouse",
+      sku: "GM-002",
+      category: "Electronics",
+      quantity: 89,
+      price: 45.50,
+      status: "In Stock",
+      statusColor: "bg-green-100 text-green-800",
+      lowStockThreshold: 30
+    },
+    {
+      id: '3',
+      name: "Office Chair",
+      sku: "OC-003",
+      category: "Furniture",
+      quantity: 12,
+      price: 199.99,
+      status: "Low Stock",
+      statusColor: "bg-yellow-100 text-yellow-800",
+      lowStockThreshold: 15
+    },
+    {
+      id: '4',
+      name: "Smartphone Stand",
+      sku: "SS-004",
+      category: "Accessories",
+      quantity: 156,
+      price: 24.99,
+      status: "In Stock",
+      statusColor: "bg-green-100 text-green-800",
+      lowStockThreshold: 20
+    },
+    {
+      id: '5',
+      name: "Laptop Bag",
+      sku: "LB-005",
+      category: "Accessories",
+      quantity: 0,
+      price: 59.99,
+      status: "Out of Stock",
+      statusColor: "bg-red-100 text-red-800",
+      lowStockThreshold: 10
+    }
+  ]
 
-    // Filters
-    setFilters,
-    resetFilters,
-    setSearchQuery,
-
-    // Pagination
-    setPagination,
-    nextPage,
-    previousPage,
-    goToPage,
-
-    // UI
-    setStatus,
-    setError,
-    setLoading,
-    setViewMode,
-    setSorting,
-
-    // Bulk actions
-    bulkUpdateItems,
-    bulkDeleteItems,
-  } = useInventoryStore()
-
-  // Computed values
-  const hasItems = items.length > 0
-  const hasSelectedItems = selectedItems.length > 0
-  const allItemsSelected = items.length > 0 && selectedItems.length === items.length
-  const someItemsSelected = selectedItems.length > 0 && selectedItems.length < items.length
-
-  // Helper functions
-  const getSelectedItems = (): InventoryItem[] => {
-    return items.filter(item => selectedItems.includes(item.id))
-  }
-
-  const toggleSelectAll = () => {
-    if (allItemsSelected) {
-      deselectAllItems()
-    } else {
-      selectAllItems()
+  const refetch = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      // 추후 API 호출로 교체
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    } catch (err) {
+      setError('재고 데이터를 불러오는데 실패했습니다.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query)
-  }
-
-  const handleFilterChange = (newFilters: Partial<InventoryFilters>) => {
-    setFilters(newFilters)
-  }
-
-  const handleSort = (field: string) => {
-    const newOrder = sortBy === field && sortOrder === 'asc' ? 'desc' : 'asc'
-    setSorting(field, newOrder)
-  }
-
   return {
-    // Data
     items,
-    selectedItems,
-    filters,
-    pagination,
-
-    // UI State
-    status,
-    error,
     isLoading,
-    viewMode,
-    sortBy,
-    sortOrder,
-
-    // Computed
-    hasItems,
-    hasSelectedItems,
-    allItemsSelected,
-    someItemsSelected,
-
-    // Actions
-    setItems,
-    addItem,
-    updateItem,
-    removeItem,
-
-    // Selection
-    selectItem,
-    deselectItem,
-    selectAllItems,
-    deselectAllItems,
-    toggleSelectAll,
-    getSelectedItems,
-
-    // Filters and Search
-    setFilters: handleFilterChange,
-    resetFilters,
-    setSearchQuery: handleSearch,
-
-    // Pagination
-    setPagination,
-    nextPage,
-    previousPage,
-    goToPage,
-
-    // UI
-    setStatus,
-    setError,
-    setLoading,
-    setViewMode,
-    handleSort,
-
-    // Bulk actions
-    bulkUpdateItems,
-    bulkDeleteItems,
+    error,
+    refetch
   }
 }

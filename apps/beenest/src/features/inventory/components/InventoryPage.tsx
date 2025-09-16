@@ -1,19 +1,23 @@
-import { useState, useMemo } from 'react'
-import { useInventory } from '../hooks/useInventory'
-import { useInventoryFilters } from '../hooks/useInventoryFilters'
-import { InventoryTable } from './InventoryTable'
-import { Button } from '@beenest/components'
+import { Button } from "@/shared/ui";
+import { useMemo, useState } from "react";
+import { useInventory } from "../hooks/useInventory";
+import { useInventoryFilters } from "../hooks/useInventoryFilters";
+import { InventoryTable } from "./InventoryTable";
+import { AddInventoryForm } from "./AddInventoryForm";
+import { Modal } from "@/shared/ui/modal";
+import { type InventoryFormData } from "../schemas/inventorySchema";
+import { Plus, Search, Filter, Download, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface InventoryPageProps {
-  className?: string
+  className?: string;
 }
 
 const SearchBar = ({
   searchTerm,
   onSearchChange,
 }: {
-  searchTerm: string
-  onSearchChange: (term: string) => void
+  searchTerm: string;
+  onSearchChange: (term: string) => void;
 }) => (
   <div className="relative">
     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -39,7 +43,7 @@ const SearchBar = ({
       className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
     />
   </div>
-)
+);
 
 const FilterDropdown = ({
   label,
@@ -47,10 +51,10 @@ const FilterDropdown = ({
   options,
   onChange,
 }: {
-  label: string
-  value: string
-  options: { value: string; label: string }[]
-  onChange: (value: string) => void
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
 }) => (
   <div className="flex flex-col">
     <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -66,7 +70,7 @@ const FilterDropdown = ({
       ))}
     </select>
   </div>
-)
+);
 
 const StockFilter = ({
   minStock,
@@ -74,10 +78,10 @@ const StockFilter = ({
   onMinStockChange,
   onMaxStockChange,
 }: {
-  minStock: string
-  maxStock: string
-  onMinStockChange: (value: string) => void
-  onMaxStockChange: (value: string) => void
+  minStock: string;
+  maxStock: string;
+  onMinStockChange: (value: string) => void;
+  onMaxStockChange: (value: string) => void;
 }) => (
   <div className="flex flex-col">
     <label className="text-sm font-medium text-gray-700 mb-1">재고 범위</label>
@@ -99,7 +103,7 @@ const StockFilter = ({
       />
     </div>
   </div>
-)
+);
 
 const LoadingSkeleton = () => (
   <div className="space-y-4">
@@ -107,9 +111,15 @@ const LoadingSkeleton = () => (
       <div key={i} className="h-16 bg-gray-200 rounded animate-pulse" />
     ))}
   </div>
-)
+);
 
-const ErrorState = ({ error, onRetry }: { error: string; onRetry: () => void }) => (
+const ErrorState = ({
+  error,
+  onRetry,
+}: {
+  error: string;
+  onRetry: () => void;
+}) => (
   <div className="text-center py-12 bg-white rounded-lg border">
     <div className="text-red-600 text-lg mb-4">{error}</div>
     <Button
@@ -119,10 +129,10 @@ const ErrorState = ({ error, onRetry }: { error: string; onRetry: () => void }) 
       다시 시도
     </Button>
   </div>
-)
+);
 
-export const InventoryPage = ({ className = '' }: InventoryPageProps) => {
-  const { items, isLoading, error, refetch } = useInventory()
+export const InventoryPage = ({ className = "" }: InventoryPageProps) => {
+  const { items, isLoading, error, refetch } = useInventory();
   const {
     searchTerm,
     setSearchTerm,
@@ -139,76 +149,103 @@ export const InventoryPage = ({ className = '' }: InventoryPageProps) => {
     sortOrder,
     setSortOrder,
     clearFilters,
-  } = useInventoryFilters()
+  } = useInventoryFilters();
 
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  const handleAddInventory = (data: InventoryFormData) => {
+    console.log('Adding inventory item:', data);
+    setShowAddForm(false);
+  };
 
   const filteredAndSortedItems = useMemo(() => {
-    if (!items) return []
+    if (!items) return [];
 
-    let filtered = items.filter((item) => {
+    const filtered = items.filter((item) => {
       // 검색어 필터
-      const matchesSearch = !searchTerm ||
+      const matchesSearch =
+        !searchTerm ||
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchTerm.toLowerCase())
+        item.category.toLowerCase().includes(searchTerm.toLowerCase());
 
       // 카테고리 필터
-      const matchesCategory = !categoryFilter || categoryFilter === 'all' || item.category === categoryFilter
+      const matchesCategory =
+        !categoryFilter ||
+        categoryFilter === "all" ||
+        item.category === categoryFilter;
 
       // 재고 상태 필터
-      const matchesStockStatus = !stockStatusFilter ||
-        stockStatusFilter === 'all' ||
-        (stockStatusFilter === 'in-stock' && item.quantity > 0) ||
-        (stockStatusFilter === 'low-stock' && item.quantity > 0 && item.quantity <= item.lowStockThreshold) ||
-        (stockStatusFilter === 'out-of-stock' && item.quantity === 0)
+      const matchesStockStatus =
+        !stockStatusFilter ||
+        stockStatusFilter === "all" ||
+        (stockStatusFilter === "in-stock" && item.quantity > 0) ||
+        (stockStatusFilter === "low-stock" &&
+          item.quantity > 0 &&
+          item.quantity <= item.lowStockThreshold) ||
+        (stockStatusFilter === "out-of-stock" && item.quantity === 0);
 
       // 재고 범위 필터
       const matchesStockRange =
         (!minStock || item.quantity >= parseInt(minStock)) &&
-        (!maxStock || item.quantity <= parseInt(maxStock))
+        (!maxStock || item.quantity <= parseInt(maxStock));
 
-      return matchesSearch && matchesCategory && matchesStockStatus && matchesStockRange
-    })
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesStockStatus &&
+        matchesStockRange
+      );
+    });
 
     // 정렬
     if (sortBy) {
       filtered.sort((a, b) => {
-        let aValue = a[sortBy]
-        let bValue = b[sortBy]
+        let aValue = a[sortBy];
+        let bValue = b[sortBy];
 
-        if (typeof aValue === 'string') {
-          aValue = aValue.toLowerCase()
-          bValue = bValue.toLowerCase()
+        if (typeof aValue === "string") {
+          aValue = aValue.toLowerCase();
+          bValue = bValue.toLowerCase();
         }
 
-        if (sortOrder === 'asc') {
-          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+        if (sortOrder === "asc") {
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
         } else {
-          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
+          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
         }
-      })
+      });
     }
 
-    return filtered
-  }, [items, searchTerm, categoryFilter, stockStatusFilter, minStock, maxStock, sortBy, sortOrder])
+    return filtered;
+  }, [
+    items,
+    searchTerm,
+    categoryFilter,
+    stockStatusFilter,
+    minStock,
+    maxStock,
+    sortBy,
+    sortOrder,
+  ]);
 
   const categoryOptions = useMemo(() => {
-    if (!items) return [{ value: 'all', label: '전체 카테고리' }]
+    if (!items) return [{ value: "all", label: "전체 카테고리" }];
 
-    const categories = Array.from(new Set(items.map(item => item.category)))
+    const categories = Array.from(new Set(items.map((item) => item.category)));
     return [
-      { value: 'all', label: '전체 카테고리' },
-      ...categories.map(cat => ({ value: cat, label: cat }))
-    ]
-  }, [items])
+      { value: "all", label: "전체 카테고리" },
+      ...categories.map((cat) => ({ value: cat, label: cat })),
+    ];
+  }, [items]);
 
   const stockStatusOptions = [
-    { value: 'all', label: '전체 상태' },
-    { value: 'in-stock', label: '재고 있음' },
-    { value: 'low-stock', label: '재고 부족' },
-    { value: 'out-of-stock', label: '재고 없음' },
-  ]
+    { value: "all", label: "전체 상태" },
+    { value: "in-stock", label: "재고 있음" },
+    { value: "low-stock", label: "재고 부족" },
+    { value: "out-of-stock", label: "재고 없음" },
+  ];
 
   if (isLoading) {
     return (
@@ -219,7 +256,7 @@ export const InventoryPage = ({ className = '' }: InventoryPageProps) => {
         </div>
         <LoadingSkeleton />
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -230,7 +267,7 @@ export const InventoryPage = ({ className = '' }: InventoryPageProps) => {
         </div>
         <ErrorState error={error} onRetry={refetch} />
       </div>
-    )
+    );
   }
 
   return (
@@ -239,8 +276,11 @@ export const InventoryPage = ({ className = '' }: InventoryPageProps) => {
         <h1 className="text-2xl font-bold text-gray-900">
           Inventory Management
         </h1>
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
-          <i className="fas fa-plus mr-2"></i>
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer"
+        >
+          <Plus className="w-4 h-4 mr-2" />
           Add New Item
         </button>
       </div>
@@ -255,18 +295,18 @@ export const InventoryPage = ({ className = '' }: InventoryPageProps) => {
                 placeholder="Search by SKU, name, or category..."
                 className="pl-10 pr-4 py-2 w-80 text-sm border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
               />
-              <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap"
             >
-              <i className="fas fa-filter mr-2"></i>
+              <Filter className="w-4 h-4 mr-2" />
               Filter
             </button>
           </div>
           <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
-            <i className="fas fa-download mr-2"></i>
+            <Download className="w-4 h-4 mr-2" />
             Export
           </button>
         </div>
@@ -310,21 +350,22 @@ export const InventoryPage = ({ className = '' }: InventoryPageProps) => {
           sortOrder={sortOrder}
           onSort={(field) => {
             if (sortBy === field) {
-              setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+              setSortOrder(sortOrder === "asc" ? "desc" : "asc");
             } else {
-              setSortBy(field)
-              setSortOrder('asc')
+              setSortBy(field);
+              setSortOrder("asc");
             }
           }}
         />
 
         <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
           <p className="text-sm text-gray-600">
-            Showing 1-{Math.min(filteredAndSortedItems.length, 5)} of {filteredAndSortedItems.length} items
+            Showing 1-{Math.min(filteredAndSortedItems.length, 5)} of{" "}
+            {filteredAndSortedItems.length} items
           </p>
           <div className="flex items-center space-x-2">
             <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
-              <i className="fas fa-chevron-left"></i>
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button className="bg-yellow-400 text-black px-2 py-1 rounded text-sm cursor-pointer">
               1
@@ -336,11 +377,18 @@ export const InventoryPage = ({ className = '' }: InventoryPageProps) => {
               3
             </button>
             <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
-              <i className="fas fa-chevron-right"></i>
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
+
+      <Modal isOpen={showAddForm} onClose={() => setShowAddForm(false)}>
+        <AddInventoryForm
+          onSubmit={handleAddInventory}
+          onCancel={() => setShowAddForm(false)}
+        />
+      </Modal>
     </div>
-  )
-}
+  );
+};

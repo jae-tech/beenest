@@ -1,100 +1,144 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-export interface DashboardMetrics {
-  totalRevenue: number
-  totalOrders: number
-  totalCustomers: number
-  lowStockItems: number
+export interface DashboardMetric {
+  icon: string
+  title: string
+  value: string
+  change: string
+  color: string
+  trend: 'up' | 'down'
+}
+
+export interface SalesItem {
+  name: string
+  sku: string
+  orderId: string
+  price: string
+  status: string
+  statusColor: string
+}
+
+export interface NewStockItem {
+  sku: string
+  name: string
+  qty: number
+  price: string
+}
+
+export interface DashboardData {
+  metrics: DashboardMetric[]
+  salesData: SalesItem[]
+  newStock: NewStockItem[]
   monthlyRevenue: { month: string; revenue: number }[]
-  recentOrders: {
-    id: string
-    customerName: string
-    amount: number
-    status: 'pending' | 'completed' | 'cancelled'
-    date: string
-  }[]
 }
 
 export const useDashboard = () => {
-  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-
-        // Mock data - 실제 환경에서는 API 호출
-        await new Promise(resolve => setTimeout(resolve, 1000))
-
-        const mockData: DashboardMetrics = {
-          totalRevenue: 15420000,
-          totalOrders: 156,
-          totalCustomers: 89,
-          lowStockItems: 12,
-          monthlyRevenue: [
-            { month: '1월', revenue: 8200000 },
-            { month: '2월', revenue: 9100000 },
-            { month: '3월', revenue: 11200000 },
-            { month: '4월', revenue: 13400000 },
-            { month: '5월', revenue: 12800000 },
-            { month: '6월', revenue: 15420000 },
-          ],
-          recentOrders: [
-            {
-              id: 'ORD-001',
-              customerName: '주식회사 ABC',
-              amount: 1200000,
-              status: 'completed',
-              date: '2024-06-15'
-            },
-            {
-              id: 'ORD-002',
-              customerName: '(주)XYZ마트',
-              amount: 850000,
-              status: 'pending',
-              date: '2024-06-14'
-            },
-            {
-              id: 'ORD-003',
-              customerName: '델리온마켓',
-              amount: 2100000,
-              status: 'completed',
-              date: '2024-06-13'
-            }
-          ]
-        }
-
-        setMetrics(mockData)
-      } catch (err) {
-        setError('대시보드 데이터를 불러오는 중 오류가 발생했습니다.')
-        console.error('Dashboard fetch error:', err)
-      } finally {
-        setIsLoading(false)
+  const mockData: DashboardData = {
+    metrics: [
+      {
+        icon: "fas fa-boxes",
+        title: "Total Stock",
+        value: "23,340 Units",
+        change: "+25% from last month",
+        color: "bg-green-500",
+        trend: "up"
+      },
+      {
+        icon: "fas fa-dollar-sign",
+        title: "Total Inventory Value",
+        value: "$23,568,470",
+        change: "+25% from last month",
+        color: "bg-yellow-500",
+        trend: "up"
+      },
+      {
+        icon: "fas fa-chart-line",
+        title: "Total Sales",
+        value: "$15,420,000",
+        change: "+18% from last month",
+        color: "bg-blue-500",
+        trend: "up"
+      },
+      {
+        icon: "fas fa-users",
+        title: "New Customers",
+        value: "1,245",
+        change: "+12% from last month",
+        color: "bg-purple-500",
+        trend: "up"
+      },
+      {
+        icon: "fas fa-shopping-cart",
+        title: "Orders",
+        value: "8,240",
+        change: "+8% from last month",
+        color: "bg-indigo-500",
+        trend: "up"
       }
-    }
-
-    fetchDashboardData()
-  }, [])
+    ],
+    salesData: [
+      {
+        name: "Backpack",
+        sku: "25 in stock",
+        orderId: "#ORD100",
+        price: "₩200,000",
+        status: "Completed",
+        statusColor: "bg-green-100 text-green-800"
+      },
+      {
+        name: "T-Shirt",
+        sku: "25 in stock",
+        orderId: "#ORD200",
+        price: "₩89,000",
+        status: "In Progress",
+        statusColor: "bg-yellow-100 text-yellow-800"
+      },
+      {
+        name: "Sunglasses",
+        sku: "15 in stock",
+        orderId: "#ORD300",
+        price: "₩150,000",
+        status: "Pending",
+        statusColor: "bg-gray-100 text-gray-800"
+      }
+    ],
+    newStock: [
+      { sku: "SKU-300", name: "Headphone", qty: 200, price: "₩400,000" },
+      { sku: "SKU-301", name: "Bottle", qty: 240, price: "₩600,000" },
+      { sku: "SKU-302", name: "Helmet", qty: 500, price: "₩1,200,000" },
+      { sku: "SKU-303", name: "Shoes", qty: 100, price: "₩300,000" }
+    ],
+    monthlyRevenue: [
+      { month: "Jan", revenue: 45000 },
+      { month: "Feb", revenue: 52000 },
+      { month: "Mar", revenue: 48000 },
+      { month: "Apr", revenue: 61000 },
+      { month: "May", revenue: 55000 },
+      { month: "Jun", revenue: 67000 }
+    ]
+  }
 
   const refreshMetrics = async () => {
     setIsLoading(true)
+    setError(null)
     try {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      // 실제 API 재호출 로직
+      // 추후 API 호출로 교체
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      // 성공시 새 데이터 설정
     } catch (err) {
-      setError('데이터 새로고침에 실패했습니다.')
+      setError('데이터를 불러오는데 실패했습니다.')
     } finally {
       setIsLoading(false)
     }
   }
 
   return {
-    metrics,
+    ...mockData,
     isLoading,
     error,
-    refreshMetrics,
+    refreshMetrics
   }
 }

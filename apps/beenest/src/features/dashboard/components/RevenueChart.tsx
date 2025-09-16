@@ -9,6 +9,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts'
+import { Calendar } from 'lucide-react'
 
 interface RevenueData {
   month: string
@@ -76,7 +77,7 @@ export const RevenueChart = ({
           </div>
         </div>
         <button className="border border-gray-200 px-3 py-1 rounded text-sm cursor-pointer whitespace-nowrap hover:bg-gray-50">
-          <i className="fas fa-calendar mr-2"></i>
+          <Calendar className="w-4 h-4 mr-2" />
           Monthly
         </button>
       </div>

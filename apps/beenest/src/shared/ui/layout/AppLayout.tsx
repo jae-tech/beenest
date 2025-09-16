@@ -6,11 +6,14 @@ import { useUIStore } from '@/app/store/uiStore'
 import { cn } from '@/shared/lib/utils'
 
 export function AppLayout() {
-  const { sidebarCollapsed } = useUIStore()
+  const { sidebarCollapsed, toggleSidebar } = useUIStore()
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar />
+      <Sidebar
+        isCollapsed={sidebarCollapsed}
+        onToggle={toggleSidebar}
+      />
       <div
         className={cn(
           'transition-all duration-300 ease-in-out',
@@ -19,7 +22,9 @@ export function AppLayout() {
       >
         <Header />
         <main className="flex-1 overflow-auto p-6">
-          <Outlet />
+          <div className="main-content transition-opacity duration-300">
+            <Outlet />
+          </div>
         </main>
       </div>
       <TanStackRouterDevtools />

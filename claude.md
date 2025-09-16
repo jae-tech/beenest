@@ -77,7 +77,7 @@ Next.js 기반의 타입세이프한 웹 애플리케이션으로, Turborepo 모
 
 ### Shared Packages (`packages/`)
 
-- **UI Package** (`@beenest/components`): Shared React components and UI library
+- **UI Package** (`@beenest/ui`): Shared React components and UI library
 - **ESLint Config** (`@beenest/eslint-config`): Shared ESLint configuration
 - **TypeScript Config** (`@beenest/typescript-config`): Shared TypeScript configuration
 
