@@ -1,22 +1,21 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
+import { type ColumnDef } from "@tanstack/react-table";
+import {
+  Building,
+  CheckCircle,
+  Clock,
+  Edit,
+  Eye,
+  Mail,
+  Plus,
+  Star,
+  Truck,
+} from "lucide-react";
 import { useSuppliers } from "../hooks/useSuppliers";
-import { Plus, Truck, CheckCircle, Clock, Star, Search, Filter, Building, Edit, Eye, Mail } from "lucide-react";
-import { ColumnDef } from "@tanstack/react-table";
-
-type Supplier = {
-  id: string;
-  name: string;
-  contact: string;
-  location: string;
-  products: string;
-  orders: string;
-  rating: number;
-  status: "active" | "pending" | "inactive";
-};
+import { type Supplier } from "@/types";
 
 export function SuppliersPage() {
   const { stats, suppliers, searchTerm, setSearchTerm } = useSuppliers();
@@ -42,18 +41,14 @@ export function SuppliersPage() {
       accessorKey: "contact",
       header: "연락처",
       cell: ({ row }) => (
-        <div className="text-sm text-gray-900">
-          {row.getValue("contact")}
-        </div>
+        <div className="text-sm text-gray-900">{row.getValue("contact")}</div>
       ),
     },
     {
       accessorKey: "location",
       header: "지역",
       cell: ({ row }) => (
-        <div className="text-sm text-gray-600">
-          {row.getValue("location")}
-        </div>
+        <div className="text-sm text-gray-600">{row.getValue("location")}</div>
       ),
     },
     {
@@ -101,7 +96,11 @@ export function SuppliersPage() {
                   : "bg-gray-100 text-gray-800"
             } text-xs font-medium px-2 py-1 rounded-full`}
           >
-            {status === "active" ? "활성" : status === "pending" ? "대기" : "비활성"}
+            {status === "active"
+              ? "활성"
+              : status === "pending"
+                ? "대기"
+                : "비활성"}
           </Badge>
         );
       },
@@ -190,7 +189,12 @@ export function SuppliersPage() {
 
       {/* Suppliers Table */}
       <Card className="p-6">
-        <DataTable columns={columns} data={suppliers} searchKey="name" searchPlaceholder="공급업체 검색..." />
+        <DataTable
+          columns={columns}
+          data={suppliers}
+          searchKey="name"
+          searchPlaceholder="공급업체 검색..."
+        />
       </Card>
     </div>
   );

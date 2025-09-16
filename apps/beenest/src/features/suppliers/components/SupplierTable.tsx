@@ -1,29 +1,40 @@
-import { Supplier } from '../hooks/useSuppliers'
-import { Search, Filter, Download, Star, Eye, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Edit,
+  Eye,
+  Filter,
+  Search,
+  Star,
+  Trash2,
+} from "lucide-react";
+import { type Supplier } from "@/types";
 
 interface SupplierTableProps {
-  suppliers: Supplier[]
+  suppliers: Supplier[];
 }
 
 export const SupplierTable = ({ suppliers }: SupplierTableProps) => {
-
   return (
     <div className="bg-white rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Supplier List</h3>
+        <h3 className="text-lg font-semibold text-gray-900">공급업체 목록</h3>
         <div className="flex items-center space-x-4">
           <div className="relative">
             <input
-              placeholder="Search suppliers..."
+              placeholder="공급업체 검색..."
               className="pl-8 pr-4 py-2 w-64 text-sm border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
             />
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
           <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
-            <Filter className="w-4 h-4 mr-2" />Filter
+            <Filter className="w-4 h-4 mr-2" />
+            필터
           </button>
           <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
-            <Download className="w-4 h-4 mr-2" />Export
+            <Download className="w-4 h-4 mr-2" />
+            내보내기
           </button>
         </div>
       </div>
@@ -33,34 +44,39 @@ export const SupplierTable = ({ suppliers }: SupplierTableProps) => {
           <thead>
             <tr className="border-b border-gray-200">
               <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                Supplier Info
+                공급업체 정보
               </th>
               <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                Contact
+                연락처
               </th>
               <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                Category
+                분류
               </th>
               <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                Status
+                상태
               </th>
               <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                Rating
+                평점
               </th>
               <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                Last Order
+                최근 주문
               </th>
               <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                Actions
+                작업
               </th>
             </tr>
           </thead>
           <tbody>
             {suppliers.map((supplier) => (
-              <tr key={supplier.id} className="border-b border-gray-100 hover:bg-gray-50">
+              <tr
+                key={supplier.id}
+                className="border-b border-gray-100 hover:bg-gray-50"
+              >
                 <td className="py-4 px-4">
                   <div>
-                    <p className="font-medium text-gray-900 text-sm">{supplier.name}</p>
+                    <p className="font-medium text-gray-900 text-sm">
+                      {supplier.name}
+                    </p>
                     <p className="text-xs text-gray-500">{supplier.email}</p>
                   </div>
                 </td>
@@ -71,25 +87,29 @@ export const SupplierTable = ({ suppliers }: SupplierTableProps) => {
                   </div>
                 </td>
                 <td className="py-4 px-4 text-sm text-gray-900">
-                  {supplier.category}
+                  -
                 </td>
                 <td className="py-4 px-4">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    supplier.status === 'Active'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {supplier.status}
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      supplier.status === "active"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {supplier.status === "active" ? "활성" : "비활성"}
                   </span>
                 </td>
                 <td className="py-4 px-4">
                   <div className="flex items-center">
                     <Star className="w-3 h-3 text-yellow-400 mr-1 fill-current" />
-                    <span className="text-sm text-gray-900">{supplier.rating}</span>
+                    <span className="text-sm text-gray-900">
+                      {supplier.rating}
+                    </span>
                   </div>
                 </td>
                 <td className="py-4 px-4 text-sm text-gray-900">
-                  {supplier.lastOrder}
+                  -
                 </td>
                 <td className="py-4 px-4">
                   <div className="flex items-center space-x-2">
@@ -112,7 +132,7 @@ export const SupplierTable = ({ suppliers }: SupplierTableProps) => {
 
       <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
         <p className="text-sm text-gray-600">
-          Showing 1-5 of {suppliers.length} suppliers
+          전체 {suppliers.length}개 공급업체 중 1-5 표시
         </p>
         <div className="flex items-center space-x-2">
           <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
@@ -130,5 +150,5 @@ export const SupplierTable = ({ suppliers }: SupplierTableProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from 'lucide-react';
-import { LucideIcon } from 'lucide-react';
+import { type LucideIcon } from 'lucide-react';
 
 export interface MetricCardProps {
   icon: LucideIcon;

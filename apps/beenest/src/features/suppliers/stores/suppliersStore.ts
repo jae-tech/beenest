@@ -73,7 +73,7 @@ const initialFilters: SuppliersFilters = {
 const initialPagination: PaginationState = {
   page: 1,
   pageSize: 10,
-  total: 0,
+  totalItems: 0,
   totalPages: 0,
 }
 
@@ -96,7 +96,7 @@ export const useSuppliersStore = create<SuppliersState>()(
       setSuppliers: (suppliers: Supplier[]) => {
         set((state) => {
           state.suppliers = suppliers
-          state.pagination.total = suppliers.length
+          state.pagination.totalItems = suppliers.length
           state.pagination.totalPages = Math.ceil(suppliers.length / state.pagination.pageSize)
         })
       },
@@ -104,7 +104,7 @@ export const useSuppliersStore = create<SuppliersState>()(
       addSupplier: (supplier: Supplier) => {
         set((state) => {
           state.suppliers.push(supplier)
-          state.pagination.total = state.suppliers.length
+          state.pagination.totalItems = state.suppliers.length
           state.pagination.totalPages = Math.ceil(state.suppliers.length / state.pagination.pageSize)
         })
       },
@@ -122,7 +122,7 @@ export const useSuppliersStore = create<SuppliersState>()(
         set((state) => {
           state.suppliers = state.suppliers.filter(supplier => supplier.id !== id)
           state.selectedSuppliers = state.selectedSuppliers.filter(supplierId => supplierId !== id)
-          state.pagination.total = state.suppliers.length
+          state.pagination.totalItems = state.suppliers.length
           state.pagination.totalPages = Math.ceil(state.suppliers.length / state.pagination.pageSize)
         })
       },
@@ -251,7 +251,7 @@ export const useSuppliersStore = create<SuppliersState>()(
         set((state) => {
           state.suppliers = state.suppliers.filter(supplier => !ids.includes(supplier.id))
           state.selectedSuppliers = state.selectedSuppliers.filter(supplierId => !ids.includes(supplierId))
-          state.pagination.total = state.suppliers.length
+          state.pagination.totalItems = state.suppliers.length
           state.pagination.totalPages = Math.ceil(state.suppliers.length / state.pagination.pageSize)
         })
       },

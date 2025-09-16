@@ -1,9 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React, { useState } from "react";
 const App: React.FC = () => {
@@ -370,7 +368,9 @@ const App: React.FC = () => {
                 </div>
                 <span className="text-sm font-semibold">40%</span>
               </div>
-              <Progress value={40} className="h-2" />
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{width: '40%'}}></div>
+              </div>
             </div>
             <Button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white !rounded-button whitespace-nowrap cursor-pointer">
               See All
@@ -588,15 +588,9 @@ const App: React.FC = () => {
                 { sku: "SKU-300", name: "Shoes", qty: 100, price: "$3K" },
               ].map((item, index) => (
                 <div key={index} className="flex items-center space-x-3">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage
-                      src={`https://readdy.ai/api/search-image?query=$%7Bitem.name.toLowerCase%28%29%7D%20product%20icon%20on%20clean%20white%20background%20minimal%20style%20professional%20ecommerce&width=50&height=50&seq=newstock-${index}&orientation=squarish`}
-                      alt={item.name}
-                    />
-                    <AvatarFallback className="bg-gray-200 text-gray-600 text-xs">
-                      {item.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xs">
+                    {item.name.charAt(0)}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-gray-900 truncate">

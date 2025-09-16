@@ -1,40 +1,40 @@
-import { InventoryItem } from './useInventory'
+import { type InventoryItem } from '@/types'
 
 export const useInventoryActions = () => {
   const addItem = async (item: Omit<InventoryItem, 'id'>) => {
-    // ”Ä API ğÙÜ mutation<\ P´
+    // ï¿½ï¿½ API ï¿½ï¿½ï¿½ mutation<\ Pï¿½
     console.log('Adding item:', item)
-    // „Ü ID İ1
+    // ï¿½ï¿½ ID ï¿½1
     const newItem = { ...item, id: Date.now().toString() }
     return newItem
   }
 
   const updateItem = async (id: string, updates: Partial<InventoryItem>) => {
-    // ”Ä API ğÙÜ mutation<\ P´
+    // ï¿½ï¿½ API ï¿½ï¿½ï¿½ mutation<\ Pï¿½
     console.log('Updating item:', id, updates)
     return { id, ...updates }
   }
 
   const deleteItem = async (id: string) => {
-    // ”Ä API ğÙÜ mutation<\ P´
+    // ï¿½ï¿½ API ï¿½ï¿½ï¿½ mutation<\ Pï¿½
     console.log('Deleting item:', id)
     return id
   }
 
   const bulkUpdateItems = async (ids: string[], updates: Partial<InventoryItem>) => {
-    // ”Ä API ğÙÜ mutation<\ P´
+    // ï¿½ï¿½ API ï¿½ï¿½ï¿½ mutation<\ Pï¿½
     console.log('Bulk updating items:', ids, updates)
     return ids
   }
 
   const bulkDeleteItems = async (ids: string[]) => {
-    // ”Ä API ğÙÜ mutation<\ P´
+    // ï¿½ï¿½ API ï¿½ï¿½ï¿½ mutation<\ Pï¿½
     console.log('Bulk deleting items:', ids)
     return ids
   }
 
   const exportItems = async (format: 'csv' | 'excel' = 'csv') => {
-    // ”Ä ä export \Á l
+    // ï¿½ï¿½ ï¿½ export \ï¿½ l
     console.log('Exporting items as:', format)
     return true
   }

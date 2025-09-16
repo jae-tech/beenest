@@ -98,7 +98,7 @@ export interface Order extends BaseEntity {
   customerName: string
   items: OrderItem[]
   totalAmount: number
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'completed'
   orderDate: string
   deliveryDate?: string
   shippingAddress: Address

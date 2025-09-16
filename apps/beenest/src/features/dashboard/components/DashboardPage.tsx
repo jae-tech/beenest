@@ -1,20 +1,20 @@
-import { useDashboard } from '../hooks/useDashboard'
-import { MetricsGrid } from './MetricsGrid'
-import { RevenueChart } from './RevenueChart'
 import {
-  Image,
-  Edit,
-  Trash2,
-  MapPin,
-  Flag,
-  Search,
   Calendar,
+  Edit,
   ExternalLink,
-  TrendingUp
-} from 'lucide-react'
+  Flag,
+  Image,
+  MapPin,
+  Search,
+  Trash2,
+  TrendingUp,
+} from "lucide-react";
+import { useDashboard } from "../hooks/useDashboard";
+import { MetricsGrid } from "./MetricsGrid";
+import { RevenueChart } from "./RevenueChart";
 
 interface DashboardPageProps {
-  className?: string
+  className?: string;
 }
 
 const LoadingSkeleton = () => (
@@ -29,9 +29,15 @@ const LoadingSkeleton = () => (
       <div className="h-80 bg-gray-200 rounded-lg animate-pulse" />
     </div>
   </div>
-)
+);
 
-const ErrorState = ({ error, onRetry }: { error: string; onRetry: () => void }) => (
+const ErrorState = ({
+  error,
+  onRetry,
+}: {
+  error: string;
+  onRetry: () => void;
+}) => (
   <div className="text-center py-12">
     <div className="text-red-600 text-lg mb-4">{error}</div>
     <button
@@ -41,7 +47,7 @@ const ErrorState = ({ error, onRetry }: { error: string; onRetry: () => void }) 
       다시 시도
     </button>
   </div>
-)
+);
 
 const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
   <div className="overflow-x-auto">
@@ -49,53 +55,50 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
       <thead>
         <tr className="border-b border-gray-200">
           <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-            Product Details
+            상품 정보
           </th>
           <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-            Order ID
+            주문 번호
           </th>
           <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-            Price
+            가격
           </th>
           <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-            Delivery Status
+            배송 상태
           </th>
           <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-            Actions
+            관리
           </th>
         </tr>
       </thead>
       <tbody>
         {[
           {
-            name: "Backpack",
-            sku: "25 in stock",
+            name: "백팩",
+            sku: "25개 재고 있음",
             orderId: "#ORD100",
             price: "₩200,000",
-            status: "Completed",
+            status: "완료",
             statusColor: "bg-green-100 text-green-800",
           },
           {
-            name: "T-Shirt",
-            sku: "25 in stock",
+            name: "티셔츠",
+            sku: "25개 재고 있음",
             orderId: "#ORD200",
             price: "₩89,000",
-            status: "In Progress",
+            status: "진행중",
             statusColor: "bg-yellow-100 text-yellow-800",
           },
           {
-            name: "Sunglasses",
-            sku: "15 in stock",
+            name: "선글라스",
+            sku: "15개 재고 있음",
             orderId: "#ORD300",
             price: "₩150,000",
-            status: "Pending",
+            status: "대기중",
             statusColor: "bg-gray-100 text-gray-800",
           },
         ].map((item, index) => (
-          <tr
-            key={index}
-            className="border-b border-gray-100 hover:bg-gray-50"
-          >
+          <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
             <td className="py-4 px-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden">
@@ -111,9 +114,7 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
                 </div>
               </div>
             </td>
-            <td className="py-4 px-4 text-sm text-gray-900">
-              {item.orderId}
-            </td>
+            <td className="py-4 px-4 text-sm text-gray-900">{item.orderId}</td>
             <td className="py-4 px-4 text-sm font-medium text-gray-900">
               {item.price}
             </td>
@@ -139,10 +140,18 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
       </tbody>
     </table>
   </div>
-)
+);
 
-export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
-  const { metrics, salesData, newStock, monthlyRevenue, isLoading, error, refreshMetrics } = useDashboard()
+export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
+  const {
+    metrics,
+    salesData,
+    newStock,
+    monthlyRevenue,
+    isLoading,
+    error,
+    refreshMetrics,
+  } = useDashboard();
 
   if (isLoading) {
     return (
@@ -153,7 +162,7 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
         </div>
         <LoadingSkeleton />
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -164,7 +173,7 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
         </div>
         <ErrorState error={error} onRetry={refreshMetrics} />
       </div>
-    )
+    );
   }
 
   return (
@@ -181,33 +190,34 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
         {/* Recent Orders */}
         <div className="bg-white rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Revenue by Locations
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">지역별 매출</h3>
           </div>
           <div className="relative h-48 bg-gray-900 rounded-lg overflow-hidden mb-4">
             <div className="absolute top-4 left-4 bg-white rounded-lg p-2 text-sm">
               <div className="flex items-center space-x-2">
                 <MapPin className="w-4 h-4 text-yellow-500" />
-                <span className="font-semibold">Korea</span>
+                <span className="font-semibold">대한민국</span>
               </div>
-              <p className="text-xs text-gray-600">₩15,420,000 Sales</p>
+              <p className="text-xs text-gray-600">₩15,420,000 매출</p>
             </div>
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Flag className="w-4 h-4 text-yellow-500" />
-                <span className="text-sm font-medium">South Korea</span>
+                <span className="text-sm font-medium">대한민국</span>
               </div>
               <span className="text-sm font-semibold">90%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '90%' }}></div>
+              <div
+                className="bg-yellow-400 h-2 rounded-full"
+                style={{ width: "90%" }}
+              ></div>
             </div>
           </div>
           <button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white !rounded-button whitespace-nowrap cursor-pointer py-2 px-4 font-semibold">
-            See All
+            전체 보기
           </button>
         </div>
       </div>
@@ -217,19 +227,19 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
         <div className="col-span-2 bg-white rounded-lg p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">
-              Sales & Orders
+              판매 및 주문
             </h3>
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <input
-                  placeholder="Search products..."
+                  placeholder="상품 검색..."
                   className="pl-8 pr-4 py-2 w-64 text-sm border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
                 />
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
               <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
                 <Calendar className="w-4 h-4 mr-2 inline" />
-                Monthly
+                월별
               </button>
             </div>
           </div>
@@ -240,7 +250,7 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
           <div className="bg-white rounded-lg p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Best Selling Products
+                베스트셀러 상품
               </h3>
               <button className="border border-gray-200 p-1 rounded cursor-pointer">
                 <ExternalLink className="w-3 h-3" />
@@ -253,7 +263,7 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
 
           <div className="bg-white rounded-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Newly Arrived Stock
+              신규 입고 상품
             </h3>
             <div className="space-y-4">
               {newStock.map((item, index) => (
@@ -284,5 +294,5 @@ export const DashboardPage = ({ className = '' }: DashboardPageProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

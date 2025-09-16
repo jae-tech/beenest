@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { type LucideIcon, Package, DollarSign, ShoppingCart, Users, TrendingUp } from 'lucide-react'
 
 export interface DashboardMetric {
-  icon: string
+  icon: LucideIcon
   title: string
   value: string
   change: string
@@ -39,7 +40,7 @@ export const useDashboard = () => {
   const mockData: DashboardData = {
     metrics: [
       {
-        icon: "fas fa-boxes",
+        icon: Package,
         title: "Total Stock",
         value: "23,340 Units",
         change: "+25% from last month",
@@ -47,7 +48,7 @@ export const useDashboard = () => {
         trend: "up"
       },
       {
-        icon: "fas fa-dollar-sign",
+        icon: DollarSign,
         title: "Total Inventory Value",
         value: "$23,568,470",
         change: "+25% from last month",
@@ -55,7 +56,7 @@ export const useDashboard = () => {
         trend: "up"
       },
       {
-        icon: "fas fa-chart-line",
+        icon: TrendingUp,
         title: "Total Sales",
         value: "$15,420,000",
         change: "+18% from last month",
@@ -63,7 +64,7 @@ export const useDashboard = () => {
         trend: "up"
       },
       {
-        icon: "fas fa-users",
+        icon: Users,
         title: "New Customers",
         value: "1,245",
         change: "+12% from last month",
@@ -71,7 +72,7 @@ export const useDashboard = () => {
         trend: "up"
       },
       {
-        icon: "fas fa-shopping-cart",
+        icon: ShoppingCart,
         title: "Orders",
         value: "8,240",
         change: "+8% from last month",

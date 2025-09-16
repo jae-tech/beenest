@@ -4,9 +4,9 @@ import { Link } from "@tanstack/react-router";
 import {
   BarChart3,
   Box,
-  Crown,
   FileBarChart,
   HelpCircle,
+  LogOut,
   Package,
   Settings,
   Shield,
@@ -96,28 +96,14 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           })}
         </nav>
       </div>
-      {!isCollapsed && (
-        <div className="p-4 border-t border-gray-800">
-          <Card className="p-4 bg-gray-800 border-gray-700">
-            <div className="flex items-center space-x-2 mb-3">
-              <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
-                <Crown className="w-4 h-4 text-black" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-white">
-                  프로 버전으로 업그레이드
-                </h4>
-              </div>
-            </div>
-            <p className="text-xs text-gray-400 mb-3">
-              프리미엄 기능을 20% 할인된 가격에 만나보세요! (기간 한정)
-            </p>
-            <Button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black text-xs font-semibold !rounded-button whitespace-nowrap cursor-pointer">
-              지금 업그레이드
-            </Button>
-          </Card>
+      <div className="p-4 border-t border-gray-800">
+        <div className={`flex items-center space-x-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer ${isCollapsed ? 'justify-center' : ''}`}>
+          <LogOut className="w-4 h-4" />
+          {!isCollapsed && (
+            <span className="text-sm font-medium">로그아웃</span>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
