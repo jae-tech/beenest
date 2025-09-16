@@ -1,20 +1,20 @@
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
-import { Link } from '@tanstack/react-router';
+import { Link } from "@tanstack/react-router";
 import {
   BarChart3,
-  Package,
-  ShoppingCart,
-  Users,
-  Store,
-  Truck,
+  Box,
+  Crown,
   FileBarChart,
   HelpCircle,
+  Package,
   Settings,
   Shield,
-  Crown,
-  Cube
-} from 'lucide-react';
+  ShoppingCart,
+  Store,
+  Truck,
+  Users,
+} from "lucide-react";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -22,7 +22,6 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
-
   const menuItems = [
     { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
     { icon: Package, label: "Inventory", path: "/inventory" },
@@ -39,7 +38,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
       <div className="p-4 border-b border-gray-800">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
-            <Cube className="w-4 h-4 text-black" />
+            <Box className="w-4 h-4 text-black" />
           </div>
           {!isCollapsed && <span className="text-xl font-bold">Beenest</span>}
         </div>
