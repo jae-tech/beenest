@@ -1,7 +1,7 @@
-import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
-import { Input } from "@/shared/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Plus, Users, UserCheck, ShoppingCart, DollarSign, Search, Filter, Download, User, Edit, Eye, Mail, ChevronLeft, ChevronRight } from "lucide-react";
 
 export const CustomersPage = () => (

@@ -1,4 +1,4 @@
-import { MetricCard } from '@/shared/ui/metric-card/MetricCard'
+import { MetricCard } from '@/components/ui/metric-card/MetricCard'
 import { SupplierStat } from '../hooks/useSuppliers'
 
 interface SupplierStatsProps {

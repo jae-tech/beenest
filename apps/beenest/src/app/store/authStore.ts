@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { User, LoginCredentials } from '@/shared/types'
+import type { User, LoginCredentials } from '@/types'
 
 interface AuthState {
   user: User | null

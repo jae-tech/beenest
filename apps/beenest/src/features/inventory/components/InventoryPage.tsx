@@ -1,394 +1,222 @@
-import { Button } from "@/shared/ui";
-import { useMemo, useState } from "react";
-import { useInventory } from "../hooks/useInventory";
-import { useInventoryFilters } from "../hooks/useInventoryFilters";
-import { InventoryTable } from "./InventoryTable";
-import { AddInventoryForm } from "./AddInventoryForm";
-import { Modal } from "@/shared/ui/modal";
-import { type InventoryFormData } from "../schemas/inventorySchema";
-import { Plus, Search, Filter, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Plus, Search, Filter, Download, Edit, Eye, Trash, ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface InventoryPageProps {
-  className?: string;
-}
-
-const SearchBar = ({
-  searchTerm,
-  onSearchChange,
-}: {
-  searchTerm: string;
-  onSearchChange: (term: string) => void;
-}) => (
-  <div className="relative">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <svg
-        className="h-5 w-5 text-gray-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
-    </div>
-    <input
-      type="text"
-      value={searchTerm}
-      onChange={(e) => onSearchChange(e.target.value)}
-      placeholder="상품명, SKU, 카테고리로 검색..."
-      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-    />
-  </div>
-);
-
-const FilterDropdown = ({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (value: string) => void;
-}) => (
-  <div className="flex flex-col">
-    <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  </div>
-);
-
-const StockFilter = ({
-  minStock,
-  maxStock,
-  onMinStockChange,
-  onMaxStockChange,
-}: {
-  minStock: string;
-  maxStock: string;
-  onMinStockChange: (value: string) => void;
-  onMaxStockChange: (value: string) => void;
-}) => (
-  <div className="flex flex-col">
-    <label className="text-sm font-medium text-gray-700 mb-1">재고 범위</label>
-    <div className="flex items-center space-x-2">
-      <input
-        type="number"
-        value={minStock}
-        onChange={(e) => onMinStockChange(e.target.value)}
-        placeholder="최소"
-        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-      />
-      <span className="text-gray-500">~</span>
-      <input
-        type="number"
-        value={maxStock}
-        onChange={(e) => onMaxStockChange(e.target.value)}
-        placeholder="최대"
-        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-      />
-    </div>
-  </div>
-);
-
-const LoadingSkeleton = () => (
-  <div className="space-y-4">
-    {Array.from({ length: 5 }).map((_, i) => (
-      <div key={i} className="h-16 bg-gray-200 rounded animate-pulse" />
-    ))}
-  </div>
-);
-
-const ErrorState = ({
-  error,
-  onRetry,
-}: {
-  error: string;
-  onRetry: () => void;
-}) => (
-  <div className="text-center py-12 bg-white rounded-lg border">
-    <div className="text-red-600 text-lg mb-4">{error}</div>
-    <Button
-      onClick={onRetry}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-    >
-      다시 시도
-    </Button>
-  </div>
-);
-
-export const InventoryPage = ({ className = "" }: InventoryPageProps) => {
-  const { items, isLoading, error, refetch } = useInventory();
-  const {
-    searchTerm,
-    setSearchTerm,
-    categoryFilter,
-    setCategoryFilter,
-    stockStatusFilter,
-    setStockStatusFilter,
-    minStock,
-    setMinStock,
-    maxStock,
-    setMaxStock,
-    sortBy,
-    setSortBy,
-    sortOrder,
-    setSortOrder,
-    clearFilters,
-  } = useInventoryFilters();
-
-  const [showFilters, setShowFilters] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
-
-  const handleAddInventory = (data: InventoryFormData) => {
-    console.log('Adding inventory item:', data);
-    setShowAddForm(false);
-  };
-
-  const filteredAndSortedItems = useMemo(() => {
-    if (!items) return [];
-
-    const filtered = items.filter((item) => {
-      // 검색어 필터
-      const matchesSearch =
-        !searchTerm ||
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchTerm.toLowerCase());
-
-      // 카테고리 필터
-      const matchesCategory =
-        !categoryFilter ||
-        categoryFilter === "all" ||
-        item.category === categoryFilter;
-
-      // 재고 상태 필터
-      const matchesStockStatus =
-        !stockStatusFilter ||
-        stockStatusFilter === "all" ||
-        (stockStatusFilter === "in-stock" && item.quantity > 0) ||
-        (stockStatusFilter === "low-stock" &&
-          item.quantity > 0 &&
-          item.quantity <= item.lowStockThreshold) ||
-        (stockStatusFilter === "out-of-stock" && item.quantity === 0);
-
-      // 재고 범위 필터
-      const matchesStockRange =
-        (!minStock || item.quantity >= parseInt(minStock)) &&
-        (!maxStock || item.quantity <= parseInt(maxStock));
-
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesStockStatus &&
-        matchesStockRange
-      );
-    });
-
-    // 정렬
-    if (sortBy) {
-      filtered.sort((a, b) => {
-        let aValue = a[sortBy];
-        let bValue = b[sortBy];
-
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
-        }
-
-        if (sortOrder === "asc") {
-          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        } else {
-          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-        }
-      });
-    }
-
-    return filtered;
-  }, [
-    items,
-    searchTerm,
-    categoryFilter,
-    stockStatusFilter,
-    minStock,
-    maxStock,
-    sortBy,
-    sortOrder,
-  ]);
-
-  const categoryOptions = useMemo(() => {
-    if (!items) return [{ value: "all", label: "전체 카테고리" }];
-
-    const categories = Array.from(new Set(items.map((item) => item.category)));
-    return [
-      { value: "all", label: "전체 카테고리" },
-      ...categories.map((cat) => ({ value: cat, label: cat })),
-    ];
-  }, [items]);
-
-  const stockStatusOptions = [
-    { value: "all", label: "전체 상태" },
-    { value: "in-stock", label: "재고 있음" },
-    { value: "low-stock", label: "재고 부족" },
-    { value: "out-of-stock", label: "재고 없음" },
-  ];
-
-  if (isLoading) {
-    return (
-      <div className={`p-6 ${className}`}>
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">재고 관리</h1>
-          <p className="text-gray-600">상품 재고를 관리하고 추적하세요</p>
-        </div>
-        <LoadingSkeleton />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={`p-6 ${className}`}>
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">재고 관리</h1>
-        </div>
-        <ErrorState error={error} onRetry={refetch} />
-      </div>
-    );
-  }
-
+export function InventoryPage() {
   return (
-    <div className={`p-6 space-y-6 bg-gray-50 min-h-screen ${className}`}>
+    <div className="p-6 space-y-6 bg-gray-50">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">
           Inventory Management
         </h1>
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer"
-        >
-          <Plus className="w-4 h-4 mr-2" />
+        <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
+          <Plus className="h-4 w-4 mr-2" />
           Add New Item
-        </button>
+        </Button>
       </div>
-
-      <div className="bg-white rounded-lg p-6">
+      <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+              <Input
                 placeholder="Search by SKU, name, or category..."
-                className="pl-10 pr-4 py-2 w-80 text-sm border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
+                className="pl-10 pr-4 py-2 w-80 text-sm"
               />
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap"
+            <Button
+              variant="outline"
+              className="cursor-pointer whitespace-nowrap"
             >
-              <Filter className="w-4 h-4 mr-2" />
+              <Filter className="h-4 w-4 mr-2" />
               Filter
-            </button>
+            </Button>
           </div>
-          <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
-            <Download className="w-4 h-4 mr-2" />
+          <Button
+            variant="outline"
+            className="cursor-pointer whitespace-nowrap"
+          >
+            <Download className="h-4 w-4 mr-2" />
             Export
-          </button>
+          </Button>
         </div>
-
-        {showFilters && (
-          <div className="bg-gray-50 p-4 rounded-lg border mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <FilterDropdown
-                label="카테고리"
-                value={categoryFilter}
-                options={categoryOptions}
-                onChange={setCategoryFilter}
-              />
-              <FilterDropdown
-                label="재고 상태"
-                value={stockStatusFilter}
-                options={stockStatusOptions}
-                onChange={setStockStatusFilter}
-              />
-              <StockFilter
-                minStock={minStock}
-                maxStock={maxStock}
-                onMinStockChange={setMinStock}
-                onMaxStockChange={setMaxStock}
-              />
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={clearFilters}
-                className="border border-gray-200 px-3 py-1 rounded text-sm cursor-pointer hover:bg-gray-50"
-              >
-                필터 초기화
-              </button>
-            </div>
-          </div>
-        )}
-
-        <InventoryTable
-          items={filteredAndSortedItems}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onSort={(field) => {
-            if (sortBy === field) {
-              setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-            } else {
-              setSortBy(field);
-              setSortOrder("asc");
-            }
-          }}
-        />
-
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                  Product
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                  SKU
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                  Category
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                  Stock Level
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                  Unit Price
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                  Total Value
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                  Status
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                {
+                  name: "Wireless Headphones",
+                  sku: "WH-001",
+                  category: "Electronics",
+                  stock: 245,
+                  price: 89.99,
+                  status: "In Stock",
+                  statusColor: "bg-green-100 text-green-800",
+                },
+                {
+                  name: "Cotton T-Shirt",
+                  sku: "CT-002",
+                  category: "Apparel",
+                  stock: 15,
+                  price: 24.99,
+                  status: "Low Stock",
+                  statusColor: "bg-yellow-100 text-yellow-800",
+                },
+                {
+                  name: "Laptop Backpack",
+                  sku: "LB-003",
+                  category: "Accessories",
+                  stock: 0,
+                  price: 49.99,
+                  status: "Out of Stock",
+                  statusColor: "bg-red-100 text-red-800",
+                },
+                {
+                  name: "Bluetooth Speaker",
+                  sku: "BS-004",
+                  category: "Electronics",
+                  stock: 128,
+                  price: 79.99,
+                  status: "In Stock",
+                  statusColor: "bg-green-100 text-green-800",
+                },
+                {
+                  name: "Running Shoes",
+                  sku: "RS-005",
+                  category: "Footwear",
+                  stock: 67,
+                  price: 129.99,
+                  status: "In Stock",
+                  statusColor: "bg-green-100 text-green-800",
+                },
+              ].map((item, index) => (
+                <tr
+                  key={index}
+                  className="border-b border-gray-100 hover:bg-gray-50"
+                >
+                  <td className="py-4 px-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden">
+                        <img
+                          src={`https://readdy.ai/api/search-image?query=$%7Bitem.name.toLowerCase%28%29.replace%28%20%2C%20-%29%7D%20product%20on%20clean%20white%20background%20minimal%20ecommerce%20style%20professional%20product%20photography&width=100&height=100&seq=inventory-${index}&orientation=squarish`}
+                          alt={item.name}
+                          className="w-full h-full object-cover object-top"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 text-sm">
+                          {item.name}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-4 px-4 text-sm font-mono text-gray-900">
+                    {item.sku}
+                  </td>
+                  <td className="py-4 px-4 text-sm text-gray-600">
+                    {item.category}
+                  </td>
+                  <td className="py-4 px-4 text-sm font-medium text-gray-900">
+                    {item.stock} units
+                  </td>
+                  <td className="py-4 px-4 text-sm font-medium text-gray-900">
+                    ${item.price}
+                  </td>
+                  <td className="py-4 px-4 text-sm font-medium text-gray-900">
+                    ${(item.stock * item.price).toLocaleString()}
+                  </td>
+                  <td className="py-4 px-4">
+                    <Badge
+                      className={`${item.statusColor} text-xs font-medium px-2 py-1 rounded-full`}
+                    >
+                      {item.status}
+                    </Badge>
+                  </td>
+                  <td className="py-4 px-4">
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="p-2 cursor-pointer"
+                      >
+                        <Edit className="h-3 w-3 text-gray-600" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="p-2 cursor-pointer"
+                      >
+                        <Eye className="h-3 w-3 text-gray-600" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="p-2 cursor-pointer"
+                      >
+                        <Trash className="h-3 w-3 text-red-600" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
-            Showing 1-{Math.min(filteredAndSortedItems.length, 5)} of{" "}
-            {filteredAndSortedItems.length} items
-          </p>
+          <p className="text-sm text-gray-600">Showing 1-5 of 1,247 items</p>
           <div className="flex items-center space-x-2">
-            <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button className="bg-yellow-400 text-black px-2 py-1 rounded text-sm cursor-pointer">
+            <Button variant="outline" size="sm" className="cursor-pointer">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-yellow-400 text-black cursor-pointer"
+            >
               1
-            </button>
-            <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
+            </Button>
+            <Button variant="outline" size="sm" className="cursor-pointer">
               2
-            </button>
-            <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
+            </Button>
+            <Button variant="outline" size="sm" className="cursor-pointer">
               3
-            </button>
-            <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
+            <Button variant="outline" size="sm" className="cursor-pointer">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-      </div>
-
-      <Modal isOpen={showAddForm} onClose={() => setShowAddForm(false)}>
-        <AddInventoryForm
-          onSubmit={handleAddInventory}
-          onCancel={() => setShowAddForm(false)}
-        />
-      </Modal>
+      </Card>
     </div>
   );
-};
+}

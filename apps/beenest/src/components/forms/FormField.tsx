@@ -1,5 +1,5 @@
 import { useFormContext, Controller } from 'react-hook-form'
-import { Input } from '@/shared/ui/input'
+import { Input } from '@/components/ui/input'
 
 interface FormFieldProps {
   name: string

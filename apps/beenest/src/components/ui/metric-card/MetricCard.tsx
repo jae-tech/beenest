@@ -1,4 +1,4 @@
-import { Card } from "@/shared/ui/card";
+import { Card } from "@/components/ui/card";
 import { ExternalLink } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 

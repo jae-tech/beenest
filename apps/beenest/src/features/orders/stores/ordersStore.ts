@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { Order, PaginationState, Status } from '@/shared/types'
+import type { Order, PaginationState, Status } from '@/types'
 
 interface OrdersFilters {
   search: string

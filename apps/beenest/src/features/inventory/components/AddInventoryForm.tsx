@@ -1,9 +1,9 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { inventorySchema, type InventoryFormData } from '../schemas/inventorySchema'
-import { Form, FormField } from '@/shared/ui/form'
-import { Button } from '@/shared/ui/button'
-import { Card } from '@/shared/ui/card'
+import { Form, FormField } from '@/components/forms'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 interface AddInventoryFormProps {
   onSubmit: (data: InventoryFormData) => void

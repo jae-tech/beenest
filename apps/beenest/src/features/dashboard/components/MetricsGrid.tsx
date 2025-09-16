@@ -1,5 +1,5 @@
 import { DashboardMetrics } from '../hooks/useDashboard'
-import { MetricCard } from '@/shared/ui/metric-card/MetricCard'
+import { MetricCard } from '@/components/ui/metric-card/MetricCard'
 import { Package, DollarSign, Target, Clock, AlertTriangle } from 'lucide-react'
 
 interface MetricsGridProps {

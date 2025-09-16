@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { api } from '@/shared/lib/api'
+import { api } from '@/lib/api'
 
 // 쿼리 키 상수들
 export const customersQueryKeys = {
