@@ -1,131 +1,120 @@
 import { useState } from 'react'
-
-export interface SupplierStat {
-  icon: string
-  title: string
-  value: string
-  color: string
-  change?: string
-  trend?: 'up' | 'down'
-}
-
-export interface Supplier {
-  id: number
-  name: string
-  contact: string
-  email: string
-  phone: string
-  category: string
-  status: 'Active' | 'Inactive'
-  rating: number
-  lastOrder: string
-}
+import type { Supplier, SupplierStats } from '@/types'
 
 export const useSuppliers = () => {
+  const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const stats: SupplierStat[] = [
-    {
-      icon: "fas fa-store",
-      title: "Total Suppliers",
-      value: "125",
-      change: "+12% from last month",
-      color: "bg-blue-500",
-      trend: "up"
-    },
-    {
-      icon: "fas fa-handshake",
-      title: "Active Partnerships",
-      value: "98",
-      change: "+5% from last month",
-      color: "bg-green-500",
-      trend: "up"
-    },
-    {
-      icon: "fas fa-clock",
-      title: "Avg Response Time",
-      value: "2.4 days",
-      change: "-8% from last month",
-      color: "bg-yellow-500",
-      trend: "down"
-    },
-    {
-      icon: "fas fa-star",
-      title: "Avg Rating",
-      value: "4.6/5",
-      change: "+0.2 from last month",
-      color: "bg-purple-500",
-      trend: "up"
-    }
-  ]
+  // Mock data - ê¸°ì¡´ ì½”ë“œì—ì„œ ê°€ì ¸ì˜¨ ë°ì´í„°
+  const stats: SupplierStats = {
+    totalSuppliers: 156,
+    activeSuppliers: 142,
+    pendingOrders: 23,
+    avgRating: 4.8
+  }
 
   const suppliers: Supplier[] = [
     {
-      id: 1,
-      name: "Tech Solutions Ltd",
-      contact: "John Smith",
-      email: "john@techsolutions.com",
-      phone: "+82-2-1234-5678",
-      category: "Electronics",
-      status: "Active",
-      rating: 4.8,
-      lastOrder: "2024-01-15"
-    },
-    {
-      id: 2,
-      name: "Global Materials Co",
-      contact: "Sarah Johnson",
-      email: "sarah@globalmaterials.com",
-      phone: "+82-2-2345-6789",
-      category: "Raw Materials",
-      status: "Active",
-      rating: 4.5,
-      lastOrder: "2024-01-12"
-    },
-    {
-      id: 3,
-      name: "Premium Packaging",
-      contact: "Mike Chen",
-      email: "mike@premium.com",
-      phone: "+82-2-3456-7890",
-      category: "Packaging",
-      status: "Inactive",
-      rating: 4.2,
-      lastOrder: "2023-12-20"
-    },
-    {
-      id: 4,
-      name: "Quality Components",
-      contact: "Lisa Park",
-      email: "lisa@quality.com",
-      phone: "+82-2-4567-8901",
-      category: "Components",
-      status: "Active",
+      id: '1',
+      name: "TechSupply Co.",
+      contact: "john@techsupply.com",
+      email: "john@techsupply.com",
+      phone: "+1-555-0123",
+      location: "New York, USA",
+      address: "123 Tech Street, NY 10001",
+      products: 45,
+      orders: 128,
       rating: 4.9,
-      lastOrder: "2024-01-14"
+      status: "active",
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-15"
     },
     {
-      id: 5,
-      name: "Fast Logistics",
-      contact: "David Kim",
-      email: "david@fastlogistics.com",
-      phone: "+82-2-5678-9012",
-      category: "Logistics",
-      status: "Active",
-      rating: 4.3,
-      lastOrder: "2024-01-13"
+      id: '2',
+      name: "Global Electronics",
+      contact: "sarah@globalelec.com",
+      email: "sarah@globalelec.com",
+      phone: "+44-20-7946-0958",
+      location: "London, UK",
+      address: "456 Electronics Ave, London EC1A 1BB",
+      products: 78,
+      orders: 256,
+      rating: 4.7,
+      status: "active",
+      createdAt: "2024-01-05",
+      updatedAt: "2024-01-16"
+    },
+    {
+      id: '3',
+      name: "Fashion Forward",
+      contact: "mike@fashionfw.com",
+      email: "mike@fashionfw.com",
+      phone: "+33-1-42-86-83-26",
+      location: "Paris, France",
+      address: "789 Fashion Blvd, Paris 75001",
+      products: 123,
+      orders: 89,
+      rating: 4.8,
+      status: "pending",
+      createdAt: "2024-01-10",
+      updatedAt: "2024-01-17"
+    },
+    {
+      id: '4',
+      name: "Sports Gear Ltd",
+      contact: "emma@sportsgear.com",
+      email: "emma@sportsgear.com",
+      phone: "+49-30-12345678",
+      location: "Berlin, Germany",
+      address: "321 Sports Way, Berlin 10115",
+      products: 67,
+      orders: 145,
+      rating: 4.6,
+      status: "active",
+      createdAt: "2024-01-12",
+      updatedAt: "2024-01-18"
     }
   ]
 
-  const refetch = async () => {
+  const filteredSuppliers = suppliers.filter(supplier =>
+    supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    supplier.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    supplier.location.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const addSupplier = async (supplier: Omit<Supplier, 'id' | 'createdAt' | 'updatedAt'>) => {
     setIsLoading(true)
-    setError(null)
     try {
-      // ”Ä API 8œ\ P´
+      // Mock API call
       await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('Adding supplier:', supplier)
     } catch (err) {
-      setError('õ	Å´ pt0| ˆì$”p ä(ˆµÈä.')
+      setError('Failed to add supplier')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const updateSupplier = async (id: string, updates: Partial<Supplier>) => {
+    setIsLoading(true)
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('Updating supplier:', id, updates)
+    } catch (err) {
+      setError('Failed to update supplier')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const deleteSupplier = async (id: string) => {
+    setIsLoading(true)
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('Deleting supplier:', id)
+    } catch (err) {
+      setError('Failed to delete supplier')
     } finally {
       setIsLoading(false)
     }
@@ -133,9 +122,13 @@ export const useSuppliers = () => {
 
   return {
     stats,
-    suppliers,
+    suppliers: filteredSuppliers,
+    searchTerm,
+    setSearchTerm,
     isLoading,
     error,
-    refetch
+    addSupplier,
+    updateSupplier,
+    deleteSupplier
   }
 }

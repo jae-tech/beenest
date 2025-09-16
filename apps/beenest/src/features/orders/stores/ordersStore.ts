@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { Order, PaginationState, Status } from '@/shared/types'
+import type { Order, PaginationState, Status } from '@/types'
 
 interface OrdersFilters {
   search: string
@@ -88,7 +88,7 @@ const initialFilters: OrdersFilters = {
 const initialPagination: PaginationState = {
   page: 1,
   pageSize: 10,
-  total: 0,
+  totalItems: 0,
   totalPages: 0,
 }
 
@@ -112,7 +112,7 @@ export const useOrdersStore = create<OrdersState>()(
       setOrders: (orders: Order[]) => {
         set((state) => {
           state.orders = orders
-          state.pagination.total = orders.length
+          state.pagination.totalItems = orders.length
           state.pagination.totalPages = Math.ceil(orders.length / state.pagination.pageSize)
         })
       },
@@ -120,7 +120,7 @@ export const useOrdersStore = create<OrdersState>()(
       addOrder: (order: Order) => {
         set((state) => {
           state.orders.push(order)
-          state.pagination.total = state.orders.length
+          state.pagination.totalItems = state.orders.length
           state.pagination.totalPages = Math.ceil(state.orders.length / state.pagination.pageSize)
         })
       },
@@ -143,7 +143,7 @@ export const useOrdersStore = create<OrdersState>()(
           if (state.currentOrder?.id === id) {
             state.currentOrder = null
           }
-          state.pagination.total = state.orders.length
+          state.pagination.totalItems = state.orders.length
           state.pagination.totalPages = Math.ceil(state.orders.length / state.pagination.pageSize)
         })
       },
@@ -271,7 +271,7 @@ export const useOrdersStore = create<OrdersState>()(
           const index = state.orders.findIndex(order => order.id === id)
           if (index !== -1) {
             state.orders[index].status = status
-            state.orders[index].updatedAt = new Date()
+            state.orders[index].updatedAt = new Date().toISOString()
           }
         })
       },
@@ -281,7 +281,7 @@ export const useOrdersStore = create<OrdersState>()(
           const index = state.orders.findIndex(order => order.id === id)
           if (index !== -1) {
             state.orders[index].status = 'cancelled'
-            state.orders[index].updatedAt = new Date()
+            state.orders[index].updatedAt = new Date().toISOString()
             if (reason) {
               state.orders[index].notes = (state.orders[index].notes || '') + `\n취소 사유: ${reason}`
             }
@@ -294,7 +294,7 @@ export const useOrdersStore = create<OrdersState>()(
           const index = state.orders.findIndex(order => order.id === id)
           if (index !== -1) {
             state.orders[index].status = 'completed'
-            state.orders[index].updatedAt = new Date()
+            state.orders[index].updatedAt = new Date().toISOString()
           }
         })
       },
@@ -319,7 +319,7 @@ export const useOrdersStore = create<OrdersState>()(
             const index = state.orders.findIndex(order => order.id === id)
             if (index !== -1) {
               state.orders[index].status = 'cancelled'
-              state.orders[index].updatedAt = new Date()
+              state.orders[index].updatedAt = new Date().toISOString()
               if (reason) {
                 state.orders[index].notes = (state.orders[index].notes || '') + `\n취소 사유: ${reason}`
               }

@@ -8,4 +8,3 @@ export { useInventoryFilters } from './hooks/useInventoryFilters'
 
 // Store
 export { useInventoryStore } from './stores/inventoryStore'
-export type { InventoryItem, InventoryFilters } from './stores/inventoryStore'

@@ -1,12 +1,10 @@
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
 import { Link } from "@tanstack/react-router";
 import {
   BarChart3,
   Box,
-  Crown,
   FileBarChart,
   HelpCircle,
+  LogOut,
   Package,
   Settings,
   Shield,
@@ -23,13 +21,13 @@ interface SidebarProps {
 
 export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const menuItems = [
-    { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
-    { icon: Package, label: "Inventory", path: "/inventory" },
-    { icon: ShoppingCart, label: "Orders", path: "/orders" },
-    { icon: Users, label: "Customers", path: "/customers" },
-    { icon: Store, label: "Suppliers", path: "/suppliers" },
-    { icon: Truck, label: "Shipment", path: "/shipment" },
-    { icon: FileBarChart, label: "Reports", path: "/reports" },
+    { icon: BarChart3, label: "대시보드", path: "/dashboard" },
+    { icon: Package, label: "재고관리", path: "/inventory" },
+    { icon: ShoppingCart, label: "주문관리", path: "/orders" },
+    { icon: Users, label: "고객관리", path: "/customers" },
+    { icon: Store, label: "공급업체", path: "/suppliers" },
+    { icon: Truck, label: "배송관리", path: "/shipment" },
+    { icon: FileBarChart, label: "보고서", path: "/reports" },
   ];
   return (
     <div
@@ -47,7 +45,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         <div className="px-4 mb-4">
           {!isCollapsed && (
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              MENU
+              메뉴
             </span>
           )}
         </div>
@@ -71,15 +69,15 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         <div className="px-4 mt-8 mb-4">
           {!isCollapsed && (
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              GENERAL
+              일반
             </span>
           )}
         </div>
         <nav className="space-y-1 px-2">
           {[
-            { icon: HelpCircle, label: "Help" },
-            { icon: Settings, label: "Settings" },
-            { icon: Shield, label: "Privacy" },
+            { icon: HelpCircle, label: "도움말" },
+            { icon: Settings, label: "설정" },
+            { icon: Shield, label: "개인정보" },
           ].map((item, index) => {
             const IconComponent = item.icon;
             return (
@@ -96,28 +94,16 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           })}
         </nav>
       </div>
-      {!isCollapsed && (
-        <div className="p-4 border-t border-gray-800">
-          <Card className="p-4 bg-gray-800 border-gray-700">
-            <div className="flex items-center space-x-2 mb-3">
-              <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
-                <Crown className="w-4 h-4 text-black" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-white">
-                  Upgrade to Pro
-                </h4>
-              </div>
-            </div>
-            <p className="text-xs text-gray-400 mb-3">
-              Unlock premium features with 20% off - for a limited time!
-            </p>
-            <Button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black text-xs font-semibold !rounded-button whitespace-nowrap cursor-pointer">
-              Upgrade Now
-            </Button>
-          </Card>
+      <div className="p-4 border-t border-gray-800">
+        <div
+          className={`flex items-center space-x-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer ${isCollapsed ? "justify-center" : ""}`}
+        >
+          <LogOut className="w-4 h-4" />
+          {!isCollapsed && (
+            <span className="text-sm font-medium">로그아웃</span>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

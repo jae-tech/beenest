@@ -1,6 +1,3 @@
-// Layout Components
-export * from './layout'
-
 // Card Components
 export * from './card'
 

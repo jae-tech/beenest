@@ -29,7 +29,7 @@ interface Notification {
 export const useUIStore = create<UIState>()(
   devtools(
     persist(
-      immer((set, get) => ({
+      immer((set) => ({
         sidebarCollapsed: false,
         theme: 'light',
         isLoading: false,

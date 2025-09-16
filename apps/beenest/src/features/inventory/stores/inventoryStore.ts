@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { InventoryItem, InventoryFilters, PaginationState, Status } from '@/shared/types'
+import type { InventoryItem, InventoryFilters, PaginationState, Status } from '@/types'
 
 interface InventoryState {
   // Data
@@ -61,17 +61,19 @@ interface InventoryState {
 }
 
 const initialFilters: InventoryFilters = {
-  search: '',
+  searchTerm: '',
   category: '',
-  status: 'all',
-  lowStock: false,
-  supplierId: undefined,
+  stockStatus: 'all',
+  minStock: '',
+  maxStock: '',
+  sortBy: '',
+  sortOrder: 'asc',
 }
 
 const initialPagination: PaginationState = {
   page: 1,
   pageSize: 10,
-  total: 0,
+  totalItems: 0,
   totalPages: 0,
 }
 
@@ -95,7 +97,7 @@ export const useInventoryStore = create<InventoryState>()(
       setItems: (items: InventoryItem[]) => {
         set((state) => {
           state.items = items
-          state.pagination.total = items.length
+          state.pagination.totalItems = items.length
           state.pagination.totalPages = Math.ceil(items.length / state.pagination.pageSize)
         })
       },
@@ -103,7 +105,7 @@ export const useInventoryStore = create<InventoryState>()(
       addItem: (item: InventoryItem) => {
         set((state) => {
           state.items.push(item)
-          state.pagination.total = state.items.length
+          state.pagination.totalItems = state.items.length
           state.pagination.totalPages = Math.ceil(state.items.length / state.pagination.pageSize)
         })
       },
@@ -121,7 +123,7 @@ export const useInventoryStore = create<InventoryState>()(
         set((state) => {
           state.items = state.items.filter(item => item.id !== id)
           state.selectedItems = state.selectedItems.filter(itemId => itemId !== id)
-          state.pagination.total = state.items.length
+          state.pagination.totalItems = state.items.length
           state.pagination.totalPages = Math.ceil(state.items.length / state.pagination.pageSize)
         })
       },
@@ -172,7 +174,7 @@ export const useInventoryStore = create<InventoryState>()(
       setSearchQuery: (query: string) => {
         set((state) => {
           state.searchQuery = query
-          state.filters.search = query
+          state.filters.searchTerm = query
           state.pagination.page = 1
         })
       },
@@ -256,7 +258,7 @@ export const useInventoryStore = create<InventoryState>()(
         set((state) => {
           state.items = state.items.filter(item => !ids.includes(item.id))
           state.selectedItems = state.selectedItems.filter(itemId => !ids.includes(itemId))
-          state.pagination.total = state.items.length
+          state.pagination.totalItems = state.items.length
           state.pagination.totalPages = Math.ceil(state.items.length / state.pagination.pageSize)
         })
       },

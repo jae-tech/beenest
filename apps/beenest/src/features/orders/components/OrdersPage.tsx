@@ -1,198 +1,234 @@
-import { useOrders } from '../hooks/useOrders'
-import { Plus, Search, Filter, Download, Eye, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DataTable } from "@/components/ui/data-table";
+import { Plus, ShoppingCart, Clock, Truck, CheckCircle, Search, Filter, Eye, Edit, Building } from 'lucide-react';
+import { type ColumnDef } from "@tanstack/react-table";
 
-export const OrdersPage = () => {
-  const { stats, orders, tabs, activeTab, setActiveTab, isLoading, error, refetch } = useOrders()
+type Order = {
+  id: string;
+  customer: string;
+  products: number;
+  amount: number;
+  date: string;
+  status: "Delivered" | "In Transit" | "Processing" | "Pending";
+  statusColor: string;
+};
 
-  if (isLoading) {
-    return (
-      <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
-        </div>
-        <div className="text-center py-12">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-      </div>
-    )
-  }
+export function OrdersPage() {
+  // All orders data
+  const allOrders: Order[] = [
+    {
+      id: "#ORD-2024-001",
+      customer: "Acme Corp",
+      products: 5,
+      amount: 1250.0,
+      date: "2024-01-15",
+      status: "Delivered",
+      statusColor: "bg-green-100 text-green-800",
+    },
+    {
+      id: "#ORD-2024-002",
+      customer: "Tech Solutions",
+      products: 3,
+      amount: 890.5,
+      date: "2024-01-14",
+      status: "In Transit",
+      statusColor: "bg-blue-100 text-blue-800",
+    },
+    {
+      id: "#ORD-2024-003",
+      customer: "Global Industries",
+      products: 8,
+      amount: 2100.75,
+      date: "2024-01-13",
+      status: "Processing",
+      statusColor: "bg-yellow-100 text-yellow-800",
+    },
+    {
+      id: "#ORD-2024-004",
+      customer: "StartUp Inc",
+      products: 2,
+      amount: 450.0,
+      date: "2024-01-12",
+      status: "Pending",
+      statusColor: "bg-gray-100 text-gray-800",
+    },
+    {
+      id: "#ORD-2024-005",
+      customer: "Enterprise Ltd",
+      products: 12,
+      amount: 3200.25,
+      date: "2024-01-11",
+      status: "Delivered",
+      statusColor: "bg-green-100 text-green-800",
+    },
+  ];
 
-  if (error) {
-    return (
-      <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
+  // Filter orders by status
+  const pendingOrders = allOrders.filter(order => order.status === "Pending");
+  const processingOrders = allOrders.filter(order => order.status === "Processing");
+  const shippedOrders = allOrders.filter(order => order.status === "In Transit");
+  const deliveredOrders = allOrders.filter(order => order.status === "Delivered");
+
+  // Define columns for the data table
+  const columns: ColumnDef<Order>[] = [
+    {
+      accessorKey: "id",
+      header: "Order ID",
+      cell: ({ row }) => (
+        <div className="font-mono text-sm text-gray-900">
+          {row.getValue("id")}
         </div>
-        <div className="text-center py-12">
-          <div className="text-red-600 mb-4">{error}</div>
-          <button
-            onClick={refetch}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            다시 시도
-          </button>
+      ),
+    },
+    {
+      accessorKey: "customer",
+      header: "Customer",
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+            <Building className="h-3 w-3 text-gray-600" />
+          </div>
+          <span className="text-sm font-medium text-gray-900">
+            {row.getValue("customer")}
+          </span>
         </div>
-      </div>
-    )
-  }
+      ),
+    },
+    {
+      accessorKey: "products",
+      header: "Products",
+      cell: ({ row }) => (
+        <div className="text-sm text-gray-900">
+          {row.getValue("products")} items
+        </div>
+      ),
+    },
+    {
+      accessorKey: "amount",
+      header: "Total Amount",
+      cell: ({ row }) => (
+        <div className="text-sm font-medium text-gray-900">
+          ${(row.getValue("amount") as number).toLocaleString()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "date",
+      header: "Order Date",
+      cell: ({ row }) => (
+        <div className="text-sm text-gray-600">
+          {row.getValue("date")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const order = row.original;
+        return (
+          <Badge className={`${order.statusColor} text-xs font-medium px-2 py-1 rounded-full`}>
+            {row.getValue("status")}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm" className="p-2 cursor-pointer">
+            <Eye className="h-3 w-3 text-gray-600" />
+          </Button>
+          <Button variant="outline" size="sm" className="p-2 cursor-pointer">
+            <Edit className="h-3 w-3 text-gray-600" />
+          </Button>
+          <Button variant="outline" size="sm" className="p-2 cursor-pointer">
+            <Truck className="h-3 w-3 text-gray-600" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const renderOrderTable = (orders: Order[]) => (
+    <DataTable columns={columns} data={orders} searchKey="customer" searchPlaceholder="Search orders..." />
+  );
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="p-6 space-y-6 bg-gray-50">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
-          <Plus className="w-4 h-4 mr-2" />Create New Order
-        </button>
+        <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
+          <Plus className="h-4 w-4 mr-2" />
+          Create New Order
+        </Button>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        {stats.map((stat, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              </div>
-              <div className={`${stat.color.replace('bg-', 'bg-').replace('-500', '-100')} p-3 rounded-full`}>
-                {/* Note: This needs to be updated to render lucide-react icons dynamically based on stat.icon */}
-                <i className={`${stat.icon} ${stat.color.replace('bg-', 'text-').replace('-500', '-600')}`}></i>
-              </div>
-            </div>
-            <p className="text-xs text-green-600 mt-2">{stat.change}</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <Card className="p-4 text-center">
+          <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <ShoppingCart className="h-5 w-5 text-white" />
           </div>
-        ))}
+          <p className="text-2xl font-bold text-gray-900">1,247</p>
+          <p className="text-sm text-gray-600">Total Orders</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <Clock className="h-5 w-5 text-white" />
+          </div>
+          <p className="text-2xl font-bold text-gray-900">89</p>
+          <p className="text-sm text-gray-600">Pending Orders</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <Truck className="h-5 w-5 text-white" />
+          </div>
+          <p className="text-2xl font-bold text-gray-900">156</p>
+          <p className="text-sm text-gray-600">In Transit</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <CheckCircle className="h-5 w-5 text-white" />
+          </div>
+          <p className="text-2xl font-bold text-gray-900">1,002</p>
+          <p className="text-sm text-gray-600">Completed</p>
+        </Card>
       </div>
-
-      <div className="bg-white rounded-lg p-6">
+      <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Orders</h3>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input
-                placeholder="Search orders..."
-                className="pl-8 pr-4 py-2 w-64 text-sm border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
-              />
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Tabs defaultValue="all" className="w-full">
+            <div className="flex items-center justify-between">
+              <TabsList className="grid w-fit grid-cols-5">
+                <TabsTrigger value="all">All Orders</TabsTrigger>
+                <TabsTrigger value="pending">Pending</TabsTrigger>
+                <TabsTrigger value="processing">Processing</TabsTrigger>
+                <TabsTrigger value="shipped">Shipped</TabsTrigger>
+                <TabsTrigger value="delivered">Delivered</TabsTrigger>
+              </TabsList>
             </div>
-            <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
-              <Filter className="w-4 h-4 mr-2" />Filter
-            </button>
-            <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
-              <Download className="w-4 h-4 mr-2" />Export
-            </button>
-          </div>
+            <TabsContent value="all" className="mt-6">
+              {renderOrderTable(allOrders)}
+            </TabsContent>
+            <TabsContent value="pending" className="mt-6">
+              {renderOrderTable(pendingOrders)}
+            </TabsContent>
+            <TabsContent value="processing" className="mt-6">
+              {renderOrderTable(processingOrders)}
+            </TabsContent>
+            <TabsContent value="shipped" className="mt-6">
+              {renderOrderTable(shippedOrders)}
+            </TabsContent>
+            <TabsContent value="delivered" className="mt-6">
+              {renderOrderTable(deliveredOrders)}
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <div className="border-b border-gray-200 mb-6">
-          <nav className="-mb-px flex space-x-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm cursor-pointer ${
-                  activeTab === tab.id
-                    ? 'border-yellow-400 text-yellow-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                {tab.label}
-                <span className="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs">
-                  {tab.count}
-                </span>
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                  Order ID
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                  Customer
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                  Items
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                  Total
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                  Status
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                  Date
-                </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-4 px-4 text-sm font-medium text-gray-900">
-                    {order.id}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-900">
-                    {order.customer}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-900">
-                    {order.items}
-                  </td>
-                  <td className="py-4 px-4 text-sm font-medium text-gray-900">
-                    {order.total}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${order.statusColor}`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-900">
-                    {order.date}
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center space-x-2">
-                      <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
-                        <Eye className="w-3 h-3 text-gray-600" />
-                      </button>
-                      <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
-                        <Edit className="w-3 h-3 text-gray-600" />
-                      </button>
-                      <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
-                        <Trash2 className="w-3 h-3 text-red-600" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
-            Showing 1-{orders.length} of {orders.length} orders
-          </p>
-          <div className="flex items-center space-x-2">
-            <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button className="bg-yellow-400 text-black px-2 py-1 rounded text-sm cursor-pointer">
-              1
-            </button>
-            <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
-              2
-            </button>
-            <button className="border border-gray-200 px-2 py-1 rounded text-sm cursor-pointer hover:bg-gray-50">
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
+      </Card>
     </div>
-  )
+  );
 }

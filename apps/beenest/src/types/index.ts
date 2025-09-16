@@ -73,16 +73,22 @@ export interface InventoryFilters {
 // Supplier Types
 export interface Supplier extends BaseEntity {
   name: string
-  contactPerson: string
+  contact: string
   email: string
-  phone: string
-  address: string
-  website?: string
-  status: 'active' | 'inactive'
-  products: string[]
-  paymentTerms?: string
-  notes?: string
-  lastUpdated: string
+  phone?: string
+  location: string
+  address?: string
+  products: number
+  orders: number
+  rating: number
+  status: 'active' | 'pending' | 'inactive'
+}
+
+export interface SupplierStats {
+  totalSuppliers: number
+  activeSuppliers: number
+  pendingOrders: number
+  avgRating: number
 }
 
 // Order Types
@@ -92,7 +98,7 @@ export interface Order extends BaseEntity {
   customerName: string
   items: OrderItem[]
   totalAmount: number
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'completed'
   orderDate: string
   deliveryDate?: string
   shippingAddress: Address

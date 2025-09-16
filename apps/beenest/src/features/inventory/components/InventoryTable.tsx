@@ -1,49 +1,76 @@
-import { useState, useRef, useEffect } from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { InventoryItem } from '../stores/inventoryStore'
-import { Image, Edit, Eye, Trash2 } from 'lucide-react'
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { Edit, Eye, Image, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { type InventoryItem } from "@/types";
 
 interface InventoryTableProps {
-  items: InventoryItem[]
-  sortBy?: keyof InventoryItem
-  sortOrder?: 'asc' | 'desc'
-  onSort?: (field: keyof InventoryItem) => void
-  onItemClick?: (item: InventoryItem) => void
-  selectedItems?: string[]
-  onSelectItem?: (itemId: string) => void
-  onSelectAll?: () => void
-  className?: string
+  items: InventoryItem[];
+  sortBy?: keyof InventoryItem;
+  sortOrder?: "asc" | "desc";
+  onSort?: (field: keyof InventoryItem) => void;
+  onItemClick?: (item: InventoryItem) => void;
+  selectedItems?: string[];
+  onSelectItem?: (itemId: string) => void;
+  onSelectAll?: () => void;
+  className?: string;
 }
 
-const SortIcon = ({ direction }: { direction?: 'asc' | 'desc' }) => (
-  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    {direction === 'asc' ? (
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-    ) : direction === 'desc' ? (
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+const SortIcon = ({ direction }: { direction?: "asc" | "desc" }) => (
+  <svg
+    className="w-4 h-4 ml-1"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    {direction === "asc" ? (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 15l7-7 7 7"
+      />
+    ) : direction === "desc" ? (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 9l-7 7-7-7"
+      />
     ) : (
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 9l4-4 4 4m0 6l-4 4-4-4"
+      />
     )}
   </svg>
-)
+);
 
-const StockStatusBadge = ({ quantity, lowStockThreshold }: { quantity: number; lowStockThreshold: number }) => {
-  const status = quantity === 0 ? 'out' : quantity <= lowStockThreshold ? 'low' : 'normal'
+const StockStatusBadge = ({
+  quantity,
+  lowStockThreshold,
+}: {
+  quantity: number;
+  lowStockThreshold: number;
+}) => {
+  const status =
+    quantity === 0 ? "out" : quantity <= lowStockThreshold ? "low" : "normal";
 
   return (
     <span
       className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-        status === 'out'
-          ? 'bg-red-100 text-red-800'
-          : status === 'low'
-          ? 'bg-yellow-100 text-yellow-800'
-          : 'bg-green-100 text-green-800'
+        status === "out"
+          ? "bg-red-100 text-red-800"
+          : status === "low"
+            ? "bg-yellow-100 text-yellow-800"
+            : "bg-green-100 text-green-800"
       }`}
     >
-      {status === 'out' ? '품절' : status === 'low' ? '부족' : '정상'}
+      {status === "out" ? "품절" : status === "low" ? "부족" : "정상"}
     </span>
-  )
-}
+  );
+};
 
 const TableHeader = ({
   label,
@@ -51,14 +78,14 @@ const TableHeader = ({
   sortBy,
   sortOrder,
   onSort,
-  className = '',
+  className = "",
 }: {
-  label: string
-  field: keyof InventoryItem
-  sortBy?: keyof InventoryItem
-  sortOrder?: 'asc' | 'desc'
-  onSort?: (field: keyof InventoryItem) => void
-  className?: string
+  label: string;
+  field: keyof InventoryItem;
+  sortBy?: keyof InventoryItem;
+  sortOrder?: "asc" | "desc";
+  onSort?: (field: keyof InventoryItem) => void;
+  className?: string;
 }) => (
   <th
     className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 ${className}`}
@@ -69,18 +96,18 @@ const TableHeader = ({
       <SortIcon direction={sortBy === field ? sortOrder : undefined} />
     </div>
   </th>
-)
+);
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('ko-KR', {
-    style: 'currency',
-    currency: 'KRW',
-  }).format(amount)
-}
+  return new Intl.NumberFormat("ko-KR", {
+    style: "currency",
+    currency: "KRW",
+  }).format(amount);
+};
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('ko-KR')
-}
+  return new Date(dateString).toLocaleDateString("ko-KR");
+};
 
 export const InventoryTable = ({
   items,
@@ -91,10 +118,10 @@ export const InventoryTable = ({
   selectedItems = [],
   onSelectItem,
   onSelectAll,
-  className = '',
+  className = "",
 }: InventoryTableProps) => {
-  const [selectAll, setSelectAll] = useState(false)
-  const parentRef = useRef<HTMLDivElement>(null)
+  const [selectAll, setSelectAll] = useState(false);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   // Virtual scrolling을 위한 설정
   const rowVirtualizer = useVirtualizer({
@@ -102,21 +129,24 @@ export const InventoryTable = ({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 64, // 각 행의 예상 높이 (px)
     overscan: 10, // 미리 렌더링할 행의 개수
-  })
+  });
 
   useEffect(() => {
-    const allSelected = items.length > 0 && selectedItems.length === items.length
-    setSelectAll(allSelected)
-  }, [selectedItems, items])
+    const allSelected =
+      items.length > 0 && selectedItems.length === items.length;
+    setSelectAll(allSelected);
+  }, [selectedItems, items]);
 
   const handleSelectAll = () => {
-    setSelectAll(!selectAll)
-    onSelectAll?.()
-  }
+    setSelectAll(!selectAll);
+    onSelectAll?.();
+  };
 
   if (items.length === 0) {
     return (
-      <div className={`bg-white rounded-lg shadow overflow-hidden ${className}`}>
+      <div
+        className={`bg-white rounded-lg shadow overflow-hidden ${className}`}
+      >
         <div className="text-center py-12">
           <svg
             className="mx-auto h-12 w-12 text-gray-400"
@@ -131,11 +161,15 @@ export const InventoryTable = ({
               d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2M4 13h2m13-4v4a2 2 0 01-2 2H9a2 2 0 01-2-2V9a2 2 0 012-2h6a2 2 0 012 2z"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">재고가 없습니다</h3>
-          <p className="mt-1 text-sm text-gray-500">검색 조건을 변경하거나 새 상품을 추가해보세요.</p>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            재고가 없습니다
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            검색 조건을 변경하거나 새 상품을 추가해보세요.
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -144,7 +178,7 @@ export const InventoryTable = ({
         <thead>
           <tr className="border-b border-gray-200">
             <TableHeader
-              label="Product"
+              label="상품명"
               field="name"
               sortBy={sortBy}
               sortOrder={sortOrder}
@@ -158,82 +192,82 @@ export const InventoryTable = ({
               onSort={onSort}
             />
             <TableHeader
-              label="Category"
+              label="카테고리"
               field="category"
               sortBy={sortBy}
               sortOrder={sortOrder}
               onSort={onSort}
             />
             <TableHeader
-              label="Stock Level"
+              label="재고"
               field="quantity"
               sortBy={sortBy}
               sortOrder={sortOrder}
               onSort={onSort}
             />
             <TableHeader
-              label="Unit Price"
+              label="단가"
               field="price"
               sortBy={sortBy}
               sortOrder={sortOrder}
               onSort={onSort}
             />
             <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-              Total Value
+              총액
             </th>
             <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-              Status
+              상태
             </th>
             <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-              Actions
+              관리
             </th>
           </tr>
         </thead>
         <tbody>
           {[
             {
-              name: "Wireless Headphones",
+              name: "무선 헤드폰",
               sku: "WH-001",
-              category: "Electronics",
+              category: "전자제품",
               stock: 245,
               price: 89.99,
-              status: "In Stock",
+              status: "재고 있음",
               statusColor: "bg-green-100 text-green-800",
             },
             {
-              name: "Cotton T-Shirt",
+              name: "면 티셔츠",
               sku: "CT-002",
-              category: "Apparel",
+              category: "의류",
               stock: 15,
               price: 24.99,
-              status: "Low Stock",
+              status: "재고 부족",
               statusColor: "bg-yellow-100 text-yellow-800",
             },
             {
-              name: "Laptop Backpack",
+              name: "노트북 백팩",
               sku: "LB-003",
-              category: "Accessories",
+              category: "액세서리",
               stock: 0,
               price: 49.99,
-              status: "Out of Stock",
+              status: "품절",
               statusColor: "bg-red-100 text-red-800",
             },
             {
-              name: "Bluetooth Speaker",
+              name: "블루투스 스피커",
               sku: "BS-004",
-              category: "Electronics",
+              category: "전자제품",
               stock: 128,
               price: 79.99,
-              status: "In Stock",
+              status: "재고 있음",
               statusColor: "bg-green-100 text-green-800",
             },
             {
-              name: "Running Shoes",
+              name: "러닝화",
               sku: "RS-005",
-              category: "Footwear",
+              category: "신발",
               stock: 67,
               price: 129.99,
-              status: "In Stock",
+              status: "재고 있음",
               statusColor: "bg-green-100 text-green-800",
             },
           ].map((item, index) => (
@@ -262,13 +296,13 @@ export const InventoryTable = ({
                 {item.category}
               </td>
               <td className="py-4 px-4 text-sm font-medium text-gray-900">
-                {item.stock} units
+                {item.stock}개
               </td>
               <td className="py-4 px-4 text-sm font-medium text-gray-900">
-                ${item.price}
+                ₩{item.price}
               </td>
               <td className="py-4 px-4 text-sm font-medium text-gray-900">
-                ${(item.stock * item.price).toLocaleString()}
+                ₩{(item.stock * item.price).toLocaleString()}
               </td>
               <td className="py-4 px-4">
                 <span
@@ -295,5 +329,5 @@ export const InventoryTable = ({
         </tbody>
       </table>
     </div>
-  )
-}
+  );
+};

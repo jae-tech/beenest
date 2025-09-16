@@ -1,72 +1,24 @@
-import { DashboardMetrics } from '../hooks/useDashboard'
-import { MetricCard } from '@/shared/ui/metric-card/MetricCard'
-import { Package, DollarSign, Target, Clock, AlertTriangle } from 'lucide-react'
+import { MetricCard } from "@/components/ui/metric-card/MetricCard";
+import {
+  AlertTriangle,
+  Clock,
+  DollarSign,
+  Package,
+  Target,
+} from "lucide-react";
+import type { DashboardMetric } from "../hooks/useDashboard";
 
 interface MetricsGridProps {
-  metrics: DashboardMetrics
-  className?: string
+  metrics: DashboardMetric[];
+  className?: string;
 }
 
-export const MetricsGrid = ({ metrics, className = '' }: MetricsGridProps) => {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'KRW',
-      notation: 'compact',
-      maximumFractionDigits: 0,
-    }).format(amount)
-  }
-
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('ko-KR').format(num)
-  }
-
-  const metricCards = [
-    {
-      icon: Package,
-      title: 'Total Stock',
-      value: `${formatNumber(metrics.totalCustomers * 340)} Units`,
-      change: '+25%',
-      trend: 'up' as const,
-      color: 'bg-green-500'
-    },
-    {
-      icon: DollarSign,
-      title: 'Total Inventory Value',
-      value: formatCurrency(metrics.totalRevenue),
-      change: '+25%',
-      trend: 'up' as const,
-      color: 'bg-yellow-500'
-    },
-    {
-      icon: Target,
-      title: 'Total Picking Accuracy',
-      value: '90%',
-      change: '+4%',
-      trend: 'up' as const,
-      color: 'bg-blue-500'
-    },
-    {
-      icon: Clock,
-      title: 'Pending Orders',
-      value: formatNumber(metrics.totalOrders),
-      change: '+7%',
-      trend: 'up' as const,
-      color: 'bg-purple-500'
-    },
-    {
-      icon: AlertTriangle,
-      title: 'Low Stock Items',
-      value: `${formatNumber(metrics.lowStockItems)} Units`,
-      change: '-10%',
-      trend: 'down' as const,
-      color: 'bg-red-500'
-    },
-  ]
-
+export const MetricsGrid = ({ metrics, className = "" }: MetricsGridProps) => {
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 ${className}`}>
-      {metricCards.map((metric, index) => (
+    <div
+      className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 ${className}`}
+    >
+      {metrics.map((metric, index) => (
         <MetricCard
           key={index}
           icon={metric.icon}
@@ -78,5 +30,5 @@ export const MetricsGrid = ({ metrics, className = '' }: MetricsGridProps) => {
         />
       ))}
     </div>
-  )
-}
+  );
+};
