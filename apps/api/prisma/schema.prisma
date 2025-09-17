@@ -27,6 +27,7 @@ model User {
   createdProducts     Product[]        @relation("ProductCreator")
   createdSuppliers    Supplier[]       @relation("SupplierCreator")
   createdStockMovements StockMovement[] @relation("StockMovementCreator")
+  createdPurchaseOrders PurchaseOrder[] @relation("PurchaseOrderCreator")
 
   @@map("users")
 }
@@ -75,6 +76,7 @@ model Product {
   inventory      Inventory?
   stockMovements StockMovement[]
   supplierProducts SupplierProduct[]
+  purchaseOrderItems PurchaseOrderItem[]
 
   @@map("products")
   @@index([productCode])
@@ -162,6 +164,7 @@ model Supplier {
   // Relations
   creator          User              @relation("SupplierCreator", fields: [createdBy], references: [id])
   supplierProducts SupplierProduct[]
+  purchaseOrders   PurchaseOrder[]
 
   @@map("suppliers")
   @@index([supplierCode])
@@ -192,5 +195,51 @@ model SupplierProduct {
   @@map("supplier_products")
   @@unique([supplierId, productId])
   @@index([supplierId])
+  @@index([productId])
+}
+
+// 구매 주문 관리 (발주서)
+model PurchaseOrder {
+  id                   BigInt    @id @default(autoincrement())
+  orderNumber          String    @unique @map("order_number") @db.VarChar(100)
+  supplierId           BigInt    @map("supplier_id")
+  status               String    @default("PENDING") @db.VarChar(50) // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+  totalAmount          Decimal   @default(0) @map("total_amount") @db.Decimal(15, 2)
+  orderDate            DateTime  @default(now()) @map("order_date")
+  expectedDeliveryDate DateTime? @map("expected_delivery_date")
+  actualDeliveryDate   DateTime? @map("actual_delivery_date")
+  notes                String?   @db.Text
+  createdBy            BigInt    @map("created_by")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  supplier Supplier           @relation(fields: [supplierId], references: [id])
+  creator  User               @relation("PurchaseOrderCreator", fields: [createdBy], references: [id])
+  items    PurchaseOrderItem[]
+
+  @@map("purchase_orders")
+  @@index([orderNumber])
+  @@index([supplierId])
+  @@index([status])
+  @@index([orderDate])
+  @@index([createdBy])
+}
+
+// 구매 주문 항목
+model PurchaseOrderItem {
+  id         BigInt  @id @default(autoincrement())
+  orderId    BigInt  @map("order_id")
+  productId  BigInt  @map("product_id")
+  quantity   Int
+  unitPrice  Decimal @map("unit_price") @db.Decimal(10, 2)
+  totalPrice Decimal @map("total_price") @db.Decimal(15, 2)
+
+  // Relations
+  order   PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product       @relation(fields: [productId], references: [id])
+
+  @@map("purchase_order_items")
+  @@index([orderId])
   @@index([productId])
 }
