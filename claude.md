@@ -249,3 +249,260 @@ pnpm build --filter=@beenest/components
 - **컴포넌트 구조**: 중앙화된 @beenest/components 패키지
 - **빌드 시스템**: tsup 기반 컴포넌트 빌드, Vite 기반 앱 빌드
 - **개발 환경**: http://localhost:5173 (Vite 개발 서버)
+
+## Backend Architecture (MVP Design)
+
+### MVP 백엔드 설계 개요
+
+소규모 창업자들을 위한 거래처 및 재고 관리 시스템의 백엔드는 단순하면서도 확장 가능한 구조로 설계됩니다. MVP 단계에서는 핵심 비즈니스 로직에 집중하고, 추후 확장성을 고려한 아키텍처를 구성합니다.
+
+### 핵심 기능 정의
+
+#### 1. 인증 시스템
+- 사용자 로그인/회원가입 (JWT 기반)
+- 사용자 세션 관리
+- 비밀번호 암호화 (bcrypt)
+
+#### 2. 대시보드 데이터
+- 매출, 주문, 재고, 고객 통계 API
+- 차트용 시계열 데이터 제공
+- 실시간 알림 (재고 부족, 주문 업데이트)
+
+#### 3. 재고 관리
+- 상품 CRUD 작업
+- 재고 현황 실시간 추적
+- 재고 입출고 이력 관리
+- 자동 재고 알림 (품절, 부족 임계값)
+
+#### 4. 공급업체 관리
+- 공급업체 정보 CRUD
+- 공급업체별 성과 통계
+- 연락처 및 평가 시스템
+
+#### 5. 주문 관리
+- 주문 생성, 수정, 삭제
+- 주문 상태 관리 (대기, 확인, 배송, 완료, 취소)
+- 주문별 재고 자동 차감
+
+### 데이터베이스 스키마
+
+```sql
+-- 핵심 테이블 구조
+users (사용자)
+├── id (UUID, PK)
+├── email (VARCHAR, UNIQUE)
+├── password_hash (VARCHAR)
+├── name, company_name
+└── created_at, updated_at
+
+suppliers (공급업체)
+├── id (UUID, PK)
+├── user_id (FK)
+├── name, contact, email, phone
+├── location, status, rating
+└── created_at, updated_at
+
+products (상품)
+├── id (UUID, PK)
+├── user_id, supplier_id, category_id (FK)
+├── name, sku (UNIQUE), description
+├── price, cost_price, stock_quantity
+├── min_stock_level, image_url, status
+└── created_at, updated_at
+
+orders (주문)
+├── id (UUID, PK)
+├── user_id, supplier_id (FK)
+├── order_number (UNIQUE), status
+├── order_date, expected_delivery_date
+├── total_amount, notes
+└── created_at, updated_at
+
+stock_movements (재고 이동)
+├── id (UUID, PK)
+├── product_id (FK)
+├── movement_type (in/out/adjustment)
+├── quantity, previous_stock, new_stock
+├── reason, reference_id, reference_type
+└── created_at
+```
+
+### API 엔드포인트 설계
+
+#### 인증 API
+```
+POST /api/auth/register     # 회원가입
+POST /api/auth/login        # 로그인
+POST /api/auth/logout       # 로그아웃
+GET  /api/auth/me          # 현재 사용자 정보
+```
+
+#### 대시보드 API
+```
+GET /api/dashboard/stats    # 전체 통계 (매출, 주문수, 재고값, 공급업체수)
+GET /api/dashboard/charts   # 차트 데이터 (월별 매출, 재고 현황)
+GET /api/dashboard/alerts   # 알림 데이터 (재고 부족, 주문 상태)
+```
+
+#### 상품 관리 API
+```
+GET    /api/products           # 상품 목록 (페이징, 검색, 필터)
+POST   /api/products           # 상품 등록
+GET    /api/products/:id       # 상품 상세 정보
+PUT    /api/products/:id       # 상품 정보 수정
+DELETE /api/products/:id       # 상품 삭제
+POST   /api/products/:id/stock # 재고 수동 조정
+GET    /api/products/low-stock # 재고 부족 상품 목록
+```
+
+#### 공급업체 API
+```
+GET    /api/suppliers         # 공급업체 목록
+POST   /api/suppliers         # 공급업체 등록
+GET    /api/suppliers/:id     # 공급업체 상세 정보
+PUT    /api/suppliers/:id     # 공급업체 정보 수정
+DELETE /api/suppliers/:id     # 공급업체 삭제
+GET    /api/suppliers/:id/stats # 공급업체별 통계
+```
+
+#### 주문 관리 API
+```
+GET    /api/orders           # 주문 목록 (상태별 필터, 페이징)
+POST   /api/orders           # 새 주문 생성
+GET    /api/orders/:id       # 주문 상세 정보
+PUT    /api/orders/:id       # 주문 정보 수정
+DELETE /api/orders/:id       # 주문 삭제
+PUT    /api/orders/:id/status # 주문 상태 변경
+```
+
+### 기술 스택 (추천)
+
+#### 백엔드 프레임워크
+- **Node.js + Express.js + TypeScript**
+  - 프론트엔드와 일관된 개발 환경
+  - 빠른 프로토타이핑 및 MVP 개발
+  - 풍부한 생태계와 라이브러리
+
+#### 데이터베이스
+- **PostgreSQL**: 관계형 데이터, ACID 보장, 복잡한 쿼리 지원
+- **Prisma ORM**: TypeScript 네이티브, 스키마 마이그레이션, 타입 안전성
+
+#### 인증 및 보안
+- **JWT (jsonwebtoken)**: 무상태 토큰 기반 인증
+- **bcrypt**: 비밀번호 해싱
+- **helmet**: HTTP 보안 헤더
+- **cors**: Cross-Origin 요청 관리
+
+#### 개발 도구
+- **Nodemon**: 개발 시 자동 재시작
+- **Jest + Supertest**: API 테스트
+- **ESLint + Prettier**: 코드 품질 및 포매팅
+- **joi** 또는 **zod**: 요청 데이터 검증
+
+#### 배포 및 인프라
+- **Docker**: 컨테이너화로 일관된 배포 환경
+- **Railway** 또는 **Vercel**: 간단한 배포 및 호스팅
+- **Supabase** 또는 **Neon**: PostgreSQL 클라우드 서비스
+
+### 프로젝트 구조
+
+```
+apps/api/                   # 백엔드 애플리케이션
+├── src/
+│   ├── controllers/        # 비즈니스 로직 처리
+│   │   ├── auth.controller.ts
+│   │   ├── products.controller.ts
+│   │   ├── suppliers.controller.ts
+│   │   └── orders.controller.ts
+│   ├── middleware/         # 미들웨어 (인증, 검증 등)
+│   │   ├── auth.middleware.ts
+│   │   ├── validation.middleware.ts
+│   │   └── error.middleware.ts
+│   ├── models/            # 데이터 모델 (Prisma)
+│   │   └── schema.prisma
+│   ├── routes/            # API 라우트 정의
+│   │   ├── auth.routes.ts
+│   │   ├── products.routes.ts
+│   │   ├── suppliers.routes.ts
+│   │   └── orders.routes.ts
+│   ├── services/          # 비즈니스 서비스 로직
+│   │   ├── auth.service.ts
+│   │   ├── products.service.ts
+│   │   └── dashboard.service.ts
+│   ├── utils/             # 유틸리티 함수
+│   │   ├── jwt.utils.ts
+│   │   ├── validation.utils.ts
+│   │   └── response.utils.ts
+│   ├── types/             # TypeScript 타입 정의
+│   │   └── index.ts
+│   └── app.ts             # Express 앱 설정
+├── tests/                 # 테스트 파일
+├── prisma/               # 데이터베이스 스키마 및 마이그레이션
+├── docker/               # Docker 설정
+├── package.json
+└── tsconfig.json
+```
+
+### MVP 개발 로드맵
+
+#### Phase 1 (1-2주): 기반 인프라
+1. Express + TypeScript 프로젝트 셋업
+2. PostgreSQL + Prisma 데이터베이스 연결
+3. JWT 기반 인증 시스템 구현
+4. 기본 미들웨어 (에러 처리, CORS, 로깅) 설정
+
+#### Phase 2 (1주): 핵심 기능
+1. 상품 관리 API 구현 (CRUD)
+2. 재고 이동 로직 및 이력 관리
+3. 기본 대시보드 통계 API
+
+#### Phase 3 (1주): 확장 기능
+1. 공급업체 관리 API
+2. 주문 관리 시스템 (기본)
+3. 재고 알림 로직
+
+#### Phase 4 (1주): 품질 향상
+1. 종합적인 에러 처리 및 검증
+2. 기본 테스트 케이스 작성
+3. Docker 컨테이너화 및 배포 설정
+
+### 데이터베이스 마이그레이션 전략
+
+- **Prisma Migrate**: 스키마 변경사항 추적 및 자동 마이그레이션
+- **Seed 데이터**: 개발 및 테스트용 샘플 데이터 자동 생성
+- **백업 전략**: 프로덕션 데이터 정기 백업 및 복구 계획
+
+### API 응답 형식
+
+```typescript
+// 성공 응답
+{
+  success: true,
+  data: any,
+  message?: string,
+  pagination?: {
+    page: number,
+    limit: number,
+    total: number,
+    totalPages: number
+  }
+}
+
+// 에러 응답
+{
+  success: false,
+  error: {
+    code: string,
+    message: string,
+    details?: any
+  }
+}
+```
+
+### 보안 고려사항
+
+1. **입력 검증**: 모든 API 요청 데이터 검증
+2. **SQL 인젝션 방지**: Prisma ORM 사용으로 자동 방지
+3. **XSS 방지**: 입력 데이터 sanitization
+4. **Rate Limiting**: API 호출 빈도 제한
+5. **HTTPS 강제**: 프로덕션 환경에서 SSL/TLS 사용

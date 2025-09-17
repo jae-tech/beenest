@@ -1,0 +1,1 @@
+export * from '@/inventory/dto/update-inventory.dto';

@@ -1,36 +1,34 @@
+import { Calendar } from "lucide-react";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
   Area,
   AreaChart,
-} from 'recharts'
-import { Calendar } from 'lucide-react'
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 interface RevenueData {
-  month: string
-  revenue: number
+  month: string;
+  revenue: number;
 }
 
 interface RevenueChartProps {
-  data: RevenueData[]
-  className?: string
-  showArea?: boolean
-  height?: number
+  data: RevenueData[];
+  className?: string;
+  showArea?: boolean;
+  height?: number;
 }
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('ko-KR', {
-    style: 'currency',
-    currency: 'KRW',
-    notation: 'compact',
+  return new Intl.NumberFormat("ko-KR", {
+    style: "currency",
+    currency: "KRW",
+    notation: "compact",
     maximumFractionDigits: 0,
-  }).format(value)
-}
+  }).format(value);
+};
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -42,26 +40,28 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           {formatCurrency(payload[0].value)}
         </p>
       </div>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 export const RevenueChart = ({
   data,
-  className = '',
+  className = "",
   showArea = true,
   height = 300,
 }: RevenueChartProps) => {
   if (!data || data.length === 0) {
     return (
       <div className={`bg-white rounded-lg shadow p-6 ${className}`}>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">월별 매출 현황</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          월별 매출 현황
+        </h3>
         <div className="flex items-center justify-center h-64 text-gray-500">
           데이터가 없습니다.
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -70,7 +70,12 @@ export const RevenueChart = ({
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Revenue</h3>
           <div className="flex items-center space-x-4 mt-2">
-            <span className="text-2xl font-bold text-gray-900">₩{formatCurrency(data.reduce((sum, d) => sum + d.revenue, 0)).replace('₩', '')}</span>
+            <span className="text-2xl font-bold text-gray-900">
+              ₩
+              {formatCurrency(
+                data.reduce((sum, d) => sum + d.revenue, 0)
+              ).replace("₩", "")}
+            </span>
             <span className="text-sm font-medium text-green-600">
               +15% Compared to last month
             </span>
@@ -82,7 +87,7 @@ export const RevenueChart = ({
         </button>
       </div>
 
-      <div style={{ width: '100%', height: height }}>
+      <div style={{ width: "100%", height: height }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
@@ -97,13 +102,13 @@ export const RevenueChart = ({
             <XAxis
               dataKey="month"
               tick={{ fontSize: 12 }}
-              tickLine={{ stroke: '#e0e0e0' }}
-              axisLine={{ stroke: '#e0e0e0' }}
+              tickLine={{ stroke: "#e0e0e0" }}
+              axisLine={{ stroke: "#e0e0e0" }}
             />
             <YAxis
               tick={{ fontSize: 12 }}
-              tickLine={{ stroke: '#e0e0e0' }}
-              axisLine={{ stroke: '#e0e0e0' }}
+              tickLine={{ stroke: "#e0e0e0" }}
+              axisLine={{ stroke: "#e0e0e0" }}
               tickFormatter={(value) => `₩${(value / 1000000).toFixed(0)}M`}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -114,8 +119,8 @@ export const RevenueChart = ({
               strokeWidth={2}
               fill="#eab308"
               fillOpacity={0.1}
-              dot={{ fill: '#eab308', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, fill: '#eab308' }}
+              dot={{ fill: "#eab308", strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, fill: "#eab308" }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -132,5 +137,5 @@ export const RevenueChart = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
