@@ -1,16 +1,18 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
+import { PageLayout } from "@/components/layout";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
-  Download,
   Edit,
   Eye,
-  Filter,
-  Plus,
+  Package,
+  AlertTriangle,
+  CheckCircle,
+  ShoppingCart,
   Trash,
 } from "lucide-react";
+import { type StatItem } from "@/types/design-system";
 
 type InventoryItem = {
   name: string;
@@ -23,6 +25,36 @@ type InventoryItem = {
 };
 
 export function InventoryPage() {
+  const stats: StatItem[] = [
+    {
+      title: "전체 상품",
+      value: "455",
+      description: "전체 상품",
+      icon: Package,
+      color: "blue",
+    },
+    {
+      title: "재고 있음",
+      value: "389",
+      description: "재고 있음",
+      icon: CheckCircle,
+      color: "green",
+    },
+    {
+      title: "재고 부족",
+      value: "52",
+      description: "재고 부족",
+      icon: AlertTriangle,
+      color: "yellow",
+    },
+    {
+      title: "품절",
+      value: "14",
+      description: "품절",
+      icon: ShoppingCart,
+      color: "red",
+    },
+  ];
   const inventoryData: InventoryItem[] = [
     {
       name: "무선 헤드폰",
@@ -172,36 +204,21 @@ export function InventoryPage() {
   ];
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">재고 관리</h1>
-        <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
-          <Plus className="h-4 w-4 mr-2" />
-          신규 등록
-        </Button>
-      </div>
-
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" className="cursor-pointer whitespace-nowrap">
-              <Filter className="h-4 w-4 mr-2" />
-              필터
-            </Button>
-          </div>
-          <Button variant="outline" className="cursor-pointer whitespace-nowrap">
-            <Download className="h-4 w-4 mr-2" />
-            내보내기
-          </Button>
-        </div>
-
-        <DataTable
-          columns={columns}
-          data={inventoryData}
-          searchKey="name"
-          searchPlaceholder="SKU, 상품명, 카테고리로 검색..."
-        />
-      </Card>
-    </div>
+    <PageLayout
+      title="재고 관리"
+      actionText="신규 등록"
+      stats={stats}
+      showExport={true}
+      onAction={() => console.log("신규 등록")}
+      onFilter={() => console.log("필터")}
+      onExport={() => console.log("내보내기")}
+    >
+      <DataTable
+        columns={columns}
+        data={inventoryData}
+        searchKey="name"
+        searchPlaceholder="검색..."
+      />
+    </PageLayout>
   );
 }

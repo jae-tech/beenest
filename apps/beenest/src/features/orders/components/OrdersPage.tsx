@@ -1,11 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/ui/data-table";
-import { Plus, ShoppingCart, Clock, Truck, CheckCircle, Search, Filter, Eye, Edit, Building } from 'lucide-react';
+import { PageLayout } from "@/components/layout";
+import { ShoppingCart, Clock, Truck, CheckCircle, Eye, Edit, Building } from 'lucide-react';
 import { type ColumnDef } from "@tanstack/react-table";
+import { type StatItem } from "@/types/design-system";
 
 type Order = {
   id: string;
@@ -18,6 +19,36 @@ type Order = {
 };
 
 export function OrdersPage() {
+  const stats: StatItem[] = [
+    {
+      title: "전체 주문",
+      value: "1,247",
+      description: "전체 주문",
+      icon: ShoppingCart,
+      color: "blue",
+    },
+    {
+      title: "대기 주문",
+      value: "89",
+      description: "대기 주문",
+      icon: Clock,
+      color: "yellow",
+    },
+    {
+      title: "배송 중",
+      value: "156",
+      description: "배송 중",
+      icon: Truck,
+      color: "green",
+    },
+    {
+      title: "완료",
+      value: "1,002",
+      description: "완료",
+      icon: CheckCircle,
+      color: "purple",
+    },
+  ];
   // All orders data
   const allOrders: Order[] = [
     {
@@ -77,7 +108,7 @@ export function OrdersPage() {
   const columns: ColumnDef<Order>[] = [
     {
       accessorKey: "id",
-      header: "Order ID",
+      header: "주문 ID",
       cell: ({ row }) => (
         <div className="font-mono text-sm text-gray-900">
           {row.getValue("id")}
@@ -86,7 +117,7 @@ export function OrdersPage() {
     },
     {
       accessorKey: "customer",
-      header: "Customer",
+      header: "고객",
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
@@ -100,25 +131,25 @@ export function OrdersPage() {
     },
     {
       accessorKey: "products",
-      header: "Products",
+      header: "상품",
       cell: ({ row }) => (
         <div className="text-sm text-gray-900">
-          {row.getValue("products")} items
+          {row.getValue("products")}개
         </div>
       ),
     },
     {
       accessorKey: "amount",
-      header: "Total Amount",
+      header: "총 금액",
       cell: ({ row }) => (
         <div className="text-sm font-medium text-gray-900">
-          ${(row.getValue("amount") as number).toLocaleString()}
+          ₩{(row.getValue("amount") as number * 1300).toLocaleString()}
         </div>
       ),
     },
     {
       accessorKey: "date",
-      header: "Order Date",
+      header: "주문일자",
       cell: ({ row }) => (
         <div className="text-sm text-gray-600">
           {row.getValue("date")}
@@ -127,19 +158,25 @@ export function OrdersPage() {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: "상태",
       cell: ({ row }) => {
         const order = row.original;
+        const statusMap = {
+          "Delivered": "배송완료",
+          "In Transit": "배송중",
+          "Processing": "처리중",
+          "Pending": "대기중"
+        };
         return (
           <Badge className={`${order.statusColor} text-xs font-medium px-2 py-1 rounded-full`}>
-            {row.getValue("status")}
+            {statusMap[row.getValue("status") as keyof typeof statusMap]}
           </Badge>
         );
       },
     },
     {
       id: "actions",
-      header: "Actions",
+      header: "관리",
       cell: ({ row }) => (
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" className="p-2 cursor-pointer">
@@ -157,78 +194,43 @@ export function OrdersPage() {
   ];
 
   const renderOrderTable = (orders: Order[]) => (
-    <DataTable columns={columns} data={orders} searchKey="customer" searchPlaceholder="Search orders..." />
+    <DataTable columns={columns} data={orders} searchKey="customer" searchPlaceholder="검색..." />
   );
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
-        <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
-          <Plus className="h-4 w-4 mr-2" />
-          Create New Order
-        </Button>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <ShoppingCart className="h-5 w-5 text-white" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">1,247</p>
-          <p className="text-sm text-gray-600">Total Orders</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <Clock className="h-5 w-5 text-white" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">89</p>
-          <p className="text-sm text-gray-600">Pending Orders</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <Truck className="h-5 w-5 text-white" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">156</p>
-          <p className="text-sm text-gray-600">In Transit</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <CheckCircle className="h-5 w-5 text-white" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">1,002</p>
-          <p className="text-sm text-gray-600">Completed</p>
-        </Card>
-      </div>
-      <Card className="p-6">
+    <PageLayout
+      title="주문 관리"
+      actionText="신규 주문"
+      stats={stats}
+      onAction={() => console.log("신규 주문")}
+      onFilter={() => console.log("필터")}
+    >
+      <Tabs defaultValue="all" className="w-full">
         <div className="flex items-center justify-between mb-6">
-          <Tabs defaultValue="all" className="w-full">
-            <div className="flex items-center justify-between">
-              <TabsList className="grid w-fit grid-cols-5">
-                <TabsTrigger value="all">All Orders</TabsTrigger>
-                <TabsTrigger value="pending">Pending</TabsTrigger>
-                <TabsTrigger value="processing">Processing</TabsTrigger>
-                <TabsTrigger value="shipped">Shipped</TabsTrigger>
-                <TabsTrigger value="delivered">Delivered</TabsTrigger>
-              </TabsList>
-            </div>
-            <TabsContent value="all" className="mt-6">
-              {renderOrderTable(allOrders)}
-            </TabsContent>
-            <TabsContent value="pending" className="mt-6">
-              {renderOrderTable(pendingOrders)}
-            </TabsContent>
-            <TabsContent value="processing" className="mt-6">
-              {renderOrderTable(processingOrders)}
-            </TabsContent>
-            <TabsContent value="shipped" className="mt-6">
-              {renderOrderTable(shippedOrders)}
-            </TabsContent>
-            <TabsContent value="delivered" className="mt-6">
-              {renderOrderTable(deliveredOrders)}
-            </TabsContent>
-          </Tabs>
+          <TabsList className="grid w-fit grid-cols-5">
+            <TabsTrigger value="all">전체 주문</TabsTrigger>
+            <TabsTrigger value="pending">대기</TabsTrigger>
+            <TabsTrigger value="processing">처리중</TabsTrigger>
+            <TabsTrigger value="shipped">배송중</TabsTrigger>
+            <TabsTrigger value="delivered">완료</TabsTrigger>
+          </TabsList>
         </div>
-      </Card>
-    </div>
+        <TabsContent value="all" className="mt-6">
+          {renderOrderTable(allOrders)}
+        </TabsContent>
+        <TabsContent value="pending" className="mt-6">
+          {renderOrderTable(pendingOrders)}
+        </TabsContent>
+        <TabsContent value="processing" className="mt-6">
+          {renderOrderTable(processingOrders)}
+        </TabsContent>
+        <TabsContent value="shipped" className="mt-6">
+          {renderOrderTable(shippedOrders)}
+        </TabsContent>
+        <TabsContent value="delivered" className="mt-6">
+          {renderOrderTable(deliveredOrders)}
+        </TabsContent>
+      </Tabs>
+    </PageLayout>
   );
 }

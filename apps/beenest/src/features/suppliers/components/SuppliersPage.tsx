@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
+import { PageLayout } from "@/components/layout";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   Building,
@@ -10,15 +10,46 @@ import {
   Edit,
   Eye,
   Mail,
-  Plus,
   Star,
   Truck,
 } from "lucide-react";
 import { useSuppliers } from "../hooks/useSuppliers";
 import { type Supplier } from "@/types";
+import { type StatItem } from "@/types/design-system";
 
 export function SuppliersPage() {
   const { stats, suppliers, searchTerm, setSearchTerm } = useSuppliers();
+
+  const statsData: StatItem[] = [
+    {
+      title: "전체 공급업체",
+      value: stats.totalSuppliers,
+      description: "전체 공급업체",
+      icon: Truck,
+      color: "blue",
+    },
+    {
+      title: "활성 공급업체",
+      value: stats.activeSuppliers,
+      description: "활성 공급업체",
+      icon: CheckCircle,
+      color: "green",
+    },
+    {
+      title: "대기 중인 주문",
+      value: stats.pendingOrders,
+      description: "대기 중인 주문",
+      icon: Clock,
+      color: "yellow",
+    },
+    {
+      title: "평균 평점",
+      value: stats.avgRating,
+      description: "평균 평점",
+      icon: Star,
+      color: "purple",
+    },
+  ];
 
   const columns: ColumnDef<Supplier>[] = [
     {
@@ -107,7 +138,7 @@ export function SuppliersPage() {
     },
     {
       id: "actions",
-      header: "작업",
+      header: "관리",
       cell: ({ row }) => (
         <div className="flex items-center space-x-2">
           <Button
@@ -140,62 +171,19 @@ export function SuppliersPage() {
   ];
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">공급업체 관리</h1>
-        <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
-          <Plus className="w-4 h-4 mr-2" />
-          신규 공급업체 추가
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <Truck className="w-5 h-5 text-white" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">
-            {stats.totalSuppliers}
-          </p>
-          <p className="text-sm text-gray-600">전체 공급업체</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <CheckCircle className="w-5 h-5 text-white" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">
-            {stats.activeSuppliers}
-          </p>
-          <p className="text-sm text-gray-600">활성 공급업체</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <Clock className="w-5 h-5 text-white" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">
-            {stats.pendingOrders}
-          </p>
-          <p className="text-sm text-gray-600">대기 중인 주문</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <Star className="w-5 h-5 text-white" />
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.avgRating}</p>
-          <p className="text-sm text-gray-600">평균 평점</p>
-        </Card>
-      </div>
-
-      {/* Suppliers Table */}
-      <Card className="p-6">
-        <DataTable
-          columns={columns}
-          data={suppliers}
-          searchKey="name"
-          searchPlaceholder="공급업체 검색..."
-        />
-      </Card>
-    </div>
+    <PageLayout
+      title="공급업체 관리"
+      actionText="신규 추가"
+      stats={statsData}
+      onAction={() => console.log("신규 공급업체 추가")}
+      onFilter={() => console.log("필터")}
+    >
+      <DataTable
+        columns={columns}
+        data={suppliers}
+        searchKey="name"
+        searchPlaceholder="검색..."
+      />
+    </PageLayout>
   );
 }
