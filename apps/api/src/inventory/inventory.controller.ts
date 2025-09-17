@@ -17,7 +17,8 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { InventoryService } from '@/inventory/inventory.service';
-import { AdjustStockDto, UpdateInventoryDto } from '@/inventory/dto';
+import { UpdateInventoryDto } from '@/inventory/dto';
+import { AdjustStockDto } from '@/products/dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('재고 관리')
