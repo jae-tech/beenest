@@ -1,0 +1,196 @@
+// Beenest ERP/재고관리 시스템 - 현업 표준 스키마
+// 설계 원칙: snake_case, bigint PK, soft delete, 확장성 고려
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 관리
+model User {
+  id            BigInt    @id @default(autoincrement())
+  email         String    @unique @db.VarChar(255)
+  passwordHash  String    @map("password_hash") @db.VarChar(255)
+  name          String    @db.VarChar(200)
+  role          String    @default("user") @db.VarChar(50)
+  isActive      Boolean   @default(true) @map("is_active")
+  lastLoginAt   DateTime? @map("last_login_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  // Relations
+  createdProducts     Product[]        @relation("ProductCreator")
+  createdSuppliers    Supplier[]       @relation("SupplierCreator")
+  createdStockMovements StockMovement[] @relation("StockMovementCreator")
+
+  @@map("users")
+}
+
+// 상품 카테고리 (계층 구조 지원)
+model ProductCategory {
+  id               BigInt            @id @default(autoincrement())
+  categoryName     String            @map("category_name") @db.VarChar(100)
+  parentCategoryId BigInt?           @map("parent_category_id")
+  displayOrder     Int               @default(0) @map("display_order")
+  isActive         Boolean           @default(true) @map("is_active")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  parentCategory ProductCategory? @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id])
+  childCategories ProductCategory[] @relation("CategoryHierarchy")
+  products       Product[]
+
+  @@map("product_categories")
+  @@index([parentCategoryId])
+}
+
+// 상품 마스터
+model Product {
+  id          BigInt    @id @default(autoincrement())
+  productCode String    @unique @map("product_code") @db.VarChar(100)
+  productName String    @map("product_name") @db.VarChar(255)
+  description String?   @db.Text
+  categoryId  BigInt?   @map("category_id")
+  unitPrice   Decimal   @default(0) @map("unit_price") @db.Decimal(10, 2)
+  costPrice   Decimal?  @map("cost_price") @db.Decimal(10, 2)
+  barcode     String?   @db.VarChar(255)
+  weight      Decimal?  @db.Decimal(8, 2)
+  dimensions  String?   @db.VarChar(100)
+  imageUrl    String?   @map("image_url") @db.VarChar(500)
+  isActive    Boolean   @default(true) @map("is_active")
+  createdBy   BigInt    @map("created_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  // Relations
+  category       ProductCategory? @relation(fields: [categoryId], references: [id])
+  creator        User             @relation("ProductCreator", fields: [createdBy], references: [id])
+  inventory      Inventory?
+  stockMovements StockMovement[]
+  supplierProducts SupplierProduct[]
+
+  @@map("products")
+  @@index([productCode])
+  @@index([categoryId])
+  @@index([createdBy])
+  @@index([isActive])
+}
+
+// 재고 관리 (제품별 재고 현황)
+model Inventory {
+  id                BigInt    @id @default(autoincrement())
+  productId         BigInt    @unique @map("product_id")
+  warehouseLocation String    @default("MAIN") @map("warehouse_location") @db.VarChar(100)
+  currentStock      Int       @default(0) @map("current_stock")
+  reservedStock     Int       @default(0) @map("reserved_stock")
+  // availableStock는 computed column으로 처리 (currentStock - reservedStock)
+  minimumStock      Int       @default(0) @map("minimum_stock")
+  maximumStock      Int?      @map("maximum_stock")
+  reorderPoint      Int       @default(0) @map("reorder_point")
+  lastStockCheckAt  DateTime? @map("last_stock_check_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("inventory")
+  @@index([currentStock])
+  @@index([minimumStock])
+}
+
+// 재고 이동 이력 (모든 재고 변동 추적)
+model StockMovement {
+  id            BigInt    @id @default(autoincrement())
+  productId     BigInt    @map("product_id")
+  movementType  String    @map("movement_type") @db.VarChar(50) // IN, OUT, ADJUST, TRANSFER
+  quantity      Int
+  unitCost      Decimal?  @map("unit_cost") @db.Decimal(10, 2)
+  referenceType String?   @map("reference_type") @db.VarChar(50) // ORDER, PURCHASE, ADJUSTMENT, RETURN
+  referenceId   BigInt?   @map("reference_id")
+  notes         String?   @db.Text
+  createdBy     BigInt    @map("created_by")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id])
+  creator User    @relation("StockMovementCreator", fields: [createdBy], references: [id])
+
+  @@map("stock_movements")
+  @@index([productId])
+  @@index([movementType])
+  @@index([referenceType, referenceId])
+  @@index([createdAt])
+}
+
+// 공급업체 관리 (완전한 비즈니스 정보)
+model Supplier {
+  id                   BigInt    @id @default(autoincrement())
+  supplierCode         String    @unique @map("supplier_code") @db.VarChar(100)
+  companyName          String    @map("company_name") @db.VarChar(255)
+  contactPerson        String?   @map("contact_person") @db.VarChar(100)
+  email                String?   @db.VarChar(255)
+  phone                String?   @db.VarChar(50)
+  mobile               String?   @db.VarChar(50)
+  fax                  String?   @db.VarChar(50)
+  businessRegistration String?   @map("business_registration") @db.VarChar(100)
+  taxId                String?   @map("tax_id") @db.VarChar(100)
+  addressLine1         String?   @map("address_line1") @db.VarChar(255)
+  addressLine2         String?   @map("address_line2") @db.VarChar(255)
+  city                 String?   @db.VarChar(100)
+  stateProvince        String?   @map("state_province") @db.VarChar(100)
+  postalCode           String?   @map("postal_code") @db.VarChar(20)
+  country              String    @default("KR") @db.VarChar(100)
+  paymentTerms         String?   @map("payment_terms") @db.VarChar(100)
+  creditLimit          Decimal   @default(0) @map("credit_limit") @db.Decimal(15, 2)
+  rating               Int?      // 1-5 점수
+  supplierStatus       String    @default("active") @map("supplier_status") @db.VarChar(50)
+  notes                String?   @db.Text
+  isActive             Boolean   @default(true) @map("is_active")
+  createdBy            BigInt    @map("created_by")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  deletedAt            DateTime? @map("deleted_at")
+
+  // Relations
+  creator          User              @relation("SupplierCreator", fields: [createdBy], references: [id])
+  supplierProducts SupplierProduct[]
+
+  @@map("suppliers")
+  @@index([supplierCode])
+  @@index([companyName])
+  @@index([supplierStatus])
+  @@index([createdBy])
+  @@index([isActive])
+}
+
+// 공급업체-상품 연결 테이블 (다대다 관계, 공급업체별 상품 정보)
+model SupplierProduct {
+  id               BigInt    @id @default(autoincrement())
+  supplierId       BigInt    @map("supplier_id")
+  productId        BigInt    @map("product_id")
+  supplierProductCode String? @map("supplier_product_code") @db.VarChar(100) // 공급업체 상품코드
+  supplierPrice    Decimal?  @map("supplier_price") @db.Decimal(10, 2)
+  minimumOrderQty  Int?      @map("minimum_order_qty")
+  leadTimeDays     Int?      @map("lead_time_days")
+  isPreferred      Boolean   @default(false) @map("is_preferred")
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+  product  Product  @relation(fields: [productId], references: [id])
+
+  @@map("supplier_products")
+  @@unique([supplierId, productId])
+  @@index([supplierId])
+  @@index([productId])
+}
