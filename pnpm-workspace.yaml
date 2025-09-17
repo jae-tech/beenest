@@ -3,8 +3,13 @@ packages:
   - packages/*
 
 ignoredBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/client'
+  - '@prisma/engines'
   - '@tailwindcss/oxide'
+  - bcrypt
   - esbuild
+  - prisma
 
 onlyBuiltDependencies:
   - '@swc/core'
