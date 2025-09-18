@@ -1,5 +1,4 @@
 import { Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 import { useUIStore } from '@/app/store/uiStore'
@@ -9,20 +8,17 @@ export function AppLayout() {
   const { sidebarCollapsed, toggleSidebar } = useUIStore()
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-full bg-gray-50 overflow-hidden">
       <Sidebar
         isCollapsed={sidebarCollapsed}
         onToggle={toggleSidebar}
       />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0">
         <Header />
-        <main className="flex-1 overflow-auto">
-          <div className="main-content transition-opacity duration-300">
-            <Outlet />
-          </div>
+        <main className="flex-1 overflow-auto bg-gray-50">
+          <Outlet />
         </main>
       </div>
-      <TanStackRouterDevtools />
     </div>
   )
 }

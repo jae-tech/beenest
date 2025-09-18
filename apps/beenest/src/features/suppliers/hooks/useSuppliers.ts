@@ -1,81 +1,60 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useSuppliers as useAPISuppliers, useSupplierActions } from '@/hooks/useSuppliers'
 import type { Supplier, SupplierStats } from '@/types'
+import type { Supplier as APISupplier } from '@/types/api'
+
+// API Supplier를 앱 Supplier 타입으로 변환
+function transformAPISupplierToSupplier(apiSupplier: APISupplier): Supplier {
+  return {
+    id: apiSupplier.id,
+    name: apiSupplier.name,
+    contact: apiSupplier.contact || '',
+    email: apiSupplier.email || '',
+    phone: apiSupplier.phone || '',
+    location: apiSupplier.location || '',
+    address: '', // API에 address 필드가 없으면 빈 문자열
+    products: 0, // 실제 API에서 관련 상품 수를 가져와야 함
+    orders: 0, // 실제 API에서 주문 수를 가져와야 함
+    rating: apiSupplier.rating || 0,
+    status: apiSupplier.status as 'active' | 'pending' | 'inactive',
+    createdAt: apiSupplier.createdAt,
+    updatedAt: apiSupplier.updatedAt
+  }
+}
 
 export const useSuppliers = () => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
-  // Mock data - 기존 코드에서 가져온 데이터
-  const stats: SupplierStats = {
-    totalSuppliers: 156,
-    activeSuppliers: 142,
-    pendingOrders: 23,
-    avgRating: 4.8
-  }
+  // API 호출
+  const {
+    data: suppliersResponse,
+    isLoading: isLoadingSuppliers,
+    error: suppliersError
+  } = useAPISuppliers({ search: searchTerm })
 
-  const suppliers: Supplier[] = [
-    {
-      id: '1',
-      name: "TechSupply Co.",
-      contact: "john@techsupply.com",
-      email: "john@techsupply.com",
-      phone: "+1-555-0123",
-      location: "New York, USA",
-      address: "123 Tech Street, NY 10001",
-      products: 45,
-      orders: 128,
-      rating: 4.9,
-      status: "active",
-      createdAt: "2024-01-01",
-      updatedAt: "2024-01-15"
-    },
-    {
-      id: '2',
-      name: "Global Electronics",
-      contact: "sarah@globalelec.com",
-      email: "sarah@globalelec.com",
-      phone: "+44-20-7946-0958",
-      location: "London, UK",
-      address: "456 Electronics Ave, London EC1A 1BB",
-      products: 78,
-      orders: 256,
-      rating: 4.7,
-      status: "active",
-      createdAt: "2024-01-05",
-      updatedAt: "2024-01-16"
-    },
-    {
-      id: '3',
-      name: "Fashion Forward",
-      contact: "mike@fashionfw.com",
-      email: "mike@fashionfw.com",
-      phone: "+33-1-42-86-83-26",
-      location: "Paris, France",
-      address: "789 Fashion Blvd, Paris 75001",
-      products: 123,
-      orders: 89,
-      rating: 4.8,
-      status: "pending",
-      createdAt: "2024-01-10",
-      updatedAt: "2024-01-17"
-    },
-    {
-      id: '4',
-      name: "Sports Gear Ltd",
-      contact: "emma@sportsgear.com",
-      email: "emma@sportsgear.com",
-      phone: "+49-30-12345678",
-      location: "Berlin, Germany",
-      address: "321 Sports Way, Berlin 10115",
-      products: 67,
-      orders: 145,
-      rating: 4.6,
-      status: "active",
-      createdAt: "2024-01-12",
-      updatedAt: "2024-01-18"
+  const { createSupplier, updateSupplier, deleteSupplier, isLoading: isActionLoading } = useSupplierActions()
+
+  // API 데이터를 앱 타입으로 변환
+  const suppliers = useMemo(() => {
+    if (!suppliersResponse?.success || !suppliersResponse.data) {
+      return []
     }
-  ]
+    return suppliersResponse.data.map(transformAPISupplierToSupplier)
+  }, [suppliersResponse])
+
+  // 통계 계산 (실제로는 별도 API에서 가져와야 함)
+  const stats: SupplierStats = useMemo(() => {
+    const activeSuppliers = suppliers.filter(s => s.status === 'active').length
+    const totalOrders = suppliers.reduce((sum, s) => sum + s.orders, 0)
+    const totalRating = suppliers.reduce((sum, s) => sum + s.rating, 0)
+
+    return {
+      totalSuppliers: suppliers.length,
+      activeSuppliers,
+      pendingOrders: 0, // 실제 API에서 가져와야 함
+      avgRating: suppliers.length > 0 ? totalRating / suppliers.length : 0
+    }
+  }, [suppliers])
 
   const filteredSuppliers = suppliers.filter(supplier =>
     supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,39 +63,45 @@ export const useSuppliers = () => {
   )
 
   const addSupplier = async (supplier: Omit<Supplier, 'id' | 'createdAt' | 'updatedAt'>) => {
-    setIsLoading(true)
     try {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Adding supplier:', supplier)
-    } catch (err) {
-      setError('Failed to add supplier')
-    } finally {
-      setIsLoading(false)
+      await createSupplier.mutateAsync({
+        name: supplier.name,
+        contact: supplier.contact,
+        email: supplier.email,
+        phone: supplier.phone,
+        location: supplier.location,
+        status: supplier.status,
+        rating: supplier.rating
+      })
+    } catch (error) {
+      throw error
     }
   }
 
-  const updateSupplier = async (id: string, updates: Partial<Supplier>) => {
-    setIsLoading(true)
+  const updateSupplierData = async (id: string, updates: Partial<Supplier>) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Updating supplier:', id, updates)
-    } catch (err) {
-      setError('Failed to update supplier')
-    } finally {
-      setIsLoading(false)
+      await updateSupplier.mutateAsync({
+        id,
+        data: {
+          name: updates.name,
+          contact: updates.contact,
+          email: updates.email,
+          phone: updates.phone,
+          location: updates.location,
+          status: updates.status,
+          rating: updates.rating
+        }
+      })
+    } catch (error) {
+      throw error
     }
   }
 
-  const deleteSupplier = async (id: string) => {
-    setIsLoading(true)
+  const deleteSupplierData = async (id: string) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Deleting supplier:', id)
-    } catch (err) {
-      setError('Failed to delete supplier')
-    } finally {
-      setIsLoading(false)
+      await deleteSupplier.mutateAsync(id)
+    } catch (error) {
+      throw error
     }
   }
 
@@ -125,10 +110,10 @@ export const useSuppliers = () => {
     suppliers: filteredSuppliers,
     searchTerm,
     setSearchTerm,
-    isLoading,
-    error,
+    isLoading: isLoadingSuppliers || isActionLoading,
+    error: suppliersError ? '공급업체 데이터를 불러오는데 실패했습니다.' : null,
     addSupplier,
-    updateSupplier,
-    deleteSupplier
+    updateSupplier: updateSupplierData,
+    deleteSupplier: deleteSupplierData
   }
 }

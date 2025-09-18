@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

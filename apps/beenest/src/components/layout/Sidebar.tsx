@@ -2,16 +2,13 @@ import { Link } from "@tanstack/react-router";
 import {
   BarChart3,
   Box,
-  FileBarChart,
   HelpCircle,
   LogOut,
   Package,
   Settings,
   Shield,
-  ShoppingCart,
   Store,
-  Truck,
-  Users,
+  ClipboardList,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -22,16 +19,17 @@ interface SidebarProps {
 export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const menuItems = [
     { icon: BarChart3, label: "대시보드", path: "/dashboard" },
-    { icon: Package, label: "재고관리", path: "/inventory" },
-    { icon: ShoppingCart, label: "주문관리", path: "/orders" },
-    { icon: Users, label: "고객관리", path: "/customers" },
+    { icon: Package, label: "상품관리", path: "/products" },
+    { icon: ClipboardList, label: "재고현황", path: "/inventory" },
+    // { icon: ShoppingCart, label: "주문관리", path: "/orders" },
+    // { icon: Users, label: "고객관리", path: "/customers" },
     { icon: Store, label: "공급업체", path: "/suppliers" },
-    { icon: Truck, label: "배송관리", path: "/shipment" },
-    { icon: FileBarChart, label: "보고서", path: "/reports" },
+    // { icon: Truck, label: "배송관리", path: "/shipment" },
+    // { icon: FileBarChart, label: "보고서", path: "/reports" },
   ];
   return (
     <div
-      className={`bg-gray-900 text-white transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} min-h-screen flex flex-col`}
+      className={`bg-gray-900 text-white transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} h-full flex flex-col`}
     >
       <div className="p-4 border-b border-gray-800">
         <div className="flex items-center space-x-3">

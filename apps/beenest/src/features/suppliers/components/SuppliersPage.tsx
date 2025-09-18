@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { PageLayout } from "@/components/layout";
 import { type ColumnDef } from "@tanstack/react-table";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Building,
   CheckCircle,
@@ -19,6 +20,7 @@ import { type StatItem } from "@/types/design-system";
 
 export function SuppliersPage() {
   const { stats, suppliers, searchTerm, setSearchTerm } = useSuppliers();
+  const navigate = useNavigate();
 
   const statsData: StatItem[] = [
     {
@@ -175,7 +177,7 @@ export function SuppliersPage() {
       title="공급업체 관리"
       actionText="신규 추가"
       stats={statsData}
-      onAction={() => console.log("신규 공급업체 추가")}
+      onAction={() => navigate({ to: '/suppliers/add' })}
       onFilter={() => console.log("필터")}
     >
       <DataTable

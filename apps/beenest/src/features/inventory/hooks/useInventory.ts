@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
+import { useProducts } from '@/hooks/useProducts'
+import type { Product } from '@/types/api'
 
 export interface InventoryItem {
   id: string
@@ -12,85 +14,64 @@ export interface InventoryItem {
   lowStockThreshold: number
 }
 
-export const useInventory = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const items: InventoryItem[] = [
-    {
-      id: '1',
-      name: "Wireless Headphones",
-      sku: "WH-001",
-      category: "Electronics",
-      quantity: 245,
-      price: 89.99,
-      status: "In Stock",
-      statusColor: "bg-green-100 text-green-800",
-      lowStockThreshold: 50
-    },
-    {
-      id: '2',
-      name: "Gaming Mouse",
-      sku: "GM-002",
-      category: "Electronics",
-      quantity: 89,
-      price: 45.50,
-      status: "In Stock",
-      statusColor: "bg-green-100 text-green-800",
-      lowStockThreshold: 30
-    },
-    {
-      id: '3',
-      name: "Office Chair",
-      sku: "OC-003",
-      category: "Furniture",
-      quantity: 12,
-      price: 199.99,
-      status: "Low Stock",
-      statusColor: "bg-yellow-100 text-yellow-800",
-      lowStockThreshold: 15
-    },
-    {
-      id: '4',
-      name: "Smartphone Stand",
-      sku: "SS-004",
-      category: "Accessories",
-      quantity: 156,
-      price: 24.99,
-      status: "In Stock",
-      statusColor: "bg-green-100 text-green-800",
-      lowStockThreshold: 20
-    },
-    {
-      id: '5',
-      name: "Laptop Bag",
-      sku: "LB-005",
-      category: "Accessories",
-      quantity: 0,
-      price: 59.99,
-      status: "Out of Stock",
-      statusColor: "bg-red-100 text-red-800",
-      lowStockThreshold: 10
-    }
-  ]
-
-  const refetch = async () => {
-    setIsLoading(true)
-    setError(null)
-    try {
-      // 추후 API 호출로 교체
-      await new Promise(resolve => setTimeout(resolve, 1000))
-    } catch (err) {
-      setError('재고 데이터를 불러오는데 실패했습니다.')
-    } finally {
-      setIsLoading(false)
+// API Product를 InventoryItem으로 변환하는 함수
+function transformProductToInventoryItem(product: Product): InventoryItem {
+  const getStockStatus = () => {
+    if (product.stockQuantity === 0) {
+      return {
+        status: "Out of Stock",
+        statusColor: "bg-red-100 text-red-800"
+      }
+    } else if (product.stockQuantity <= product.minStockLevel) {
+      return {
+        status: "Low Stock",
+        statusColor: "bg-yellow-100 text-yellow-800"
+      }
+    } else {
+      return {
+        status: "In Stock",
+        statusColor: "bg-green-100 text-green-800"
+      }
     }
   }
+
+  const { status, statusColor } = getStockStatus()
+
+  return {
+    id: product.id,
+    name: product.name,
+    sku: product.sku,
+    category: product.category?.name || '기타',
+    quantity: product.stockQuantity,
+    price: product.price,
+    status,
+    statusColor,
+    lowStockThreshold: product.minStockLevel
+  }
+}
+
+export const useInventory = (searchParams?: any) => {
+  const {
+    data: productsResponse,
+    isLoading,
+    error,
+    refetch
+  } = useProducts(searchParams)
+
+  // API 데이터를 InventoryItem 형태로 변환
+  const items = useMemo(() => {
+    if (!productsResponse?.success || !productsResponse.data) {
+      return []
+    }
+
+    return productsResponse.data.map(transformProductToInventoryItem)
+  }, [productsResponse])
 
   return {
     items,
     isLoading,
-    error,
-    refetch
+    error: error ? '재고 데이터를 불러오는데 실패했습니다.' : null,
+    refetch,
+    pagination: productsResponse?.pagination
   }
 }

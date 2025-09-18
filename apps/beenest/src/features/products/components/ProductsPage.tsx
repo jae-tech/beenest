@@ -15,7 +15,7 @@ import {
 import { type StatItem } from "@/types/design-system";
 import { useNavigate } from "@tanstack/react-router";
 
-type InventoryItem = {
+type ProductItem = {
   name: string;
   sku: string;
   category: string;
@@ -25,7 +25,7 @@ type InventoryItem = {
   statusColor: string;
 };
 
-export function InventoryPage() {
+export function ProductsPage() {
   const navigate = useNavigate();
 
   const stats: StatItem[] = [
@@ -106,7 +106,7 @@ export function InventoryPage() {
     },
   ];
 
-  const columns: ColumnDef<InventoryItem>[] = [
+  const columns: ColumnDef<ProductItem>[] = [
     {
       accessorKey: "name",
       header: "상품명",
@@ -190,12 +190,22 @@ export function InventoryPage() {
     {
       id: "actions",
       header: "관리",
-      cell: () => (
+      cell: ({ row }) => (
         <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" className="p-2 cursor-pointer">
+          <Button
+            variant="outline"
+            size="sm"
+            className="p-2 cursor-pointer"
+            onClick={() => navigate({ to: `/products/${row.original.sku}` })}
+          >
             <Edit className="h-3 w-3 text-gray-600" />
           </Button>
-          <Button variant="outline" size="sm" className="p-2 cursor-pointer">
+          <Button
+            variant="outline"
+            size="sm"
+            className="p-2 cursor-pointer"
+            onClick={() => navigate({ to: `/products/${row.original.sku}` })}
+          >
             <Eye className="h-3 w-3 text-gray-600" />
           </Button>
           <Button variant="outline" size="sm" className="p-2 cursor-pointer">
@@ -208,7 +218,7 @@ export function InventoryPage() {
 
   return (
     <PageLayout
-      title="재고 현황"
+      title="상품 관리"
       actionText="신규 등록"
       stats={stats}
       showExport={true}
