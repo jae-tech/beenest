@@ -14,48 +14,104 @@ import {
   Star,
   Truck,
 } from "lucide-react";
-import { useSuppliers } from "../hooks/useSuppliers";
-import { type Supplier } from "@/types";
+import { useSuppliers, useSupplierStats } from "../hooks/useSuppliers";
+import { type Supplier } from "@/types/api";
 import { type StatItem } from "@/types/design-system";
+import { useMemo, useState } from "react";
 
 export function SuppliersPage() {
-  const { stats, suppliers, searchTerm, setSearchTerm } = useSuppliers();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-  const statsData: StatItem[] = [
-    {
-      title: "전체 공급업체",
-      value: stats.totalSuppliers,
-      description: "전체 공급업체",
-      icon: Truck,
-      color: "blue",
-    },
-    {
-      title: "활성 공급업체",
-      value: stats.activeSuppliers,
-      description: "활성 공급업체",
-      icon: CheckCircle,
-      color: "green",
-    },
-    {
-      title: "대기 중인 주문",
-      value: stats.pendingOrders,
-      description: "대기 중인 주문",
-      icon: Clock,
-      color: "yellow",
-    },
-    {
-      title: "평균 평점",
-      value: stats.avgRating,
-      description: "평균 평점",
-      icon: Star,
-      color: "purple",
-    },
-  ];
+  const {
+    data: suppliersResponse,
+    isLoading,
+    error
+  } = useSuppliers({
+    page,
+    limit: 10,
+    search: search || undefined
+  });
+
+  const {
+    data: statsResponse,
+    isLoading: isStatsLoading
+  } = useSupplierStats();
+
+  const suppliers = suppliersResponse?.success ? suppliersResponse.data?.data || [] : [];
+  const pagination = suppliersResponse?.success ? suppliersResponse.data?.pagination : null;
+  const statsData = statsResponse?.success ? statsResponse.data : null;
+
+  const stats: StatItem[] = useMemo(() => {
+    if (!statsData) {
+      return [
+        {
+          title: "전체 공급업체",
+          value: "0",
+          description: "전체 공급업체",
+          icon: Truck,
+          color: "blue",
+        },
+        {
+          title: "활성 공급업체",
+          value: "0",
+          description: "활성 공급업체",
+          icon: CheckCircle,
+          color: "green",
+        },
+        {
+          title: "대기 중인 주문",
+          value: "0",
+          description: "대기 중인 주문",
+          icon: Clock,
+          color: "yellow",
+        },
+        {
+          title: "평균 평점",
+          value: "0.0",
+          description: "평균 평점",
+          icon: Star,
+          color: "purple",
+        },
+      ];
+    }
+
+    return [
+      {
+        title: "전체 공급업체",
+        value: statsData.totalSuppliers?.toString() || "0",
+        description: "전체 공급업체",
+        icon: Truck,
+        color: "blue",
+      },
+      {
+        title: "활성 공급업체",
+        value: statsData.activeSuppliers?.toString() || "0",
+        description: "활성 공급업체",
+        icon: CheckCircle,
+        color: "green",
+      },
+      {
+        title: "대기 중인 주문",
+        value: statsData.pendingOrders?.toString() || "0",
+        description: "대기 중인 주문",
+        icon: Clock,
+        color: "yellow",
+      },
+      {
+        title: "평균 평점",
+        value: statsData.avgRating?.toFixed(1) || "0.0",
+        description: "평균 평점",
+        icon: Star,
+        color: "purple",
+      },
+    ];
+  }, [statsData]);
 
   const columns: ColumnDef<Supplier>[] = [
     {
-      accessorKey: "name",
+      accessorKey: "companyName",
       header: "공급업체",
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
@@ -64,42 +120,34 @@ export function SuppliersPage() {
           </div>
           <div>
             <p className="font-medium text-gray-900 text-sm">
-              {row.getValue("name")}
+              {row.getValue("companyName")}
+            </p>
+            <p className="text-xs text-gray-500">
+              {row.original.supplierCode}
             </p>
           </div>
         </div>
       ),
     },
     {
-      accessorKey: "contact",
-      header: "연락처",
+      accessorKey: "contactPerson",
+      header: "담당자",
       cell: ({ row }) => (
-        <div className="text-sm text-gray-900">{row.getValue("contact")}</div>
+        <div className="text-sm text-gray-900">{row.getValue("contactPerson") || "-"}</div>
       ),
     },
     {
-      accessorKey: "location",
-      header: "지역",
+      accessorKey: "email",
+      header: "이메일",
       cell: ({ row }) => (
-        <div className="text-sm text-gray-600">{row.getValue("location")}</div>
+        <div className="text-sm text-gray-600">{row.getValue("email") || "-"}</div>
       ),
     },
     {
-      accessorKey: "products",
-      header: "제품",
+      accessorKey: "phone",
+      header: "전화번호",
       cell: ({ row }) => (
-        <div className="text-sm font-medium text-gray-900">
-          {row.getValue("products")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "orders",
-      header: "주문",
-      cell: ({ row }) => (
-        <div className="text-sm font-medium text-gray-900">
-          {row.getValue("orders")}
-        </div>
+        <div className="text-sm text-gray-600">{row.getValue("phone") || "-"}</div>
       ),
     },
     {
@@ -176,15 +224,17 @@ export function SuppliersPage() {
     <PageLayout
       title="공급업체 관리"
       actionText="신규 추가"
-      stats={statsData}
+      stats={stats}
       onAction={() => navigate({ to: '/suppliers/add' })}
       onFilter={() => console.log("필터")}
     >
       <DataTable
         columns={columns}
         data={suppliers}
-        searchKey="name"
-        searchPlaceholder="검색..."
+        searchKey="companyName"
+        searchPlaceholder="공사명 또는 코드 검색..."
+        isLoading={isLoading}
+        error={error ? "공급업체 목록을 불러오는데 실패했습니다." : undefined}
       />
     </PageLayout>
   );

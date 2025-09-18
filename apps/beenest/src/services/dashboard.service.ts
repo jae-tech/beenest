@@ -9,7 +9,7 @@ export const dashboardService = {
 
   // 차트 데이터 조회
   async getCharts(period?: string): Promise<ApiResponse<ChartData>> {
-    return api.get<ChartData>('/dashboard/charts', { period })
+    return api.get<ChartData>('/dashboard/charts/inventory', { period })
   },
 
   // 알림 데이터 조회

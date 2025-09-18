@@ -1,119 +1,64 @@
-import { useState, useMemo } from 'react'
-import { useSuppliers as useAPISuppliers, useSupplierActions } from '@/hooks/useSuppliers'
-import type { Supplier, SupplierStats } from '@/types'
-import type { Supplier as APISupplier } from '@/types/api'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { suppliersService } from '@/services/suppliers.service'
+import type { SuppliersSearchParams, Supplier } from '@/types/api'
+import { queryKeys } from '@/lib/query-client'
 
-// API Supplier를 앱 Supplier 타입으로 변환
-function transformAPISupplierToSupplier(apiSupplier: APISupplier): Supplier {
-  return {
-    id: apiSupplier.id,
-    name: apiSupplier.name,
-    contact: apiSupplier.contact || '',
-    email: apiSupplier.email || '',
-    phone: apiSupplier.phone || '',
-    location: apiSupplier.location || '',
-    address: '', // API에 address 필드가 없으면 빈 문자열
-    products: 0, // 실제 API에서 관련 상품 수를 가져와야 함
-    orders: 0, // 실제 API에서 주문 수를 가져와야 함
-    rating: apiSupplier.rating || 0,
-    status: apiSupplier.status as 'active' | 'pending' | 'inactive',
-    createdAt: apiSupplier.createdAt,
-    updatedAt: apiSupplier.updatedAt
-  }
+export const useSuppliers = (params?: SuppliersSearchParams) => {
+  return useQuery({
+    queryKey: queryKeys.suppliers.list(params),
+    queryFn: () => suppliersService.getSuppliers(params),
+    staleTime: 5 * 60 * 1000, // 5분
+  })
 }
 
-export const useSuppliers = () => {
-  const [searchTerm, setSearchTerm] = useState('')
+export const useSupplier = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.suppliers.detail(id),
+    queryFn: () => suppliersService.getSupplier(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  })
+}
 
-  // API 호출
-  const {
-    data: suppliersResponse,
-    isLoading: isLoadingSuppliers,
-    error: suppliersError
-  } = useAPISuppliers({ search: searchTerm })
+export const useSupplierStats = () => {
+  return useQuery({
+    queryKey: queryKeys.suppliers.stats('all'),
+    queryFn: () => suppliersService.getAllSupplierStats(),
+    staleTime: 5 * 60 * 1000,
+  })
+}
 
-  const { createSupplier, updateSupplier, deleteSupplier, isLoading: isActionLoading } = useSupplierActions()
+export const useCreateSupplier = () => {
+  const queryClient = useQueryClient()
 
-  // API 데이터를 앱 타입으로 변환
-  const suppliers = useMemo(() => {
-    if (!suppliersResponse?.success || !suppliersResponse.data) {
-      return []
-    }
-    return suppliersResponse.data.map(transformAPISupplierToSupplier)
-  }, [suppliersResponse])
+  return useMutation({
+    mutationFn: suppliersService.createSupplier,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.lists() })
+    },
+  })
+}
 
-  // 통계 계산 (실제로는 별도 API에서 가져와야 함)
-  const stats: SupplierStats = useMemo(() => {
-    const activeSuppliers = suppliers.filter(s => s.status === 'active').length
-    const totalOrders = suppliers.reduce((sum, s) => sum + s.orders, 0)
-    const totalRating = suppliers.reduce((sum, s) => sum + s.rating, 0)
+export const useUpdateSupplier = () => {
+  const queryClient = useQueryClient()
 
-    return {
-      totalSuppliers: suppliers.length,
-      activeSuppliers,
-      pendingOrders: 0, // 실제 API에서 가져와야 함
-      avgRating: suppliers.length > 0 ? totalRating / suppliers.length : 0
-    }
-  }, [suppliers])
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      suppliersService.updateSupplier(id, data),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.detail(id) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.lists() })
+    },
+  })
+}
 
-  const filteredSuppliers = suppliers.filter(supplier =>
-    supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    supplier.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    supplier.location.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+export const useDeleteSupplier = () => {
+  const queryClient = useQueryClient()
 
-  const addSupplier = async (supplier: Omit<Supplier, 'id' | 'createdAt' | 'updatedAt'>) => {
-    try {
-      await createSupplier.mutateAsync({
-        name: supplier.name,
-        contact: supplier.contact,
-        email: supplier.email,
-        phone: supplier.phone,
-        location: supplier.location,
-        status: supplier.status,
-        rating: supplier.rating
-      })
-    } catch (error) {
-      throw error
-    }
-  }
-
-  const updateSupplierData = async (id: string, updates: Partial<Supplier>) => {
-    try {
-      await updateSupplier.mutateAsync({
-        id,
-        data: {
-          name: updates.name,
-          contact: updates.contact,
-          email: updates.email,
-          phone: updates.phone,
-          location: updates.location,
-          status: updates.status,
-          rating: updates.rating
-        }
-      })
-    } catch (error) {
-      throw error
-    }
-  }
-
-  const deleteSupplierData = async (id: string) => {
-    try {
-      await deleteSupplier.mutateAsync(id)
-    } catch (error) {
-      throw error
-    }
-  }
-
-  return {
-    stats,
-    suppliers: filteredSuppliers,
-    searchTerm,
-    setSearchTerm,
-    isLoading: isLoadingSuppliers || isActionLoading,
-    error: suppliersError ? '공급업체 데이터를 불러오는데 실패했습니다.' : null,
-    addSupplier,
-    updateSupplier: updateSupplierData,
-    deleteSupplier: deleteSupplierData
-  }
+  return useMutation({
+    mutationFn: suppliersService.deleteSupplier,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.lists() })
+    },
+  })
 }

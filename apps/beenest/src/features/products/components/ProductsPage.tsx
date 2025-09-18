@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
+import { TableSkeleton } from "@/components/ui/loading";
 import { PageLayout } from "@/components/layout";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
@@ -14,6 +15,9 @@ import {
 } from "lucide-react";
 import { type StatItem } from "@/types/design-system";
 import { useNavigate } from "@tanstack/react-router";
+import { useProducts, useLowStockProducts, useDeleteProduct } from "@/hooks/useProducts";
+import { useState } from "react";
+import type { Product } from "@/types/api";
 
 type ProductItem = {
   name: string;
@@ -27,25 +31,36 @@ type ProductItem = {
 
 export function ProductsPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useState({});
+
+  const { data: productsResponse, isLoading: isProductsLoading, error: productsError } = useProducts(searchParams);
+  const { data: lowStockResponse, isLoading: isLowStockLoading } = useLowStockProducts();
+  const deleteProduct = useDeleteProduct();
+
+  const products = productsResponse?.data?.products || [];
+  const totalProducts = productsResponse?.data?.total || 0;
+  const lowStockProducts = lowStockResponse?.data || [];
+
+  const stockProducts = products.filter(p => p.stockLevel > p.minStockLevel);
 
   const stats: StatItem[] = [
     {
       title: "전체 상품",
-      value: "455",
+      value: totalProducts.toString(),
       description: "전체 상품",
       icon: Package,
       color: "blue",
     },
     {
       title: "재고 있음",
-      value: "389",
+      value: stockProducts.length.toString(),
       description: "재고 있음",
       icon: CheckCircle,
       color: "green",
     },
     {
       title: "재고 부족",
-      value: "52",
+      value: lowStockProducts.length.toString(),
       description: "재고 부족",
       icon: AlertTriangle,
       color: "yellow",
@@ -106,7 +121,17 @@ export function ProductsPage() {
     },
   ];
 
-  const columns: ColumnDef<ProductItem>[] = [
+  const handleDelete = async (productId: string) => {
+    if (confirm('정말로 이 상품을 삭제하시겠습니까?')) {
+      try {
+        await deleteProduct.mutateAsync(productId);
+      } catch (error) {
+        // 에러는 hook에서 처리됨
+      }
+    }
+  };
+
+  const columns: ColumnDef<Product>[] = [
     {
       accessorKey: "name",
       header: "상품명",
@@ -196,7 +221,7 @@ export function ProductsPage() {
             variant="outline"
             size="sm"
             className="p-2 cursor-pointer"
-            onClick={() => navigate({ to: `/products/${row.original.sku}` })}
+            onClick={() => navigate({ to: `/products/${row.original.id}` })}
           >
             <Edit className="h-3 w-3 text-gray-600" />
           </Button>
@@ -204,11 +229,17 @@ export function ProductsPage() {
             variant="outline"
             size="sm"
             className="p-2 cursor-pointer"
-            onClick={() => navigate({ to: `/products/${row.original.sku}` })}
+            onClick={() => navigate({ to: `/products/${row.original.id}` })}
           >
             <Eye className="h-3 w-3 text-gray-600" />
           </Button>
-          <Button variant="outline" size="sm" className="p-2 cursor-pointer">
+          <Button
+            variant="outline"
+            size="sm"
+            className="p-2 cursor-pointer"
+            onClick={() => handleDelete(row.original.id.toString())}
+            disabled={deleteProduct.isPending}
+          >
             <Trash className="h-3 w-3 text-red-600" />
           </Button>
         </div>
@@ -226,12 +257,20 @@ export function ProductsPage() {
       onFilter={() => console.log("필터")}
       onExport={() => console.log("내보내기")}
     >
-      <DataTable
-        columns={columns}
-        data={inventoryData}
-        searchKey="name"
-        searchPlaceholder="검색..."
-      />
+      {isProductsLoading ? (
+        <TableSkeleton rows={10} cols={7} />
+      ) : productsError ? (
+        <div className="text-center py-8">
+          <p className="text-red-600">상품 데이터를 불러오는 중 오류가 발생했습니다.</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={products}
+          searchKey="name"
+          searchPlaceholder="상품명 또는 SKU로 검색..."
+        />
+      )}
     </PageLayout>
   );
 }

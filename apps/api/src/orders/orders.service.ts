@@ -26,7 +26,12 @@ export class OrdersService {
 
       // 상품들 확인 및 가격 계산
       let totalAmount = 0;
-      const validatedItems = [];
+      const validatedItems: Array<{
+        productId: bigint;
+        quantity: number;
+        unitPrice: number;
+        totalPrice: number;
+      }> = [];
 
       for (const item of items) {
         const product = await prisma.product.findFirst({
@@ -311,7 +316,19 @@ export class OrdersService {
 
         // 새 항목들 생성
         let totalAmount = 0;
-        const newItems = [];
+        const newItems: Array<{
+          id: string;
+          orderId: string;
+          productId: string;
+          quantity: number;
+          unitPrice: number;
+          totalPrice: number;
+          product: {
+            id: string;
+            productCode: string;
+            productName: string;
+          };
+        }> = [];
 
         for (const item of items) {
           const product = await prisma.product.findFirst({
@@ -351,10 +368,12 @@ export class OrdersService {
           });
 
           newItems.push({
-            ...orderItem,
             id: orderItem.id.toString(),
             orderId: orderItem.orderId.toString(),
             productId: orderItem.productId.toString(),
+            quantity: orderItem.quantity,
+            unitPrice: Number(orderItem.unitPrice),
+            totalPrice: Number(orderItem.totalPrice),
             product: {
               ...orderItem.product,
               id: orderItem.product.id.toString(),

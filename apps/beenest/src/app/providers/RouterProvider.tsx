@@ -25,7 +25,7 @@ export function RouterProvider() {
   const [isRouterReady, setIsRouterReady] = useState(false)
 
   // auth 상태가 변경될 때마다 context 업데이트
-  const contextValue = useMemo(() => ({ auth }), [auth.isAuthenticated, auth.user])
+  const contextValue = useMemo(() => ({ auth }), [auth])
 
   useEffect(() => {
     console.log('Auth state changed:', {

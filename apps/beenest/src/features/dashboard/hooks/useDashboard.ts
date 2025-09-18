@@ -76,7 +76,10 @@ export const useDashboard = () => {
       return []
     }
 
-    const stats = statsResponse.data
+    const apiData = statsResponse.data as any
+    const overview = apiData.overview || {}
+    const inventory = apiData.inventory || {}
+
     const formatNumber = (num: number) => new Intl.NumberFormat('ko-KR').format(num)
     const formatCurrency = (num: number) => `₩${formatNumber(num)}`
 
@@ -84,31 +87,31 @@ export const useDashboard = () => {
       {
         icon: Package,
         title: "총 상품 수",
-        value: `${formatNumber(stats.totalProducts)} 개`,
-        change: `${stats.revenueGrowth > 0 ? '+' : ''}${stats.revenueGrowth}% from last month`,
+        value: `${formatNumber(overview.totalProducts || 0)} 개`,
+        change: "전체 등록 상품",
         color: "bg-green-500",
-        trend: stats.revenueGrowth >= 0 ? "up" : "down"
+        trend: "up"
       },
       {
         icon: DollarSign,
-        title: "총 매출",
-        value: formatCurrency(stats.totalRevenue),
-        change: `${stats.revenueGrowth > 0 ? '+' : ''}${stats.revenueGrowth}% from last month`,
+        title: "총 재고 가치",
+        value: formatCurrency(overview.totalInventoryValue || 0),
+        change: "현재 재고 총 가치",
         color: "bg-yellow-500",
-        trend: stats.revenueGrowth >= 0 ? "up" : "down"
+        trend: "up"
       },
       {
         icon: ShoppingCart,
-        title: "총 주문 수",
-        value: formatNumber(stats.totalOrders),
-        change: `${stats.ordersGrowth > 0 ? '+' : ''}${stats.ordersGrowth}% from last month`,
+        title: "최근 주문 수",
+        value: formatNumber(overview.recentOrders || 0),
+        change: "이번 달 주문 수",
         color: "bg-blue-500",
-        trend: stats.ordersGrowth >= 0 ? "up" : "down"
+        trend: "up"
       },
       {
         icon: Users,
         title: "공급업체 수",
-        value: formatNumber(stats.totalSuppliers),
+        value: formatNumber(overview.totalSuppliers || 0),
         change: "활성 공급업체",
         color: "bg-purple-500",
         trend: "up"
@@ -116,10 +119,10 @@ export const useDashboard = () => {
       {
         icon: TrendingUp,
         title: "재고 부족 상품",
-        value: formatNumber(stats.lowStockProducts),
+        value: formatNumber(inventory.lowStockCount || 0),
         change: "주의 필요",
-        color: stats.lowStockProducts > 0 ? "bg-red-500" : "bg-green-500",
-        trend: stats.lowStockProducts > 0 ? "down" : "up"
+        color: (inventory.lowStockCount || 0) > 0 ? "bg-red-500" : "bg-green-500",
+        trend: (inventory.lowStockCount || 0) > 0 ? "down" : "up"
       }
     ]
   }, [statsResponse])
@@ -130,9 +133,12 @@ export const useDashboard = () => {
     }
 
     const chartData = chartsResponse.data
+    if (!chartData.labels || !Array.isArray(chartData.labels)) {
+      return []
+    }
     return chartData.labels.map((label, index) => ({
       month: label,
-      revenue: chartData.revenue[index] || 0
+      revenue: (chartData.revenue && chartData.revenue[index]) || 0
     }))
   }, [chartsResponse])
 
@@ -180,10 +186,10 @@ export const useDashboard = () => {
   }
 
   return {
-    metrics,
-    salesData,
-    newStock,
-    monthlyRevenue,
+    metrics: metrics || [],
+    salesData: salesData || [],
+    newStock: newStock || [],
+    monthlyRevenue: monthlyRevenue || [],
     isLoading: isStatsLoading || isChartsLoading || isAlertsLoading,
     error: statsError || chartsError ? '데이터를 불러오는데 실패했습니다.' : null,
     refreshMetrics,

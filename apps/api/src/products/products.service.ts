@@ -193,9 +193,15 @@ export class ProductsService {
       } : null,
       inventory: product.inventory ? {
         ...product.inventory,
+        id: product.inventory.id.toString(),
+        productId: product.inventory.productId.toString(),
         availableStock: product.inventory.currentStock - product.inventory.reservedStock,
       } : null,
-      preferredSupplier: product.supplierProducts[0]?.supplier || null,
+      preferredSupplier: product.supplierProducts[0]?.supplier ? {
+        ...product.supplierProducts[0].supplier,
+        id: product.supplierProducts[0].supplier.id.toString(),
+      } : null,
+      supplierProducts: undefined,
     }));
 
     return {
@@ -451,12 +457,6 @@ export class ProductsService {
         createdBy: BigInt(userId),
         isActive: true,
         deletedAt: null,
-        inventory: {
-          OR: [
-            { currentStock: { lte: this.prisma.inventory.fields.minimumStock } },
-            { currentStock: { equals: 0 } },
-          ],
-        },
       },
       include: {
         category: {
@@ -487,7 +487,13 @@ export class ProductsService {
       },
     });
 
-    return products.map(product => ({
+    const lowStockProducts = products.filter(product =>
+      product.inventory &&
+      (product.inventory.currentStock <= product.inventory.minimumStock ||
+       product.inventory.currentStock <= product.inventory.reorderPoint)
+    );
+
+    return lowStockProducts.map(product => ({
       ...product,
       id: product.id.toString(),
       categoryId: product.categoryId?.toString(),
@@ -502,7 +508,11 @@ export class ProductsService {
         productId: product.inventory.productId.toString(),
         availableStock: product.inventory.currentStock - product.inventory.reservedStock,
       } : null,
-      preferredSupplier: product.supplierProducts[0]?.supplier || null,
+      preferredSupplier: product.supplierProducts[0]?.supplier ? {
+        ...product.supplierProducts[0].supplier,
+        id: product.supplierProducts[0].supplier.id.toString(),
+      } : null,
+      supplierProducts: undefined,
     }));
   }
 }

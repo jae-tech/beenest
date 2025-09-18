@@ -11,7 +11,12 @@ import type {
 export const suppliersService = {
   // 공급업체 목록 조회 (페이징, 검색, 필터)
   async getSuppliers(params?: SuppliersSearchParams): Promise<PaginatedResponse<Supplier>> {
-    return api.get<Supplier[]>('/suppliers', params)
+    return api.get<PaginatedResponse<Supplier>>('/suppliers', params)
+  },
+
+  // 공급업체 전체 통계
+  async getAllSupplierStats(): Promise<ApiResponse<any>> {
+    return api.get<any>('/suppliers/stats')
   },
 
   // 공급업체 상세 조회

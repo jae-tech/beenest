@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-client'
 import { suppliersService } from '@/services/suppliers.service'
+import { handleApiSuccess, handleApiError } from '@/lib/toast'
 import type {
   Supplier,
   CreateSupplierRequest,
@@ -61,9 +62,13 @@ export function useCreateSupplier() {
   return useMutation({
     mutationFn: (data: CreateSupplierRequest) => suppliersService.createSupplier(data),
     onSuccess: () => {
+      handleApiSuccess('공급업체가 성공적으로 등록되었습니다.')
       // 공급업체 목록 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.lists() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+    },
+    onError: (error) => {
+      handleApiError(error)
     },
   })
 }

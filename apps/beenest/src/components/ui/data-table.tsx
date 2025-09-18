@@ -14,23 +14,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ChevronDown, Search } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -39,7 +24,7 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string
 }
 
-export function DataTable<TData, TValue>({
+export const DataTable = React.memo(function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
@@ -163,4 +148,4 @@ export function DataTable<TData, TValue>({
       </div>
     </div>
   )
-}
+})

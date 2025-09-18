@@ -112,7 +112,7 @@ export const promiseToast = <T>(
   messages: {
     loading: string
     success: string | ((data: T) => string)
-    error: string | ((error: any) => string)
+    error: string | ((error: Error) => string)
   }
 ) => {
   return toast.promise(promise, messages, {
@@ -143,7 +143,7 @@ export const promiseToast = <T>(
 }
 
 // 커스텀 토스트 (JSX 컨텐츠 포함)
-export const customToast = (content: React.ReactNode, options?: any) => {
+export const customToast = (content: React.ReactNode, options?: Record<string, unknown>) => {
   return toast.custom(content, {
     ...toastOptions,
     ...options,
@@ -161,7 +161,7 @@ export const dismissToast = (toastId: string) => {
 }
 
 // API 에러 메시지 처리
-export const handleApiError = (error: any) => {
+export const handleApiError = (error: { error?: { message?: string }; message?: string } | Error) => {
   const message = error?.error?.message || error?.message || '알 수 없는 오류가 발생했습니다.'
   errorToast(message)
 }

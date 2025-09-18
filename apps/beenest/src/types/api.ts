@@ -1,11 +1,11 @@
 // API 응답 공통 형식
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   error?: {
     code: string
     message: string
-    details?: any
+    details?: unknown
   }
   message?: string
 }
@@ -13,12 +13,14 @@ export interface ApiResponse<T = any> {
 // 페이지네이션 응답
 export interface PaginatedResponse<T> {
   success: boolean
-  data: T[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
+  data: {
+    data: T[]
+    pagination: {
+      page: number
+      limit: number
+      total: number
+      totalPages: number
+    }
   }
   message?: string
 }
@@ -42,35 +44,55 @@ export interface LoginResponse {
 // 상품 타입 (백엔드와 동기화)
 export interface Product {
   id: string
-  userId: string
-  supplierId?: string
-  categoryId?: string
-  name: string
-  sku: string
+  productCode: string
+  productName: string
   description?: string
-  price: number
-  costPrice: number
-  stockQuantity: number
-  minStockLevel: number
+  categoryId?: string
+  unitPrice: number
+  costPrice?: number
+  barcode?: string
+  weight?: number
+  dimensions?: string
   imageUrl?: string
-  status: 'active' | 'inactive' | 'discontinued'
+  isActive: boolean
   createdAt: string
   updatedAt: string
-  supplier?: Supplier
-  category?: Category
+  createdBy: string
+  category?: {
+    id: string
+    categoryName: string
+  }
+  inventory?: {
+    id: string
+    productId: string
+    currentStock: number
+    reservedStock: number
+    minimumStock: number
+    reorderPoint: number
+    availableStock: number
+  }
+  preferredSupplier?: {
+    id: string
+    companyName: string
+    supplierCode: string
+  }
 }
 
 // 공급업체 타입
 export interface Supplier {
   id: string
-  userId: string
-  name: string
-  contact?: string
+  supplierCode: string
+  companyName: string
+  contactPerson?: string
   email?: string
   phone?: string
-  location?: string
-  status: 'active' | 'inactive'
+  address?: string
+  website?: string
+  taxNumber?: string
+  status: 'active' | 'inactive' | 'pending'
   rating?: number
+  notes?: string
+  createdBy: string
   createdAt: string
   updatedAt: string
 }
@@ -88,17 +110,21 @@ export interface Category {
 // 주문 타입
 export interface Order {
   id: string
-  userId: string
-  supplierId: string
   orderNumber: string
+  supplierId: string
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
   orderDate: string
   expectedDeliveryDate?: string
   totalAmount: number
   notes?: string
+  createdBy: string
   createdAt: string
   updatedAt: string
-  supplier?: Supplier
+  supplier?: {
+    id: string
+    companyName: string
+    supplierCode: string
+  }
   orderItems?: OrderItem[]
 }
 
@@ -162,7 +188,9 @@ export interface CreateProductRequest {
   status?: 'active' | 'inactive'
 }
 
-export interface UpdateProductRequest extends Partial<CreateProductRequest> {}
+export interface UpdateProductRequest extends Partial<CreateProductRequest> {
+  id?: string
+}
 
 export interface CreateSupplierRequest {
   name: string
@@ -174,7 +202,25 @@ export interface CreateSupplierRequest {
   rating?: number
 }
 
-export interface UpdateSupplierRequest extends Partial<CreateSupplierRequest> {}
+export interface UpdateSupplierRequest extends Partial<CreateSupplierRequest> {
+  id?: string
+}
+
+export interface CreateOrderRequest {
+  supplierId: string
+  orderDate: string
+  expectedDeliveryDate?: string
+  notes?: string
+  orderItems: {
+    productId: string
+    quantity: number
+    unitPrice: number
+  }[]
+}
+
+export interface UpdateOrderRequest extends Partial<CreateOrderRequest> {
+  status?: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+}
 
 export interface LoginRequest {
   email: string

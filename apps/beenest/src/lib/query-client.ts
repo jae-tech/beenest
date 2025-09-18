@@ -29,6 +29,7 @@ export const queryKeys = {
     list: (params?: any) => [...queryKeys.products.lists(), params] as const,
     details: () => [...queryKeys.products.all, 'detail'] as const,
     detail: (id: string) => [...queryKeys.products.details(), id] as const,
+    lowStock: () => [...queryKeys.products.all, 'low-stock'] as const,
   },
 
   // 공급업체

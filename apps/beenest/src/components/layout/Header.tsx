@@ -2,6 +2,7 @@ import { useUIStore } from "@/app/store/uiStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bell, Menu, Plus, Search, Settings } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 interface HeaderProps {
   className?: string;
@@ -45,10 +46,12 @@ export const Header = ({ className = "" }: HeaderProps) => {
               3
             </span>
           </Button>
-          <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
-            <Plus className="w-4 h-4 mr-2" />
-            신규 상품 등록
-          </Button>
+          <Link to="/products/add">
+            <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">
+              <Plus className="w-4 h-4 mr-2" />
+              신규 상품 등록
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

@@ -266,7 +266,7 @@ export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
               신규 입고 상품
             </h3>
             <div className="space-y-4">
-              {newStock.map((item, index) => (
+              {(newStock || []).map((item, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                     <span className="text-xs text-gray-600 font-medium">

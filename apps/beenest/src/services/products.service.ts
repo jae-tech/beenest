@@ -11,7 +11,7 @@ import type {
 export const productsService = {
   // 상품 목록 조회 (페이징, 검색, 필터)
   async getProducts(params?: ProductsSearchParams): Promise<PaginatedResponse<Product>> {
-    return api.get<Product[]>('/products', params)
+    return api.get<PaginatedResponse<Product>>('/products', params)
   },
 
   // 상품 상세 조회

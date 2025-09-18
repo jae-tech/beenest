@@ -14,8 +14,12 @@ import {
 } from "lucide-react";
 import { type StatItem } from "@/types/design-system";
 import { useNavigate } from "@tanstack/react-router";
+import { useProducts } from "../hooks/useProducts";
+import { useMemo, useState } from "react";
+import type { Product } from "@/types/api";
 
 type InventoryItem = {
+  id: string;
   name: string;
   sku: string;
   category: string;
@@ -27,84 +31,90 @@ type InventoryItem = {
 
 export function InventoryPage() {
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-  const stats: StatItem[] = [
-    {
-      title: "전체 상품",
-      value: "455",
-      description: "전체 상품",
-      icon: Package,
-      color: "blue",
-    },
-    {
-      title: "재고 있음",
-      value: "389",
-      description: "재고 있음",
-      icon: CheckCircle,
-      color: "green",
-    },
-    {
-      title: "재고 부족",
-      value: "52",
-      description: "재고 부족",
-      icon: AlertTriangle,
-      color: "yellow",
-    },
-    {
-      title: "품절",
-      value: "14",
-      description: "품절",
-      icon: ShoppingCart,
-      color: "red",
-    },
-  ];
-  const inventoryData: InventoryItem[] = [
-    {
-      name: "무선 헤드폰",
-      sku: "WH-001",
-      category: "전자제품",
-      stock: 245,
-      price: 89.99,
-      status: "재고 있음",
-      statusColor: "bg-green-100 text-green-800",
-    },
-    {
-      name: "면 티셔츠",
-      sku: "CT-002",
-      category: "의류",
-      stock: 15,
-      price: 24.99,
-      status: "재고 부족",
-      statusColor: "bg-yellow-100 text-yellow-800",
-    },
-    {
-      name: "노트북 백팩",
-      sku: "LB-003",
-      category: "액세서리",
-      stock: 0,
-      price: 49.99,
-      status: "품절",
-      statusColor: "bg-red-100 text-red-800",
-    },
-    {
-      name: "블루투스 스피커",
-      sku: "BS-004",
-      category: "전자제품",
-      stock: 128,
-      price: 79.99,
-      status: "재고 있음",
-      statusColor: "bg-green-100 text-green-800",
-    },
-    {
-      name: "러닝화",
-      sku: "RS-005",
-      category: "신발",
-      stock: 67,
-      price: 129.99,
-      status: "재고 있음",
-      statusColor: "bg-green-100 text-green-800",
-    },
-  ];
+  const {
+    data: productsResponse,
+    isLoading,
+    error
+  } = useProducts({
+    page,
+    limit: 10,
+    search: search || undefined
+  });
+
+  const products = productsResponse?.success ? productsResponse.data?.data || [] : [];
+  const pagination = productsResponse?.success ? productsResponse.data?.pagination : null;
+
+  const stats: StatItem[] = useMemo(() => {
+    const totalProducts = products.length;
+    const inStock = products.filter(p => p.inventory && p.inventory.currentStock > p.inventory.minimumStock).length;
+    const lowStock = products.filter(p => p.inventory && p.inventory.currentStock <= p.inventory.minimumStock && p.inventory.currentStock > 0).length;
+    const outOfStock = products.filter(p => !p.inventory || p.inventory.currentStock === 0).length;
+
+    return [
+      {
+        title: "전체 상품",
+        value: totalProducts.toString(),
+        description: "전체 상품",
+        icon: Package,
+        color: "blue",
+      },
+      {
+        title: "재고 있음",
+        value: inStock.toString(),
+        description: "재고 있음",
+        icon: CheckCircle,
+        color: "green",
+      },
+      {
+        title: "재고 부족",
+        value: lowStock.toString(),
+        description: "재고 부족",
+        icon: AlertTriangle,
+        color: "yellow",
+      },
+      {
+        title: "품절",
+        value: outOfStock.toString(),
+        description: "품절",
+        icon: ShoppingCart,
+        color: "red",
+      },
+    ];
+  }, [products]);
+  const inventoryData: InventoryItem[] = useMemo(() => {
+    return products.map((product: Product) => {
+      const stock = product.inventory?.currentStock || 0;
+      const minStock = product.inventory?.minimumStock || 0;
+
+      let status: string;
+      let statusColor: string;
+
+      if (stock === 0) {
+        status = "품절";
+        statusColor = "bg-red-100 text-red-800";
+      } else if (stock <= minStock) {
+        status = "재고 부족";
+        statusColor = "bg-yellow-100 text-yellow-800";
+      } else {
+        status = "재고 있음";
+        statusColor = "bg-green-100 text-green-800";
+      }
+
+      return {
+        id: product.id,
+        name: product.productName,
+        sku: product.productCode,
+        category: product.category?.categoryName || "미분류",
+        stock: stock,
+        price: product.unitPrice,
+        status,
+        statusColor,
+      };
+    });
+  }, [products]);
 
   const columns: ColumnDef<InventoryItem>[] = [
     {
@@ -220,7 +230,9 @@ export function InventoryPage() {
         columns={columns}
         data={inventoryData}
         searchKey="name"
-        searchPlaceholder="검색..."
+        searchPlaceholder="상품명 또는 SKU 검색..."
+        isLoading={isLoading}
+        error={error ? "상품 목록을 불러오는데 실패했습니다." : undefined}
       />
     </PageLayout>
   );
