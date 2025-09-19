@@ -1,6 +1,7 @@
 import { RouterProvider as TanStackRouterProvider, createRouter } from '@tanstack/react-router'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useEffect, useMemo, useState } from 'react'
+import { BrandLoadingScreen } from '@/components/loading/BrandLoadingScreen'
 
 // 자동 생성될 routeTree import
 import { routeTree } from '@/routeTree.gen'
@@ -40,7 +41,7 @@ export function RouterProvider() {
   }, [])
 
   if (!isRouterReady) {
-    return <div>Loading...</div>
+    return <BrandLoadingScreen />
   }
 
   return <TanStackRouterProvider router={router} context={contextValue} />
