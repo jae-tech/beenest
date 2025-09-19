@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { CreateOrderDto, UpdateOrderDto, OrderStatus } from '@/orders/dto';
+import { CreateOrderDto, UpdateOrderDto } from '@/orders/dto';
 
 @Injectable()
 export class OrdersService {
@@ -139,7 +139,7 @@ export class OrdersService {
     });
   }
 
-  async findAll(userId: string, page = 1, limit = 20, status?: OrderStatus) {
+  async findAll(userId: string, page = 1, limit = 20, status?: string) {
     const skip = (page - 1) * limit;
 
     const where = {

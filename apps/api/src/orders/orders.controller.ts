@@ -18,7 +18,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { OrdersService } from '@/orders/orders.service';
-import { CreateOrderDto, UpdateOrderDto, OrderStatus } from '@/orders/dto';
+import { CreateOrderDto, UpdateOrderDto } from '@/orders/dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('주문 관리')
@@ -46,13 +46,13 @@ export class OrdersController {
   @ApiOperation({ summary: '주문 목록 조회' })
   @ApiQuery({ name: 'page', required: false, description: '페이지 번호 (기본값: 1)' })
   @ApiQuery({ name: 'limit', required: false, description: '페이지당 항목 수 (기본값: 20)' })
-  @ApiQuery({ name: 'status', required: false, enum: OrderStatus, description: '주문 상태 필터' })
+  @ApiQuery({ name: 'status', required: false, description: '주문 상태 필터 (PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED)' })
   @ApiResponse({ status: 200, description: '주문 목록 조회 성공' })
   async findAll(
     @Request() req,
     @Query('page') page = 1,
     @Query('limit') limit = 20,
-    @Query('status') status?: OrderStatus,
+    @Query('status') status?: string,
   ) {
     const result = await this.ordersService.findAll(
       req.user.id,

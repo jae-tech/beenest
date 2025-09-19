@@ -1,21 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsEnum, IsDateString, IsArray, ValidateNested } from 'class-validator';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, IsEnum, IsDateString, IsArray, ValidateNested, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
-import { OrderItemDto } from './create-order.dto';
-
-export enum OrderStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
-}
+import { OrderItemDto } from './order-types.dto';
 
 export class UpdateOrderDto {
-  @ApiProperty({ description: '주문 상태', enum: OrderStatus, required: false })
+  @ApiProperty({
+    description: '주문 상태',
+    enum: ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
+    required: false,
+    example: 'PENDING'
+  })
   @IsOptional()
-  @IsEnum(OrderStatus)
-  status?: OrderStatus;
+  @IsIn(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'])
+  status?: string;
 
   @ApiProperty({ description: '예상 배송일', required: false })
   @IsOptional()
@@ -27,7 +24,12 @@ export class UpdateOrderDto {
   @IsString()
   notes?: string;
 
-  @ApiProperty({ description: '주문 항목들', type: [OrderItemDto], required: false })
+  @ApiProperty({
+    description: '주문 항목 목록',
+    type: () => [OrderItemDto],
+    required: false,
+    isArray: true
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
