@@ -17,70 +17,114 @@ html, body {
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* 브랜드 컬러 */
+  --brand-primary: 221 53% 43%; /* 파란색 */
+  --brand-primary-foreground: 0 0% 98%; /* 거의 흰색 */
+  --brand-secondary: 221 48% 84%; /* 밝은 파란색 */
+  --brand-secondary-foreground: 0 0% 25%; /* 어두운 회색 */
+
+  /* 시맨틱 컬러 */
+  --success: 142 44% 43%; /* 초록색 */
+  --success-foreground: 0 0% 98%;
+  --warning: 32 95% 44%; /* 주황색 */
+  --warning-foreground: 0 0% 15%;
+  --error: 0 62% 50%; /* 빨간색 */
+  --error-foreground: 0 0% 98%;
+  --info: 221 53% 54%; /* 파란색 */
+  --info-foreground: 0 0% 98%;
+
+  /* 기본 색상 */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 15%;
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-primary-foreground);
+  --secondary: var(--brand-secondary);
+  --secondary-foreground: var(--brand-secondary-foreground);
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 46%;
+  --accent: 0 0% 96%;
+  --accent-foreground: 0 0% 20%;
+  --destructive: var(--error);
+  --destructive-foreground: var(--error-foreground);
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 0 0% 63%;
+
+  /* 차트 색상 */
+  --chart-1: var(--brand-primary);
+  --chart-2: var(--success);
+  --chart-3: var(--warning);
+  --chart-4: var(--info);
+  --chart-5: var(--error);
+
+  /* 사이드바 색상 */
+  --sidebar: 0 0% 98%;
+  --sidebar-foreground: 0 0% 15%;
+  --sidebar-primary: var(--brand-primary);
+  --sidebar-primary-foreground: var(--brand-primary-foreground);
+  --sidebar-accent: 0 0% 96%;
+  --sidebar-accent-foreground: 0 0% 20%;
+  --sidebar-border: 0 0% 90%;
+  --sidebar-ring: 0 0% 63%;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* 브랜드 컬러 (다크 모드용) */
+  --brand-primary: 221 70% 70%; /* 더 밝은 파란색 */
+  --brand-primary-foreground: 0 0% 15%; /* 어두운 배경 */
+  --brand-secondary: 221 20% 28%; /* 어두운 파란색 */
+  --brand-secondary-foreground: 0 0% 92%; /* 밝은 텍스트 */
+
+  /* 시맨틱 컬러 (다크 모드용) */
+  --success: 142 50% 58%; /* 더 밝은 초록색 */
+  --success-foreground: 0 0% 15%;
+  --warning: 32 95% 58%; /* 주황색 유지 */
+  --warning-foreground: 0 0% 15%;
+  --error: 0 72% 65%; /* 더 밝은 빨간색 */
+  --error-foreground: 0 0% 98%;
+  --info: 221 70% 70%; /* 더 밝은 파란색 */
+  --info-foreground: 0 0% 15%;
+
+  /* 기본 색상 */
+  --background: 0 0% 9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 14%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 14%;
+  --popover-foreground: 0 0% 98%;
+  --primary: var(--brand-primary);
+  --primary-foreground: var(--brand-primary-foreground);
+  --secondary: var(--brand-secondary);
+  --secondary-foreground: var(--brand-secondary-foreground);
+  --muted: 0 0% 21%;
+  --muted-foreground: 0 0% 71%;
+  --accent: 0 0% 21%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: var(--error);
+  --destructive-foreground: var(--error-foreground);
+  --border: 0 0% 100% / 10%;
+  --input: 0 0% 100% / 15%;
+  --ring: 0 0% 56%;
+
+  /* 차트 색상 (다크 모드용) */
+  --chart-1: var(--brand-primary);
+  --chart-2: var(--success);
+  --chart-3: var(--warning);
+  --chart-4: var(--info);
+  --chart-5: var(--error);
+
+  /* 사이드바 색상 */
+  --sidebar: 0 0% 14%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: var(--brand-primary);
+  --sidebar-primary-foreground: var(--brand-primary-foreground);
+  --sidebar-accent: 0 0% 21%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 0 0% 100% / 10%;
+  --sidebar-ring: 0 0% 56%;
 }

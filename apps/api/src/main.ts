@@ -37,13 +37,21 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   const port = process.env.PORT || 3001;
   await app.listen(port, '0.0.0.0');
 
   console.log(`🚀 Beenest API 서버가 포트 ${port}에서 실행 중입니다`);
-  console.log(`📚 API 문서: http://localhost:${port}/api/docs`);
+  console.log(`📚 API 문서: http://localhost:${port}/docs`);
 }
 
 bootstrap();
+
+// Hot Module Replacement
+declare const module: any;
+
+if (module.hot) {
+  module.hot.accept();
+  module.hot.dispose(() => console.log('Disposing app...'));
+}

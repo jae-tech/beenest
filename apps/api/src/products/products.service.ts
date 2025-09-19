@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateProductDto, UpdateProductDto } from '@/products/dto';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 @Injectable()
 export class ProductsService {
@@ -75,7 +79,12 @@ export class ProductsService {
       });
 
       // 재고 정보 생성
-      if (initialStock > 0 || minimumStock > 0 || maximumStock || reorderPoint > 0) {
+      if (
+        initialStock > 0 ||
+        minimumStock > 0 ||
+        maximumStock ||
+        reorderPoint > 0
+      ) {
         await prisma.inventory.create({
           data: {
             productId: product.id,
@@ -111,19 +120,29 @@ export class ProductsService {
           ...product.creator,
           id: product.creator.id.toString(),
         },
-        category: product.category ? {
-          ...product.category,
-          id: product.category.id.toString(),
-          parentCategory: product.category.parentCategory ? {
-            ...product.category.parentCategory,
-            id: product.category.parentCategory.id.toString(),
-          } : null,
-        } : null,
+        category: product.category
+          ? {
+              ...product.category,
+              id: product.category.id.toString(),
+              parentCategory: product.category.parentCategory
+                ? {
+                    ...product.category.parentCategory,
+                    id: product.category.parentCategory.id.toString(),
+                  }
+                : null,
+            }
+          : null,
       };
     });
   }
 
-  async findAll(userId: string, page = 1, limit = 10, search?: string, categoryId?: string) {
+  async findAll(
+    userId: string,
+    page = 1,
+    limit = 10,
+    search?: string,
+    categoryId?: string,
+  ) {
     const skip = (page - 1) * limit;
 
     const where = {
@@ -155,6 +174,8 @@ export class ProductsService {
           },
           inventory: {
             select: {
+              id: true,
+              productId: true,
               currentStock: true,
               reservedStock: true,
               minimumStock: true,
@@ -182,25 +203,32 @@ export class ProductsService {
       this.prisma.product.count({ where }),
     ]);
 
-    const formattedProducts = products.map(product => ({
+    const formattedProducts = products.map((product) => ({
       ...product,
       id: product.id.toString(),
       categoryId: product.categoryId?.toString(),
       createdBy: product.createdBy.toString(),
-      category: product.category ? {
-        ...product.category,
-        id: product.category.id.toString(),
-      } : null,
-      inventory: product.inventory ? {
-        ...product.inventory,
-        id: product.inventory.id.toString(),
-        productId: product.inventory.productId.toString(),
-        availableStock: product.inventory.currentStock - product.inventory.reservedStock,
-      } : null,
-      preferredSupplier: product.supplierProducts[0]?.supplier ? {
-        ...product.supplierProducts[0].supplier,
-        id: product.supplierProducts[0].supplier.id.toString(),
-      } : null,
+      category: product.category
+        ? {
+            ...product.category,
+            id: product.category.id.toString(),
+          }
+        : null,
+      inventory: product.inventory
+        ? {
+            ...product.inventory,
+            id: product.inventory.id.toString(),
+            productId: product.inventory.productId.toString(),
+            availableStock:
+              product.inventory.currentStock - product.inventory.reservedStock,
+          }
+        : null,
+      preferredSupplier: product.supplierProducts[0]?.supplier
+        ? {
+            ...product.supplierProducts[0].supplier,
+            id: product.supplierProducts[0].supplier.id.toString(),
+          }
+        : null,
       supplierProducts: undefined,
     }));
 
@@ -287,21 +315,28 @@ export class ProductsService {
       id: product.id.toString(),
       categoryId: product.categoryId?.toString(),
       createdBy: product.createdBy.toString(),
-      category: product.category ? {
-        ...product.category,
-        id: product.category.id.toString(),
-        parentCategory: product.category.parentCategory ? {
-          ...product.category.parentCategory,
-          id: product.category.parentCategory.id.toString(),
-        } : null,
-      } : null,
-      inventory: product.inventory ? {
-        ...product.inventory,
-        id: product.inventory.id.toString(),
-        productId: product.inventory.productId.toString(),
-        availableStock: product.inventory.currentStock - product.inventory.reservedStock,
-      } : null,
-      supplierProducts: product.supplierProducts.map(sp => ({
+      category: product.category
+        ? {
+            ...product.category,
+            id: product.category.id.toString(),
+            parentCategory: product.category.parentCategory
+              ? {
+                  ...product.category.parentCategory,
+                  id: product.category.parentCategory.id.toString(),
+                }
+              : null,
+          }
+        : null,
+      inventory: product.inventory
+        ? {
+            ...product.inventory,
+            id: product.inventory.id.toString(),
+            productId: product.inventory.productId.toString(),
+            availableStock:
+              product.inventory.currentStock - product.inventory.reservedStock,
+          }
+        : null,
+      supplierProducts: product.supplierProducts.map((sp) => ({
         ...sp,
         id: sp.id.toString(),
         supplierId: sp.supplierId.toString(),
@@ -311,7 +346,7 @@ export class ProductsService {
           id: sp.supplier.id.toString(),
         },
       })),
-      stockMovements: product.stockMovements.map(sm => ({
+      stockMovements: product.stockMovements.map((sm) => ({
         ...sm,
         id: sm.id.toString(),
         productId: sm.productId.toString(),
@@ -346,7 +381,9 @@ export class ProductsService {
       where: { id: BigInt(id) },
       data: {
         ...updateProductDto,
-        categoryId: updateProductDto.categoryId ? BigInt(updateProductDto.categoryId) : undefined,
+        categoryId: updateProductDto.categoryId
+          ? BigInt(updateProductDto.categoryId)
+          : undefined,
         updatedAt: new Date(),
       },
       include: {
@@ -365,15 +402,19 @@ export class ProductsService {
       id: updatedProduct.id.toString(),
       categoryId: updatedProduct.categoryId?.toString(),
       createdBy: updatedProduct.createdBy.toString(),
-      category: updatedProduct.category ? {
-        ...updatedProduct.category,
-        id: updatedProduct.category.id.toString(),
-      } : null,
-      inventory: updatedProduct.inventory ? {
-        ...updatedProduct.inventory,
-        id: updatedProduct.inventory.id.toString(),
-        productId: updatedProduct.inventory.productId.toString(),
-      } : null,
+      category: updatedProduct.category
+        ? {
+            ...updatedProduct.category,
+            id: updatedProduct.category.id.toString(),
+          }
+        : null,
+      inventory: updatedProduct.inventory
+        ? {
+            ...updatedProduct.inventory,
+            id: updatedProduct.inventory.id.toString(),
+            productId: updatedProduct.inventory.productId.toString(),
+          }
+        : null,
     };
   }
 
@@ -400,7 +441,12 @@ export class ProductsService {
     });
   }
 
-  async adjustStock(id: string, userId: string, quantity: number, reason: string) {
+  async adjustStock(
+    id: string,
+    userId: string,
+    quantity: number,
+    reason: string,
+  ) {
     const product = await this.prisma.product.findFirst({
       where: {
         id: BigInt(id),
@@ -487,31 +533,39 @@ export class ProductsService {
       },
     });
 
-    const lowStockProducts = products.filter(product =>
-      product.inventory &&
-      (product.inventory.currentStock <= product.inventory.minimumStock ||
-       product.inventory.currentStock <= product.inventory.reorderPoint)
+    const lowStockProducts = products.filter(
+      (product) =>
+        product.inventory &&
+        (product.inventory.currentStock <= product.inventory.minimumStock ||
+          product.inventory.currentStock <= product.inventory.reorderPoint),
     );
 
-    return lowStockProducts.map(product => ({
+    return lowStockProducts.map((product) => ({
       ...product,
       id: product.id.toString(),
       categoryId: product.categoryId?.toString(),
       createdBy: product.createdBy.toString(),
-      category: product.category ? {
-        ...product.category,
-        id: product.category.id.toString(),
-      } : null,
-      inventory: product.inventory ? {
-        ...product.inventory,
-        id: product.inventory.id.toString(),
-        productId: product.inventory.productId.toString(),
-        availableStock: product.inventory.currentStock - product.inventory.reservedStock,
-      } : null,
-      preferredSupplier: product.supplierProducts[0]?.supplier ? {
-        ...product.supplierProducts[0].supplier,
-        id: product.supplierProducts[0].supplier.id.toString(),
-      } : null,
+      category: product.category
+        ? {
+            ...product.category,
+            id: product.category.id.toString(),
+          }
+        : null,
+      inventory: product.inventory
+        ? {
+            ...product.inventory,
+            id: product.inventory.id.toString(),
+            productId: product.inventory.productId.toString(),
+            availableStock:
+              product.inventory.currentStock - product.inventory.reservedStock,
+          }
+        : null,
+      preferredSupplier: product.supplierProducts[0]?.supplier
+        ? {
+            ...product.supplierProducts[0].supplier,
+            id: product.supplierProducts[0].supplier.id.toString(),
+          }
+        : null,
       supplierProducts: undefined,
     }));
   }

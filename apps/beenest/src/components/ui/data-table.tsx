@@ -75,11 +75,11 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-gray-200">
+              <tr key={headerGroup.id} className="border-b border-border">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="text-left py-3 px-4 font-medium text-gray-600 text-sm"
+                    className="text-left py-3 px-4 font-medium text-muted-foreground text-sm"
                   >
                     {header.isPlaceholder
                       ? null
@@ -97,7 +97,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-gray-100 hover:bg-gray-50"
+                  className="border-b border-border hover:bg-muted/50"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="py-4 px-4">
@@ -110,7 +110,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="h-24 text-center text-gray-500"
+                  className="h-24 text-center text-muted-foreground"
                 >
                   데이터가 없습니다.
                 </td>
@@ -122,7 +122,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
 
       {/* Pagination */}
       <div className="flex items-center justify-between mt-4">
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-muted-foreground">
           총 {table.getFilteredRowModel().rows.length}개의 항목
         </div>
         <div className="flex space-x-2">

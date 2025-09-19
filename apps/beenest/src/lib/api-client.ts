@@ -50,20 +50,42 @@ class ApiClient {
         return response;
       },
       async (error: AxiosError<ApiResponse>) => {
-        const originalRequest = error.config;
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
         // 401 Unauthorized - 토큰 만료 또는 인증 실패
-        if (error.response?.status === 401) {
-          localStorage.removeItem("auth_token");
-          localStorage.removeItem("user");
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
 
-          // 로그인 페이지로 리다이렉트 (현재 위치 저장)
-          const currentPath = window.location.pathname;
-          if (currentPath !== "/login") {
-            errorToast("로그인이 필요합니다. 다시 로그인해주세요.");
-            setTimeout(() => {
-              window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-            }, 1000);
+          const refreshToken = this.getRefreshToken();
+
+          // Refresh token이 있으면 갱신 시도
+          if (refreshToken) {
+            try {
+              const response = await this.instance.post('/auth/refresh', {
+                refreshToken,
+                deviceId: this.getDeviceId(),
+              });
+
+              const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+              // 새 토큰 저장
+              this.setToken(accessToken);
+              this.setRefreshToken(newRefreshToken);
+
+              // 원래 요청 재시도
+              if (originalRequest.headers) {
+                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+              }
+
+              return this.instance(originalRequest);
+            } catch (refreshError) {
+              // Refresh 실패 시 로그아웃 처리
+              console.log('Token refresh failed:', refreshError);
+              this.handleAuthFailure();
+            }
+          } else {
+            // Refresh token이 없으면 로그아웃 처리
+            this.handleAuthFailure();
           }
         }
 
@@ -160,15 +182,26 @@ class ApiClient {
     localStorage.setItem("auth_token", token);
   }
 
+  // Refresh 토큰 설정
+  setRefreshToken(refreshToken: string) {
+    localStorage.setItem("refresh_token", refreshToken);
+  }
+
   // 토큰 제거
   removeToken() {
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
   }
 
   // 토큰 확인
   getToken(): string | null {
     return localStorage.getItem("auth_token");
+  }
+
+  // Refresh 토큰 확인
+  getRefreshToken(): string | null {
+    return localStorage.getItem("refresh_token");
   }
 
   // 토큰 유효성 검사
@@ -183,6 +216,30 @@ class ApiClient {
       return payload.exp > currentTime;
     } catch {
       return false;
+    }
+  }
+
+  // 디바이스 ID 생성/조회
+  private getDeviceId(): string {
+    let deviceId = localStorage.getItem('device_id');
+    if (!deviceId) {
+      deviceId = `web-${navigator.userAgent.slice(-10)}-${Date.now()}`;
+      localStorage.setItem('device_id', deviceId);
+    }
+    return deviceId;
+  }
+
+  // 인증 실패 처리
+  private handleAuthFailure() {
+    this.removeToken();
+
+    // 로그인 페이지로 리다이렉트 (현재 위치 저장)
+    const currentPath = window.location.pathname;
+    if (currentPath !== "/login") {
+      errorToast("로그인이 필요합니다. 다시 로그인해주세요.");
+      setTimeout(() => {
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+      }, 1000);
     }
   }
 }

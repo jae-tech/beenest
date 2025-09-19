@@ -24,8 +24,10 @@ describe('utils', () => {
     })
 
     it('should handle conditional classes', () => {
-      expect(cn('base', true && 'conditional')).toContain('conditional')
-      expect(cn('base', false && 'conditional')).not.toContain('conditional')
+      const condition1 = true
+      const condition2 = false
+      expect(cn('base', condition1 && 'conditional')).toContain('conditional')
+      expect(cn('base', condition2 && 'conditional')).not.toContain('conditional')
     })
   })
 

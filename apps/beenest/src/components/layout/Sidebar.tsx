@@ -1,14 +1,15 @@
+import { useAuth } from "@/features/auth";
 import { Link } from "@tanstack/react-router";
 import {
   BarChart3,
   Box,
+  ClipboardList,
   HelpCircle,
   LogOut,
   Package,
   Settings,
   Shield,
   Store,
-  ClipboardList,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -17,6 +18,7 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
+  const { logout } = useAuth();
   const menuItems = [
     { icon: BarChart3, label: "대시보드", path: "/dashboard" },
     { icon: Package, label: "상품관리", path: "/products" },
@@ -95,6 +97,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
       <div className="p-4 border-t border-gray-800">
         <div
           className={`flex items-center space-x-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer ${isCollapsed ? "justify-center" : ""}`}
+          onClick={logout}
         >
           <LogOut className="w-4 h-4" />
           {!isCollapsed && (

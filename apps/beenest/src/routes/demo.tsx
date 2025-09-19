@@ -11,48 +11,48 @@ const DemoApp: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const LoginPage = () => (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background to-primary/10 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-card rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-600 rounded-xl mx-auto mb-4 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">B</span>
+            <div className="w-16 h-16 bg-primary rounded-xl mx-auto mb-4 flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-xl">B</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Beenest</h1>
-            <p className="text-gray-600">소상공인을 위한 재고 및 거래처 관리 시스템</p>
+            <h1 className="text-2xl font-bold text-card-foreground mb-2">Welcome to Beenest</h1>
+            <p className="text-muted-foreground">소상공인을 위한 재고 및 거래처 관리 시스템</p>
           </div>
 
           <form className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">이메일</label>
+              <label className="block text-sm font-medium text-foreground mb-2">이메일</label>
               <Input
                 type="email"
                 placeholder="admin@beenest.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">비밀번호</label>
+              <label className="block text-sm font-medium text-foreground mb-2">비밀번호</label>
               <Input
                 type="password"
                 placeholder="password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full"
               />
             </div>
 
             <div className="flex items-center justify-between">
               <label className="flex items-center">
-                <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                <span className="ml-2 text-sm text-gray-600">로그인 상태 유지</span>
+                <input type="checkbox" className="rounded border-input text-primary focus:ring-ring" />
+                <span className="ml-2 text-sm text-muted-foreground">로그인 상태 유지</span>
               </label>
-              <a href="#" className="text-sm text-blue-600 hover:text-blue-500">비밀번호 찾기</a>
+              <a href="#" className="text-sm text-primary hover:text-primary/90">비밀번호 찾기</a>
             </div>
 
             <Button
               type="button"
               onClick={() => setCurrentView("dashboard")}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors"
+              className="w-full py-3 rounded-lg font-medium"
             >
               로그인
             </Button>
@@ -63,15 +63,15 @@ const DemoApp: React.FC = () => {
   );
 
   const DashboardPage = () => (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-white shadow-lg transition-all duration-300`}>
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-card shadow-lg transition-all duration-300`}>
         <div className="p-6">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">B</span>
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">B</span>
             </div>
-            {!sidebarCollapsed && <span className="font-bold text-gray-900">Beenest</span>}
+            {!sidebarCollapsed && <span className="font-bold text-card-foreground">Beenest</span>}
           </div>
         </div>
 
@@ -87,8 +87,8 @@ const DemoApp: React.FC = () => {
               onClick={() => setCurrentView(item.name.toLowerCase().replace("관리", "").replace("대시보드", "dashboard").replace("주문", "orders").replace("공급업체", "suppliers").replace("재고", "inventory"))}
               className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                 item.active
-                  ? "bg-blue-50 text-blue-600 font-medium"
-                  : "text-gray-600 hover:bg-gray-50"
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "text-muted-foreground hover:bg-muted/50"
               }`}
             >
               {!sidebarCollapsed && item.name}
@@ -100,16 +100,16 @@ const DemoApp: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-white shadow-sm px-6 py-4">
+        <header className="bg-card shadow-sm px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="p-2 text-gray-600 hover:text-gray-900"
+                className="p-2 text-muted-foreground hover:text-foreground"
               >
                 ☰
               </Button>
-              <h1 className="text-xl font-semibold text-gray-900">
+              <h1 className="text-xl font-semibold text-foreground">
                 {currentView === "dashboard" && "대시보드"}
                 {currentView === "inventory" && "재고관리"}
                 {currentView === "orders" && "주문관리"}
@@ -117,10 +117,10 @@ const DemoApp: React.FC = () => {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">관리자님</span>
+              <span className="text-sm text-muted-foreground">관리자님</span>
               <Button
                 onClick={() => setCurrentView("login")}
-                className="text-sm text-gray-600 hover:text-gray-900"
+                className="text-sm text-muted-foreground hover:text-foreground"
               >
                 로그아웃
               </Button>
@@ -147,11 +147,11 @@ const DemoApp: React.FC = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-600">{metric.title}</p>
-                      <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
+                      <p className="text-sm font-medium text-muted-foreground">{metric.title}</p>
+                      <p className="text-2xl font-bold text-foreground">{metric.value}</p>
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-green-600">{metric.change}</span>
-                        <span className="text-xs text-gray-500">지난달 대비</span>
+                        <span className="text-sm font-medium text-success">{metric.change}</span>
+                        <span className="text-xs text-muted-foreground">지난달 대비</span>
                       </div>
                     </div>
                   </Card>
@@ -161,27 +161,27 @@ const DemoApp: React.FC = () => {
               {/* Charts and Tables */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">월별 매출 추이</h3>
-                  <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-500">차트 영역</span>
+                  <h3 className="text-lg font-semibold text-card-foreground mb-4">월별 매출 추이</h3>
+                  <div className="h-64 bg-muted/30 rounded-lg flex items-center justify-center">
+                    <span className="text-muted-foreground">차트 영역</span>
                   </div>
                 </Card>
 
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">최근 주문</h3>
+                  <h3 className="text-lg font-semibold text-card-foreground mb-4">최근 주문</h3>
                   <div className="space-y-4">
                     {[
                       { product: "백팩", customer: "김철수", amount: "₩200,000", status: "완료" },
                       { product: "티셔츠", customer: "이영희", amount: "₩89,000", status: "진행중" },
                       { product: "선글라스", customer: "박민수", amount: "₩150,000", status: "대기" }
                     ].map((order, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                         <div>
-                          <p className="font-medium text-gray-900">{order.product}</p>
-                          <p className="text-sm text-gray-600">{order.customer}</p>
+                          <p className="font-medium text-foreground">{order.product}</p>
+                          <p className="text-sm text-muted-foreground">{order.customer}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium text-gray-900">{order.amount}</p>
+                          <p className="font-medium text-foreground">{order.amount}</p>
                           <Badge variant={order.status === "완료" ? "default" : "secondary"}>
                             {order.status}
                           </Badge>

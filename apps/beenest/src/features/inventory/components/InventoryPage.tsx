@@ -1,22 +1,22 @@
+import { PageLayout } from "@/components/layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { PageLayout } from "@/components/layout";
+import type { Product } from "@/types/api";
+import { type StatItem } from "@/types/design-system";
+import { useNavigate } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
+  AlertTriangle,
+  CheckCircle,
   Edit,
   Eye,
   Package,
-  AlertTriangle,
-  CheckCircle,
   ShoppingCart,
   Trash,
 } from "lucide-react";
-import { type StatItem } from "@/types/design-system";
-import { useNavigate } from "@tanstack/react-router";
-import { useProducts } from "../hooks/useProducts";
 import { useMemo, useState } from "react";
-import type { Product } from "@/types/api";
+import { useProducts } from "../hooks/useProducts";
 
 type InventoryItem = {
   id: string;
@@ -37,21 +37,32 @@ export function InventoryPage() {
   const {
     data: productsResponse,
     isLoading,
-    error
+    error,
   } = useProducts({
     page,
     limit: 10,
-    search: search || undefined
+    search: search || undefined,
   });
 
-  const products = productsResponse?.success ? productsResponse.data?.data || [] : [];
-  const pagination = productsResponse?.success ? productsResponse.data?.pagination : null;
+  const products = productsResponse?.success ? productsResponse.data || [] : [];
+  const pagination = productsResponse?.success
+    ? productsResponse.data?.pagination
+    : null;
 
   const stats: StatItem[] = useMemo(() => {
     const totalProducts = products.length;
-    const inStock = products.filter(p => p.inventory && p.inventory.currentStock > p.inventory.minimumStock).length;
-    const lowStock = products.filter(p => p.inventory && p.inventory.currentStock <= p.inventory.minimumStock && p.inventory.currentStock > 0).length;
-    const outOfStock = products.filter(p => !p.inventory || p.inventory.currentStock === 0).length;
+    const inStock = products.filter(
+      (p) => p.inventory && p.inventory.currentStock > p.inventory.minimumStock
+    ).length;
+    const lowStock = products.filter(
+      (p) =>
+        p.inventory &&
+        p.inventory.currentStock <= p.inventory.minimumStock &&
+        p.inventory.currentStock > 0
+    ).length;
+    const outOfStock = products.filter(
+      (p) => !p.inventory || p.inventory.currentStock === 0
+    ).length;
 
     return [
       {
@@ -121,7 +132,9 @@ export function InventoryPage() {
       accessorKey: "name",
       header: "상품명",
       cell: ({ row, table }) => {
-        const index = table.getRowModel().rows.findIndex(r => r.id === row.id);
+        const index = table
+          .getRowModel()
+          .rows.findIndex((r) => r.id === row.id);
         return (
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden">
@@ -179,7 +192,11 @@ export function InventoryPage() {
       header: "총액",
       cell: ({ row }) => (
         <div className="text-sm font-medium text-gray-900">
-          ₩{((row.getValue("stock") as number) * (row.getValue("price") as number)).toLocaleString()}
+          ₩
+          {(
+            (row.getValue("stock") as number) *
+            (row.getValue("price") as number)
+          ).toLocaleString()}
         </div>
       ),
     },

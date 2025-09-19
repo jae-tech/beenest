@@ -24,12 +24,34 @@ model User {
   deletedAt     DateTime? @map("deleted_at")
 
   // Relations
+  refreshTokens       RefreshToken[]
   createdProducts     Product[]        @relation("ProductCreator")
   createdSuppliers    Supplier[]       @relation("SupplierCreator")
   createdStockMovements StockMovement[] @relation("StockMovementCreator")
   createdPurchaseOrders PurchaseOrder[] @relation("PurchaseOrderCreator")
 
   @@map("users")
+}
+
+// RefreshToken 관리 (JWT 토큰 갱신용)
+model RefreshToken {
+  id         BigInt    @id @default(autoincrement())
+  token      String    @unique @db.VarChar(500)
+  userId     BigInt    @map("user_id")
+  deviceId   String?   @map("device_id") @db.VarChar(255) // 디바이스/브라우저 식별
+  expiresAt  DateTime  @map("expires_at")
+  isRevoked  Boolean   @default(false) @map("is_revoked")
+  lastUsedAt DateTime? @map("last_used_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
 }
 
 // 상품 카테고리 (계층 구조 지원)
