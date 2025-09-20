@@ -9,12 +9,10 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, redirectTo = '/login' }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { isAuthenticated, isLoading } = useAuthStore();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+  // checkAuth 호출 제거 - useAuth hook에서 이미 처리됨
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {

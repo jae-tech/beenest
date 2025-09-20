@@ -139,20 +139,6 @@ export interface OrderItem {
   product?: Product
 }
 
-// 재고 이동 타입
-export interface StockMovement {
-  id: string
-  productId: string
-  movementType: 'in' | 'out' | 'adjustment'
-  quantity: number
-  previousStock: number
-  newStock: number
-  reason?: string
-  referenceId?: string
-  referenceType?: string
-  createdAt: string
-  product?: Product
-}
 
 // 대시보드 통계 타입
 export interface DashboardStats {
@@ -225,6 +211,119 @@ export interface UpdateOrderRequest extends Partial<CreateOrderRequest> {
 export interface LoginRequest {
   email: string
   password: string
+}
+
+// 재고 관리 타입들
+export type MovementType = 'IN' | 'OUT' | 'ADJUST' | 'TRANSFER'
+export type ReferenceType = 'ORDER' | 'PURCHASE' | 'ADJUSTMENT' | 'RETURN' | 'INITIAL'
+export type AlertType = 'OUT_OF_STOCK' | 'REORDER_POINT' | 'LOW_STOCK'
+
+export interface Inventory {
+  id: string
+  productId: string
+  currentStock: number
+  reservedStock: number
+  availableStock: number
+  minimumStock: number
+  maximumStock?: number
+  reorderPoint: number
+  warehouseLocation: string
+  lastStockCheckAt?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface StockMovement {
+  id: string
+  productId: string
+  movementType: MovementType
+  quantity: number
+  unitCost?: number
+  referenceType?: string
+  referenceId?: string
+  notes?: string
+  createdAt: string
+  createdBy: string
+  creator?: {
+    id: string
+    name: string
+  }
+  product?: {
+    id: string
+    productCode: string
+    productName: string
+    unitPrice: number
+    category?: {
+      id: string
+      categoryName: string
+    }
+  }
+}
+
+export interface InventoryByProduct {
+  product: {
+    id: string
+    productCode: string
+    productName: string
+    unitPrice: number
+    costPrice?: number
+    category?: {
+      id: string
+      categoryName: string
+    }
+  }
+  inventory?: Inventory
+}
+
+export interface LowStockAlert {
+  product: {
+    id: string
+    productCode: string
+    productName: string
+    unitPrice: number
+    category?: {
+      id: string
+      categoryName: string
+    }
+  }
+  inventory: Inventory & {
+    alertType: AlertType
+  }
+  preferredSupplier?: {
+    id: string
+    companyName: string
+    supplierCode: string
+    contactPerson?: string
+    phone?: string
+    email?: string
+  }
+}
+
+export interface InventoryStats {
+  totalProducts: number
+  lowStockCount: number
+  outOfStockCount: number
+  normalStockCount: number
+  totalInventoryValue: number
+  alertsCount: number
+}
+
+export interface AdjustStockRequest {
+  quantity: number
+  movementType: MovementType
+  unitCost?: number
+  referenceType?: ReferenceType
+  referenceId?: string
+  notes?: string
+  reason: string
+}
+
+export interface UpdateInventoryRequest {
+  warehouseLocation?: string
+  reservedStock?: number
+  minimumStock?: number
+  maximumStock?: number
+  reorderPoint?: number
 }
 
 export interface RegisterRequest {

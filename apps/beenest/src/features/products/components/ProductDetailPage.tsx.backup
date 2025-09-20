@@ -26,6 +26,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// 상세보기 전용 컴포넌트이므로 Zod 스키마 불필요
 
 export function ProductDetailPage() {
   const navigate = useNavigate();
@@ -37,9 +40,8 @@ export function ProductDetailPage() {
   const { data: inventoryResponse, isLoading: isInventoryLoading } = useInventoryByProduct(productId);
   const deleteProduct = useDeleteProduct();
 
-  // API 응답 구조에 따른 데이터 접근
-  const product = productResponse?.data?.product || productResponse?.data;
-  const inventory = inventoryResponse?.data?.inventory || inventoryResponse?.data;
+  const product = productResponse?.data;
+  const inventory = inventoryResponse?.data;
 
   // 로딩 상태 및 에러 처리
   const isLoading = isProductLoading || isInventoryLoading;
@@ -60,8 +62,8 @@ export function ProductDetailPage() {
   }
 
   const getStockStatus = () => {
-    const stockLevel = product?.inventory?.currentStock || inventory?.currentStock || 0;
-    const minStockLevel = product?.inventory?.minimumStock || inventory?.minimumStock || 0;
+    const stockLevel = product?.stock_quantity || inventory?.current_stock || 0;
+    const minStockLevel = product?.min_stock_level || inventory?.min_stock_level || 0;
 
     if (stockLevel === 0) {
       return { label: "품절", variant: "destructive" as const };
@@ -104,14 +106,14 @@ export function ProductDetailPage() {
   };
 
   const getTotalValue = () => {
-    const stockLevel = product?.inventory?.currentStock || inventory?.currentStock || 0;
-    const unitPrice = product?.unitPrice || 0;
+    const stockLevel = product?.stock_quantity || inventory?.current_stock || 0;
+    const unitPrice = product?.price || 0;
     return stockLevel * unitPrice;
   };
 
   const getStockProgressWidth = () => {
-    const stockLevel = product?.inventory?.currentStock || inventory?.currentStock || 0;
-    const minStockLevel = product?.inventory?.minimumStock || inventory?.minimumStock || 0;
+    const stockLevel = product?.stock_quantity || inventory?.current_stock || 0;
+    const minStockLevel = product?.min_stock_level || inventory?.min_stock_level || 0;
     return Math.min(100, (stockLevel / (minStockLevel * 3)) * 100);
   };
 
@@ -124,7 +126,7 @@ export function ProductDetailPage() {
     },
     {
       action: "가격 수정",
-      quantity: `₩${(product?.unitPrice || 0).toLocaleString()}`,
+      quantity: `$${watchedValues.unitPrice}`,
       date: "1일 전",
       user: "John Doe",
     },
@@ -139,9 +141,65 @@ export function ProductDetailPage() {
   if (isLoading) {
     return (
       <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p className="mt-4 text-gray-600">상품 정보를 불러오는 중...</p>
+        <div className="space-y-6">
+          {/* Header skeleton */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Skeleton className="h-12 w-12 rounded-lg" />
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Skeleton className="h-9 w-20" />
+                <Skeleton className="h-9 w-20" />
+              </div>
+            </div>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main content skeleton */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="p-6">
+                <Skeleton className="h-6 w-32 mb-4" />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-6 w-full" />
+                  </div>
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-12" />
+                    <Skeleton className="h-6 w-full" />
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-6">
+                <Skeleton className="h-6 w-24 mb-4" />
+                <div className="grid grid-cols-3 gap-6">
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                </div>
+              </Card>
+            </div>
+
+            {/* Sidebar skeleton */}
+            <div className="space-y-6">
+              <Card className="p-6">
+                <Skeleton className="h-6 w-24 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </Card>
+              <Card className="p-6">
+                <Skeleton className="h-48 w-full" />
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -155,19 +213,19 @@ export function ProductDetailPage() {
           { label: "상품 관리", path: "/products" },
           { label: "상품 상세" }
         ]}
-        title={product?.productName || "상품 상세"}
+        title={product?.name || "상품 상세"}
         subtitle="상품 정보를 확인하고 관리하세요"
-        imageUrl={product?.imageUrl || "https://readdy.ai/api/search-image?query=premium%20wireless%20headphones%20product%20shot%20on%20clean%20white%20background%20minimal%20ecommerce%20style%20professional%20product%20photography%20modern%20design&width=200&height=200&seq=product-detail&orientation=squarish"}
-        imageAlt={product?.productName || "상품 이미지"}
+        imageUrl={product?.image_url || "https://readdy.ai/api/search-image?query=premium%20wireless%20headphones%20product%20shot%20on%20clean%20white%20background%20minimal%20ecommerce%20style%20professional%20product%20photography%20modern%20design&width=200&height=200&seq=product-detail&orientation=squarish"}
+        imageAlt={product?.name || "상품 이미지"}
         badges={[
-          { label: `SKU: ${product?.productCode || 'N/A'}`, variant: 'default' },
+          { label: `SKU: ${product?.sku || 'N/A'}`, variant: 'default' },
           { label: stockStatus.label, variant: stockStatus.variant },
-          { label: product?.isActive ? '활성' : '비활성', variant: product?.isActive ? 'success' : 'secondary' }
+          { label: product?.status === 'active' ? '활성' : '비활성', variant: product?.status === 'active' ? 'success' : 'secondary' }
         ]}
         rightInfo={{
           label: "마지막 수정",
-          value: product?.updatedAt ? new Date(product.updatedAt).toLocaleDateString('ko-KR') : 'N/A',
-          sublabel: product?.category?.categoryName || 'N/A'
+          value: product?.updated_at ? new Date(product.updated_at).toLocaleDateString('ko-KR') : 'N/A',
+          sublabel: product?.category?.name || 'N/A'
         }}
         actions={[
           {
@@ -217,7 +275,7 @@ export function ProductDetailPage() {
                   제품명
                 </label>
                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-900 font-medium">{product?.productName || 'N/A'}</p>
+                  <p className="text-gray-900 font-medium">{product?.name || 'N/A'}</p>
                 </div>
               </div>
 
@@ -226,7 +284,7 @@ export function ProductDetailPage() {
                   SKU
                 </label>
                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-900 font-mono">{product?.productCode || 'N/A'}</p>
+                  <p className="text-gray-900 font-mono">{product?.sku || 'N/A'}</p>
                 </div>
               </div>
 
@@ -235,7 +293,7 @@ export function ProductDetailPage() {
                   카테고리
                 </label>
                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-900">{product?.category?.categoryName || 'N/A'}</p>
+                  <p className="text-gray-900">{product?.category?.name || 'N/A'}</p>
                 </div>
               </div>
 
@@ -244,7 +302,7 @@ export function ProductDetailPage() {
                   공급업체
                 </label>
                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-900">{product?.preferredSupplier?.companyName || 'N/A'}</p>
+                  <p className="text-gray-900">{product?.supplier?.name || 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -270,8 +328,8 @@ export function ProductDetailPage() {
                     현재 제품의 활성화 상태입니다
                   </p>
                 </div>
-                <Badge variant={product?.isActive ? 'success' : 'secondary'}>
-                  {product?.isActive ? '활성' : '비활성'}
+                <Badge variant={product?.status === 'active' ? 'success' : 'secondary'}>
+                  {product?.status === 'active' ? '활성' : '비활성'}
                 </Badge>
               </div>
             </div>
@@ -295,7 +353,7 @@ export function ProductDetailPage() {
                 </label>
                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                   <p className="text-lg font-semibold text-gray-900">
-                    {(product?.inventory?.currentStock || inventory?.currentStock || 0).toLocaleString()}개
+                    {(product?.stock_quantity || inventory?.current_stock || 0).toLocaleString()}개
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">단위: 개</p>
@@ -307,7 +365,7 @@ export function ProductDetailPage() {
                 </label>
                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                   <p className="text-lg font-semibold text-gray-900">
-                    ₩{(product?.unitPrice || 0).toLocaleString()}
+                    ₩{(product?.price || 0).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -318,7 +376,7 @@ export function ProductDetailPage() {
                 </label>
                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
                   <p className="text-lg font-semibold text-gray-900">
-                    {(product?.inventory?.minimumStock || inventory?.minimumStock || 0).toLocaleString()}개
+                    {(product?.min_stock_level || inventory?.min_stock_level || 0).toLocaleString()}개
                   </p>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
@@ -333,7 +391,7 @@ export function ProductDetailPage() {
                   창고 위치
                 </label>
                 <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-900">{product?.inventory?.warehouseLocation || inventory?.warehouseLocation || 'N/A'}</p>
+                  <p className="text-gray-900">{inventory?.location || product?.location || 'N/A'}</p>
                 </div>
               </div>
               <div>
@@ -348,7 +406,6 @@ export function ProductDetailPage() {
               </div>
             </div>
           </Card>
-        </div>
 
         {/* 사이드바 */}
         <div className="space-y-6">
@@ -361,7 +418,7 @@ export function ProductDetailPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">현재 재고</span>
                 <span className="text-lg font-semibold text-gray-900">
-                  {(product?.inventory?.currentStock || inventory?.currentStock || 0).toLocaleString()}개
+                  {(product?.stock_quantity || inventory?.current_stock || 0).toLocaleString()}개
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -380,11 +437,11 @@ export function ProductDetailPage() {
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className={`h-2 rounded-full ${
-                      (product?.inventory?.currentStock || inventory?.currentStock || 0) <=
-                      (product?.inventory?.minimumStock || inventory?.minimumStock || 0)
+                      (product?.stock_quantity || inventory?.current_stock || 0) <=
+                      (product?.min_stock_level || inventory?.min_stock_level || 0)
                         ? "bg-red-500"
-                        : (product?.inventory?.currentStock || inventory?.currentStock || 0) <=
-                            (product?.inventory?.minimumStock || inventory?.minimumStock || 0) * 2
+                        : (product?.stock_quantity || inventory?.current_stock || 0) <=
+                            (product?.min_stock_level || inventory?.min_stock_level || 0) * 2
                           ? "bg-yellow-500"
                           : "bg-green-500"
                     }`}
@@ -392,7 +449,7 @@ export function ProductDetailPage() {
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  최소 기준: {(product?.inventory?.minimumStock || inventory?.minimumStock || 0).toLocaleString()}개
+                  최소 기준: {(product?.min_stock_level || inventory?.min_stock_level || 0).toLocaleString()}개
                 </p>
               </div>
             </div>
@@ -405,7 +462,10 @@ export function ProductDetailPage() {
             </h3>
             <div className="space-y-3">
               {mockRecentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start space-x-3 text-sm">
+                <div
+                  key={index}
+                  className="flex items-start space-x-3 text-sm"
+                >
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-gray-900 font-medium">
@@ -429,8 +489,8 @@ export function ProductDetailPage() {
             <div className="space-y-4">
               <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
                 <img
-                  src={product?.imageUrl || "https://readdy.ai/api/search-image?query=premium%20wireless%20headphones%20product%20showcase%20multiple%20angles%20on%20clean%20white%20background%20professional%20ecommerce%20photography%20modern%20design%20high%20quality&width=300&height=200&seq=product-gallery&orientation=landscape"}
-                  alt={product?.productName || "제품 이미지"}
+                  src={product?.image_url || "https://readdy.ai/api/search-image?query=premium%20wireless%20headphones%20product%20showcase%20multiple%20angles%20on%20clean%20white%20background%20professional%20ecommerce%20photography%20modern%20design%20high%20quality&width=300&height=200&seq=product-gallery&orientation=landscape"}
+                  alt={product?.name || "제품 이미지"}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -440,7 +500,6 @@ export function ProductDetailPage() {
               </Button>
             </div>
           </Card>
-
         </div>
       </div>
 

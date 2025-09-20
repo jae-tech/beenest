@@ -65,4 +65,20 @@ export const queryKeys = {
     lists: () => [...queryKeys.stockMovements.all, 'list'] as const,
     list: (productId?: string) => [...queryKeys.stockMovements.lists(), productId] as const,
   },
+
+  // 재고 관리
+  inventory: {
+    all: ['inventory'] as const,
+    stats: () => [...queryKeys.inventory.all, 'stats'] as const,
+    product: (productId: string) => [...queryKeys.inventory.all, 'product', productId] as const,
+    movements: (productId: string) => [...queryKeys.inventory.all, 'movements', productId] as const,
+    alerts: () => [...queryKeys.inventory.all, 'alerts'] as const,
+  },
+
+  // 카테고리
+  categories: {
+    all: ['categories'] as const,
+    lists: () => [...queryKeys.categories.all, 'list'] as const,
+    list: (params?: any) => [...queryKeys.categories.lists(), params] as const,
+  },
 } as const

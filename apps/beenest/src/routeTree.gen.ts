@@ -14,7 +14,9 @@ import { Route as DemoRouteImport } from './routes/demo'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
 import { Route as LayoutOrdersRouteImport } from './routes/_layout/orders'
+import { Route as LayoutInventoryRouteImport } from './routes/_layout/inventory'
 import { Route as LayoutDashboardRouteImport } from './routes/_layout/dashboard'
 import { Route as LayoutSuppliersIndexRouteImport } from './routes/_layout/suppliers/index'
 import { Route as LayoutProductsIndexRouteImport } from './routes/_layout/products/index'
@@ -22,6 +24,9 @@ import { Route as LayoutInventoryIndexRouteImport } from './routes/_layout/inven
 import { Route as LayoutSuppliersAddRouteImport } from './routes/_layout/suppliers/add'
 import { Route as LayoutProductsAddRouteImport } from './routes/_layout/products/add'
 import { Route as LayoutProductsProductIdRouteImport } from './routes/_layout/products/$productId'
+import { Route as LayoutInventoryAdjustRouteImport } from './routes/_layout/inventory/adjust'
+import { Route as LayoutProductsProductIdEditRouteImport } from './routes/_layout/products/$productId/edit'
+import { Route as LayoutInventoryProductIdAdjustRouteImport } from './routes/_layout/inventory/$productId/adjust'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -47,9 +52,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutOrdersRoute = LayoutOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutInventoryRoute = LayoutInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutDashboardRoute = LayoutDashboardRouteImport.update({
@@ -68,9 +83,9 @@ const LayoutProductsIndexRoute = LayoutProductsIndexRouteImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutInventoryIndexRoute = LayoutInventoryIndexRouteImport.update({
-  id: '/inventory/',
-  path: '/inventory/',
-  getParentRoute: () => LayoutRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => LayoutInventoryRoute,
 } as any)
 const LayoutSuppliersAddRoute = LayoutSuppliersAddRouteImport.update({
   id: '/suppliers/add',
@@ -87,6 +102,23 @@ const LayoutProductsProductIdRoute = LayoutProductsProductIdRouteImport.update({
   path: '/products/$productId',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutInventoryAdjustRoute = LayoutInventoryAdjustRouteImport.update({
+  id: '/adjust',
+  path: '/adjust',
+  getParentRoute: () => LayoutInventoryRoute,
+} as any)
+const LayoutProductsProductIdEditRoute =
+  LayoutProductsProductIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => LayoutProductsProductIdRoute,
+  } as any)
+const LayoutInventoryProductIdAdjustRoute =
+  LayoutInventoryProductIdAdjustRouteImport.update({
+    id: '/$productId/adjust',
+    path: '/$productId/adjust',
+    getParentRoute: () => LayoutInventoryRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -94,13 +126,18 @@ export interface FileRoutesByFullPath {
   '/demo': typeof DemoRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof LayoutDashboardRoute
+  '/inventory': typeof LayoutInventoryRouteWithChildren
   '/orders': typeof LayoutOrdersRoute
-  '/products/$productId': typeof LayoutProductsProductIdRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/inventory/adjust': typeof LayoutInventoryAdjustRoute
+  '/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
   '/products/add': typeof LayoutProductsAddRoute
   '/suppliers/add': typeof LayoutSuppliersAddRoute
-  '/inventory': typeof LayoutInventoryIndexRoute
+  '/inventory/': typeof LayoutInventoryIndexRoute
   '/products': typeof LayoutProductsIndexRoute
   '/suppliers': typeof LayoutSuppliersIndexRoute
+  '/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
+  '/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -109,12 +146,16 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/dashboard': typeof LayoutDashboardRoute
   '/orders': typeof LayoutOrdersRoute
-  '/products/$productId': typeof LayoutProductsProductIdRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/inventory/adjust': typeof LayoutInventoryAdjustRoute
+  '/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
   '/products/add': typeof LayoutProductsAddRoute
   '/suppliers/add': typeof LayoutSuppliersAddRoute
   '/inventory': typeof LayoutInventoryIndexRoute
   '/products': typeof LayoutProductsIndexRoute
   '/suppliers': typeof LayoutSuppliersIndexRoute
+  '/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
+  '/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -124,13 +165,18 @@ export interface FileRoutesById {
   '/demo': typeof DemoRoute
   '/login': typeof LoginRoute
   '/_layout/dashboard': typeof LayoutDashboardRoute
+  '/_layout/inventory': typeof LayoutInventoryRouteWithChildren
   '/_layout/orders': typeof LayoutOrdersRoute
-  '/_layout/products/$productId': typeof LayoutProductsProductIdRoute
+  '/_layout/settings': typeof LayoutSettingsRoute
+  '/_layout/inventory/adjust': typeof LayoutInventoryAdjustRoute
+  '/_layout/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
   '/_layout/products/add': typeof LayoutProductsAddRoute
   '/_layout/suppliers/add': typeof LayoutSuppliersAddRoute
   '/_layout/inventory/': typeof LayoutInventoryIndexRoute
   '/_layout/products/': typeof LayoutProductsIndexRoute
   '/_layout/suppliers/': typeof LayoutSuppliersIndexRoute
+  '/_layout/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
+  '/_layout/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,13 +186,18 @@ export interface FileRouteTypes {
     | '/demo'
     | '/login'
     | '/dashboard'
+    | '/inventory'
     | '/orders'
+    | '/settings'
+    | '/inventory/adjust'
     | '/products/$productId'
     | '/products/add'
     | '/suppliers/add'
-    | '/inventory'
+    | '/inventory/'
     | '/products'
     | '/suppliers'
+    | '/inventory/$productId/adjust'
+    | '/products/$productId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,12 +206,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/dashboard'
     | '/orders'
+    | '/settings'
+    | '/inventory/adjust'
     | '/products/$productId'
     | '/products/add'
     | '/suppliers/add'
     | '/inventory'
     | '/products'
     | '/suppliers'
+    | '/inventory/$productId/adjust'
+    | '/products/$productId/edit'
   id:
     | '__root__'
     | '/'
@@ -169,13 +224,18 @@ export interface FileRouteTypes {
     | '/demo'
     | '/login'
     | '/_layout/dashboard'
+    | '/_layout/inventory'
     | '/_layout/orders'
+    | '/_layout/settings'
+    | '/_layout/inventory/adjust'
     | '/_layout/products/$productId'
     | '/_layout/products/add'
     | '/_layout/suppliers/add'
     | '/_layout/inventory/'
     | '/_layout/products/'
     | '/_layout/suppliers/'
+    | '/_layout/inventory/$productId/adjust'
+    | '/_layout/products/$productId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,11 +283,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_layout/settings': {
+      id: '/_layout/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof LayoutSettingsRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/orders': {
       id: '/_layout/orders'
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof LayoutOrdersRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/inventory': {
+      id: '/_layout/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof LayoutInventoryRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/dashboard': {
@@ -253,10 +327,10 @@ declare module '@tanstack/react-router' {
     }
     '/_layout/inventory/': {
       id: '/_layout/inventory/'
-      path: '/inventory'
-      fullPath: '/inventory'
+      path: '/'
+      fullPath: '/inventory/'
       preLoaderRoute: typeof LayoutInventoryIndexRouteImport
-      parentRoute: typeof LayoutRoute
+      parentRoute: typeof LayoutInventoryRoute
     }
     '/_layout/suppliers/add': {
       id: '/_layout/suppliers/add'
@@ -279,27 +353,80 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutProductsProductIdRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/inventory/adjust': {
+      id: '/_layout/inventory/adjust'
+      path: '/adjust'
+      fullPath: '/inventory/adjust'
+      preLoaderRoute: typeof LayoutInventoryAdjustRouteImport
+      parentRoute: typeof LayoutInventoryRoute
+    }
+    '/_layout/products/$productId/edit': {
+      id: '/_layout/products/$productId/edit'
+      path: '/edit'
+      fullPath: '/products/$productId/edit'
+      preLoaderRoute: typeof LayoutProductsProductIdEditRouteImport
+      parentRoute: typeof LayoutProductsProductIdRoute
+    }
+    '/_layout/inventory/$productId/adjust': {
+      id: '/_layout/inventory/$productId/adjust'
+      path: '/$productId/adjust'
+      fullPath: '/inventory/$productId/adjust'
+      preLoaderRoute: typeof LayoutInventoryProductIdAdjustRouteImport
+      parentRoute: typeof LayoutInventoryRoute
+    }
   }
 }
 
+interface LayoutInventoryRouteChildren {
+  LayoutInventoryAdjustRoute: typeof LayoutInventoryAdjustRoute
+  LayoutInventoryIndexRoute: typeof LayoutInventoryIndexRoute
+  LayoutInventoryProductIdAdjustRoute: typeof LayoutInventoryProductIdAdjustRoute
+}
+
+const LayoutInventoryRouteChildren: LayoutInventoryRouteChildren = {
+  LayoutInventoryAdjustRoute: LayoutInventoryAdjustRoute,
+  LayoutInventoryIndexRoute: LayoutInventoryIndexRoute,
+  LayoutInventoryProductIdAdjustRoute: LayoutInventoryProductIdAdjustRoute,
+}
+
+const LayoutInventoryRouteWithChildren = LayoutInventoryRoute._addFileChildren(
+  LayoutInventoryRouteChildren,
+)
+
+interface LayoutProductsProductIdRouteChildren {
+  LayoutProductsProductIdEditRoute: typeof LayoutProductsProductIdEditRoute
+}
+
+const LayoutProductsProductIdRouteChildren: LayoutProductsProductIdRouteChildren =
+  {
+    LayoutProductsProductIdEditRoute: LayoutProductsProductIdEditRoute,
+  }
+
+const LayoutProductsProductIdRouteWithChildren =
+  LayoutProductsProductIdRoute._addFileChildren(
+    LayoutProductsProductIdRouteChildren,
+  )
+
 interface LayoutRouteChildren {
   LayoutDashboardRoute: typeof LayoutDashboardRoute
+  LayoutInventoryRoute: typeof LayoutInventoryRouteWithChildren
   LayoutOrdersRoute: typeof LayoutOrdersRoute
-  LayoutProductsProductIdRoute: typeof LayoutProductsProductIdRoute
+  LayoutSettingsRoute: typeof LayoutSettingsRoute
+  LayoutProductsProductIdRoute: typeof LayoutProductsProductIdRouteWithChildren
   LayoutProductsAddRoute: typeof LayoutProductsAddRoute
   LayoutSuppliersAddRoute: typeof LayoutSuppliersAddRoute
-  LayoutInventoryIndexRoute: typeof LayoutInventoryIndexRoute
   LayoutProductsIndexRoute: typeof LayoutProductsIndexRoute
   LayoutSuppliersIndexRoute: typeof LayoutSuppliersIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutDashboardRoute: LayoutDashboardRoute,
+  LayoutInventoryRoute: LayoutInventoryRouteWithChildren,
   LayoutOrdersRoute: LayoutOrdersRoute,
-  LayoutProductsProductIdRoute: LayoutProductsProductIdRoute,
+  LayoutSettingsRoute: LayoutSettingsRoute,
+  LayoutProductsProductIdRoute: LayoutProductsProductIdRouteWithChildren,
   LayoutProductsAddRoute: LayoutProductsAddRoute,
   LayoutSuppliersAddRoute: LayoutSuppliersAddRoute,
-  LayoutInventoryIndexRoute: LayoutInventoryIndexRoute,
   LayoutProductsIndexRoute: LayoutProductsIndexRoute,
   LayoutSuppliersIndexRoute: LayoutSuppliersIndexRoute,
 }

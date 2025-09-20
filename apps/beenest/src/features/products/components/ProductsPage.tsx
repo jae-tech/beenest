@@ -242,7 +242,7 @@ export function ProductsPage() {
             variant="outline"
             size="sm"
             className="p-2 cursor-pointer"
-            onClick={() => navigate({ to: `/products/${row.original.id}` })}
+            onClick={() => navigate({ to: `/products/${row.original.id}/edit` })}
           >
             <Edit className="h-3 w-3 text-gray-600" />
           </Button>

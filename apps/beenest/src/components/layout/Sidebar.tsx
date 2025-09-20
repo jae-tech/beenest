@@ -1,4 +1,4 @@
-import { useAuth } from "@/features/auth";
+import { useAuthStore } from "@/app/store/authStore";
 import { Link } from "@tanstack/react-router";
 import {
   BarChart3,
@@ -18,7 +18,7 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
-  const { logout } = useAuth();
+  const logout = useAuthStore((state) => state.logout);
   const menuItems = [
     { icon: BarChart3, label: "대시보드", path: "/dashboard" },
     { icon: Package, label: "상품관리", path: "/products" },
@@ -74,24 +74,27 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           )}
         </div>
         <nav className="space-y-1 px-2">
-          {[
-            { icon: HelpCircle, label: "도움말" },
-            { icon: Settings, label: "설정" },
-            { icon: Shield, label: "개인정보" },
-          ].map((item, index) => {
-            const IconComponent = item.icon;
-            return (
-              <button
-                key={index}
-                className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap"
-              >
-                <IconComponent className="w-4 h-4" />
-                {!isCollapsed && (
-                  <span className="text-sm font-medium">{item.label}</span>
-                )}
-              </button>
-            );
-          })}
+          <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap">
+            <HelpCircle className="w-4 h-4" />
+            {!isCollapsed && (
+              <span className="text-sm font-medium">도움말</span>
+            )}
+          </button>
+          <Link
+            to="/settings"
+            className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap text-gray-300 hover:bg-gray-800 [&.active]:bg-yellow-400 [&.active]:text-black"
+          >
+            <Settings className="w-4 h-4" />
+            {!isCollapsed && (
+              <span className="text-sm font-medium">설정</span>
+            )}
+          </Link>
+          <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap">
+            <Shield className="w-4 h-4" />
+            {!isCollapsed && (
+              <span className="text-sm font-medium">개인정보</span>
+            )}
+          </button>
         </nav>
       </div>
       <div className="p-4 border-t border-gray-800">

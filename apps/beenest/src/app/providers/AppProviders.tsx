@@ -1,12 +1,14 @@
 import { Toaster } from 'react-hot-toast'
 import { QueryProvider } from './QueryProvider'
 import { RouterProvider } from './RouterProvider'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 
 export function AppProviders() {
   return (
-    <QueryProvider>
-      <RouterProvider />
-      <Toaster
+    <ThemeProvider>
+      <QueryProvider>
+        <RouterProvider />
+        <Toaster
         position="top-right"
         toastOptions={{
           duration: 4000,
@@ -46,6 +48,7 @@ export function AppProviders() {
           },
         }}
       />
-    </QueryProvider>
+      </QueryProvider>
+    </ThemeProvider>
   )
 }

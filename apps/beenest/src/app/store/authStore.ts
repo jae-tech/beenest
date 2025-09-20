@@ -172,6 +172,12 @@ export const useAuthStore = create<AuthState>()(
         },
 
         checkAuth: async () => {
+          // 이미 인증된 상태라면 중복 요청 방지
+          const currentState = useAuthStore.getState();
+          if (currentState.isAuthenticated && currentState.user) {
+            return;
+          }
+
           const token = apiClient.getToken();
           if (!token || !apiClient.isTokenValid()) {
             // 토큰이 없거나 유효하지 않으면 로그아웃 처리
@@ -181,6 +187,15 @@ export const useAuthStore = create<AuthState>()(
             });
             return;
           }
+
+          // 이미 로딩 중이라면 중복 요청 방지
+          if (currentState.isLoading) {
+            return;
+          }
+
+          set((state) => {
+            state.isLoading = true;
+          });
 
           try {
             const response = await api.get<ApiUser>("/auth/me");
@@ -202,6 +217,7 @@ export const useAuthStore = create<AuthState>()(
               set((state) => {
                 state.user = user;
                 state.isAuthenticated = true;
+                state.isLoading = false;
               });
             } else {
               throw new Error("Authentication check failed");
@@ -212,6 +228,7 @@ export const useAuthStore = create<AuthState>()(
             set((state) => {
               state.user = null;
               state.isAuthenticated = false;
+              state.isLoading = false;
             });
           }
         },

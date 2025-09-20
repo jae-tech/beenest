@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { CloudUpload, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useCategories } from "@/hooks/useCategories";
 import { useSuppliers } from "@/hooks/useSuppliers";
-import { useCreateProduct } from "@/hooks/useProducts";
+import { useProduct, useUpdateProduct } from "@/hooks/useProducts";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -33,7 +33,7 @@ import {
   FormPageFooter,
 } from "@/components/forms";
 
-// Zod 스키마 정의 - 백엔드 API 구조에 맞게 수정
+// Zod 스키마 정의 - AddProductPage와 동일
 const productSchema = z.object({
   productName: z
     .string()
@@ -75,25 +75,27 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-export default function AddProductPage() {
+export default function ProductEditPage() {
   const navigate = useNavigate();
+  const { productId } = useParams({ from: "/_layout/products/$productId/edit" });
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   // API 훅들
   const { data: categoriesResponse, isLoading: isCategoriesLoading, error: categoriesError } = useCategories();
   const { data: suppliersResponse, isLoading: isSuppliersLoading, error: suppliersError } = useSuppliers();
-  const createProduct = useCreateProduct();
+  const { data: productResponse, isLoading: isProductLoading, error: productError } = useProduct(productId);
+  const updateProduct = useUpdateProduct();
 
   const categories = categoriesResponse?.data || [];
   const suppliers = suppliersResponse?.data?.data || [];
+  const product = productResponse?.data;
 
   // 데이터 로딩 상태
-  const isInitialLoading = isCategoriesLoading || isSuppliersLoading;
-
+  const isInitialLoading = isCategoriesLoading || isSuppliersLoading || isProductLoading;
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    mode: "onChange", // 실시간 validation
+    mode: "onChange",
     defaultValues: {
       productName: "",
       productCode: "",
@@ -106,6 +108,28 @@ export default function AddProductPage() {
       dimensions: "",
     },
   });
+
+  // 상품 데이터가 로드되면 폼에 초기값 설정
+  useEffect(() => {
+    if (product) {
+      form.reset({
+        productName: product.productName || "",
+        productCode: product.productCode || "",
+        categoryId: product.categoryId?.toString() || "",
+        description: product.description || "",
+        unitPrice: Number(product.unitPrice) || 0,
+        costPrice: Number(product.costPrice) || 0,
+        barcode: product.barcode || "",
+        weight: Number(product.weight) || 0,
+        dimensions: product.dimensions || "",
+      });
+
+      // 기존 이미지 설정
+      if (product.imageUrl) {
+        setUploadedImages([product.imageUrl]);
+      }
+    }
+  }, [product, form]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -122,6 +146,8 @@ export default function AddProductPage() {
   };
 
   const onSubmit = async (data: ProductFormData) => {
+    if (!productId) return;
+
     try {
       // 백엔드 API 스키마에 맞춰 데이터 준비
       const productData = {
@@ -138,14 +164,14 @@ export default function AddProductPage() {
         isActive: true,
       };
 
-      console.log("상품 저장 요청:", productData);
+      console.log("상품 수정 요청:", productData);
 
-      await createProduct.mutateAsync(productData);
+      await updateProduct.mutateAsync({ id: productId, data: productData });
 
       // 성공 시 상품 목록으로 이동
       navigate({ to: "/_layout/products" });
     } catch (error: any) {
-      console.error("상품 저장 실패:", error);
+      console.error("상품 수정 실패:", error);
 
       // 특정 에러에 대한 폼 레벨 에러 설정
       if (error?.error?.message?.includes("이미 존재하는 상품 코드")) {
@@ -161,7 +187,7 @@ export default function AddProductPage() {
       } else {
         form.setError("root", {
           type: "manual",
-          message: error?.error?.message || "상품 등록 중 오류가 발생했습니다."
+          message: error?.error?.message || "상품 수정 중 오류가 발생했습니다."
         });
       }
     }
@@ -178,8 +204,8 @@ export default function AddProductPage() {
         <FormPageHeader
           backPath="/_layout/products"
           backText="상품 관리로 돌아가기"
-          title="새 상품 추가"
-          subtitle="상품 정보를 입력하여 시스템에 등록하세요."
+          title="상품 수정"
+          subtitle="상품 정보를 수정하세요."
         />
         <Card className="p-6">
           <div className="space-y-6">
@@ -198,15 +224,46 @@ export default function AddProductPage() {
     );
   }
 
-  // 에러 화면
+  // 에러 화면 - 상품을 찾을 수 없는 경우
+  if (productError) {
+    return (
+      <FormPageWrapper>
+        <FormPageHeader
+          backPath="/_layout/products"
+          backText="상품 관리로 돌아가기"
+          title="상품 수정"
+          subtitle="상품 정보를 수정하세요."
+        />
+        <Card className="p-6">
+          <div className="text-center py-12">
+            <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-white text-xl font-bold">!</span>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">상품을 찾을 수 없습니다</h3>
+            <p className="text-gray-600 mb-4">
+              요청하신 상품이 존재하지 않거나 삭제되었습니다.
+            </p>
+            <Button
+              onClick={() => navigate({ to: "/_layout/products" })}
+              className="bg-yellow-500 text-white hover:bg-yellow-600"
+            >
+              상품 목록으로 돌아가기
+            </Button>
+          </div>
+        </Card>
+      </FormPageWrapper>
+    );
+  }
+
+  // 기타 데이터 로딩 에러
   if (categoriesError || suppliersError) {
     return (
       <FormPageWrapper>
         <FormPageHeader
           backPath="/_layout/products"
           backText="상품 관리로 돌아가기"
-          title="새 상품 추가"
-          subtitle="상품 정보를 입력하여 시스템에 등록하세요."
+          title="상품 수정"
+          subtitle="상품 정보를 수정하세요."
         />
         <Card className="p-6">
           <div className="text-center py-12">
@@ -229,13 +286,16 @@ export default function AddProductPage() {
     );
   }
 
+  // 폼이 변경되었는지 확인
+  const isFormDirty = form.formState.isDirty;
+
   return (
     <FormPageWrapper>
       <FormPageHeader
         backPath="/_layout/products"
         backText="상품 관리로 돌아가기"
-        title="새 상품 추가"
-        subtitle="상품 정보를 입력하여 시스템에 등록하세요."
+        title="상품 수정"
+        subtitle="상품 정보를 수정하세요."
       />
 
       <Form {...form}>
@@ -302,7 +362,7 @@ export default function AddProductPage() {
                         <FormLabel className="text-sm font-medium text-gray-700">
                           카테고리
                         </FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400">
                               <SelectValue placeholder="카테고리를 선택하세요" />
@@ -443,7 +503,7 @@ export default function AddProductPage() {
                     <div>
                       <h4 className="font-medium text-blue-900 mb-1">재고 관리 안내</h4>
                       <p className="text-sm text-blue-700">
-                        상품 등록 후 별도의 재고 관리 페이지에서 초기 재고를 설정하실 수 있습니다.
+                        재고 수량 변경은 별도의 재고 관리 페이지에서 처리하실 수 있습니다.
                       </p>
                     </div>
                   </div>
@@ -586,24 +646,6 @@ export default function AddProductPage() {
                       ))}
                     </div>
                   )}
-
-                  {/* 샘플 이미지들 */}
-                  {uploadedImages.length === 0 && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[1, 2, 3, 4].map((index) => (
-                        <div
-                          key={index}
-                          className="aspect-square bg-gray-100 rounded-lg overflow-hidden"
-                        >
-                          <img
-                            src={`https://readdy.ai/api/search-image?query=modern%20product%20placeholder%20image%20with%20clean%20white%20background%20minimal%20design%20professional%20ecommerce%20style%20photography&width=200&height=200&seq=placeholder-${index}&orientation=squarish`}
-                            alt={`상품 이미지 샘플 ${index}`}
-                            className="w-full h-full object-cover opacity-50"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -629,9 +671,9 @@ export default function AddProductPage() {
           <FormPageFooter
             onCancel={handleCancel}
             onSubmit={form.handleSubmit(onSubmit)}
-            isSubmitting={createProduct.isPending}
-            isValid={form.formState.isValid}
-            submitText="상품 저장하기"
+            isSubmitting={updateProduct.isPending}
+            isValid={form.formState.isValid && isFormDirty}
+            submitText="상품 수정하기"
           />
         </form>
       </Form>
