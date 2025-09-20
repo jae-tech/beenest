@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { LoginDto, RegisterDto, RefreshTokenDto } from '@/auth/dto';
+import { LoginDto, RegisterDto, RefreshTokenDto, ChangePasswordDto } from '@/auth/dto';
 
 @Injectable()
 export class AuthService {
@@ -295,5 +295,60 @@ export class AuthService {
       },
     });
     return result.count;
+  }
+
+  /**
+   * 비밀번호 변경
+   */
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
+    const { currentPassword, newPassword, confirmPassword } = changePasswordDto;
+
+    // 새 비밀번호와 확인 비밀번호 일치 확인
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException('새 비밀번호와 확인 비밀번호가 일치하지 않습니다');
+    }
+
+    // 현재 비밀번호와 새 비밀번호가 같은지 확인
+    if (currentPassword === newPassword) {
+      throw new BadRequestException('새 비밀번호는 현재 비밀번호와 달라야 합니다');
+    }
+
+    // 사용자 조회
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: BigInt(userId),
+        isActive: true,
+        deletedAt: null,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('사용자를 찾을 수 없습니다');
+    }
+
+    // 현재 비밀번호 확인
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isCurrentPasswordValid) {
+      throw new BadRequestException('현재 비밀번호가 올바르지 않습니다');
+    }
+
+    // 새 비밀번호 해싱
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+    // 비밀번호 업데이트
+    await this.prisma.user.update({
+      where: { id: BigInt(userId) },
+      data: {
+        passwordHash: newPasswordHash,
+        updatedAt: new Date(),
+      },
+    });
+
+    // 보안상 모든 세션 무효화 (선택적)
+    await this.revokeAllUserTokens(userId);
+
+    return {
+      message: '비밀번호가 성공적으로 변경되었습니다',
+    };
   }
 }

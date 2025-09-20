@@ -5,10 +5,11 @@ import {
   Get,
   UseGuards,
   Request,
+  Patch,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from '@/auth/auth.service';
-import { LoginDto, RegisterDto, RefreshTokenDto } from '@/auth/dto';
+import { LoginDto, RegisterDto, RefreshTokenDto, ChangePasswordDto } from '@/auth/dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('인증')
@@ -65,5 +66,16 @@ export class AuthController {
   @ApiResponse({ status: 401, description: '인증되지 않은 사용자' })
   async getMe(@Request() req) {
     return this.authService.findUserById(req.user.id);
+  }
+
+  @Patch('change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '비밀번호 변경' })
+  @ApiResponse({ status: 200, description: '비밀번호 변경 성공' })
+  @ApiResponse({ status: 400, description: '잘못된 요청' })
+  @ApiResponse({ status: 401, description: '인증되지 않은 사용자' })
+  async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
+    return this.authService.changePassword(req.user.id, changePasswordDto);
   }
 }

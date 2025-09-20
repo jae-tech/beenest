@@ -372,6 +372,91 @@ export class InventoryService {
     };
   }
 
+  async getAllMovements(userId: string, page = 1, limit = 20, productId?: string) {
+    const skip = (page - 1) * limit;
+
+    // 필터 조건 구성
+    const whereClause: any = {
+      product: {
+        createdBy: BigInt(userId),
+        deletedAt: null,
+      },
+    };
+
+    // 특정 상품 필터링
+    if (productId) {
+      whereClause.productId = BigInt(productId);
+    }
+
+    const [movements, total] = await Promise.all([
+      this.prisma.stockMovement.findMany({
+        where: whereClause,
+        skip,
+        take: limit,
+        include: {
+          creator: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          product: {
+            select: {
+              id: true,
+              productCode: true,
+              productName: true,
+              unitPrice: true,
+              category: {
+                select: {
+                  id: true,
+                  categoryName: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      this.prisma.stockMovement.count({
+        where: whereClause,
+      }),
+    ]);
+
+    return {
+      data: movements.map(movement => ({
+        ...movement,
+        id: movement.id.toString(),
+        productId: movement.productId.toString(),
+        referenceId: movement.referenceId?.toString(),
+        createdBy: movement.createdBy.toString(),
+        creator: {
+          ...movement.creator,
+          id: movement.creator.id.toString(),
+        },
+        product: {
+          ...movement.product,
+          id: movement.product.id.toString(),
+          unitPrice: Number(movement.product.unitPrice),
+          category: movement.product.category ? {
+            ...movement.product.category,
+            id: movement.product.category.id.toString(),
+          } : null,
+        },
+        unitCost: movement.unitCost ? Number(movement.unitCost) : undefined,
+        referenceType: movement.referenceType || undefined,
+        notes: movement.notes || undefined,
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
   async getInventoryStats(userId: string) {
     const [totalProducts, lowStockCount, outOfStockCount, totalInventoryValue] = await Promise.all([
       // 전체 상품 수

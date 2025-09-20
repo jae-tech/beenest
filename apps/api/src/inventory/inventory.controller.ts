@@ -17,7 +17,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { InventoryService } from '@/inventory/inventory.service';
-import { UpdateInventoryDto } from '@/inventory/dto';
+import { UpdateInventoryDto, GetMovementsDto, MovementsResponseDto } from '@/inventory/dto';
 import { AdjustStockDto } from '@/products/dto';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
@@ -86,6 +86,30 @@ export class InventoryController {
       req.user.id,
       Number(page),
       Number(limit),
+    );
+  }
+
+  @Get('movements')
+  @ApiOperation({ summary: '전체 재고 이동 이력 조회' })
+  @ApiQuery({ name: 'page', required: false, description: '페이지 번호 (기본값: 1)' })
+  @ApiQuery({ name: 'limit', required: false, description: '페이지당 항목 수 (기본값: 20)' })
+  @ApiQuery({ name: 'productId', required: false, description: '특정 상품 필터링' })
+  @ApiResponse({
+    status: 200,
+    description: '전체 재고 이동 이력 조회 성공',
+    type: MovementsResponseDto
+  })
+  async getAllMovements(
+    @Request() req,
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Query('productId') productId?: string,
+  ): Promise<MovementsResponseDto> {
+    return this.inventoryService.getAllMovements(
+      req.user.id,
+      Number(page),
+      Number(limit),
+      productId,
     );
   }
 
