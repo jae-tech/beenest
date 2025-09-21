@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateInventoryDto } from '@/inventory/dto';
 import { AdjustStockDto } from '@/products/dto';
+import { mapStockMovement } from '@/common/type-mappers';
 
 @Injectable()
 export class InventoryService {
@@ -425,7 +426,7 @@ export class InventoryService {
     ]);
 
     return {
-      data: movements.map(movement => ({
+      data: movements.map(movement => mapStockMovement({
         ...movement,
         id: movement.id.toString(),
         productId: movement.productId.toString(),

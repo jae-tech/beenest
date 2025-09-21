@@ -1,21 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
-
-enum MovementType {
-  IN = 'IN',
-  OUT = 'OUT',
-  ADJUST = 'ADJUST',
-  TRANSFER = 'TRANSFER',
-}
-
-enum ReferenceType {
-  ORDER = 'ORDER',
-  PURCHASE = 'PURCHASE',
-  ADJUSTMENT = 'ADJUSTMENT',
-  RETURN = 'RETURN',
-  INITIAL = 'INITIAL',
-}
+import { MovementType, ReferenceType } from '@beenest/types';
 
 export class AdjustStockDto {
   @ApiProperty({

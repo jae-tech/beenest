@@ -1,9 +1,8 @@
 import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';
-import { config } from 'dotenv';
 
-// Load test environment variables
-config({ path: resolve(__dirname, '../.env.test') });
+// Set test environment variables directly
+process.env.NODE_ENV = 'test';
 
 export default defineConfig({
   test: {

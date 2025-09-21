@@ -38,8 +38,8 @@ export function ProductDetailPage() {
   const deleteProduct = useDeleteProduct();
 
   // API 응답 구조에 따른 데이터 접근
-  const product = productResponse?.data?.product || productResponse?.data;
-  const inventory = inventoryResponse?.data?.inventory || inventoryResponse?.data;
+  const product = productResponse;
+  const inventory = inventoryResponse?.inventory || inventoryResponse;
 
   // 로딩 상태 및 에러 처리
   const isLoading = isProductLoading || isInventoryLoading;
@@ -216,7 +216,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   제품명
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-gray-900 font-medium">{product?.productName || 'N/A'}</p>
                 </div>
               </div>
@@ -225,7 +225,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   SKU
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-gray-900 font-mono">{product?.productCode || 'N/A'}</p>
                 </div>
               </div>
@@ -234,7 +234,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   카테고리
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-gray-900">{product?.category?.categoryName || 'N/A'}</p>
                 </div>
               </div>
@@ -243,7 +243,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   공급업체
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-gray-900">{product?.preferredSupplier?.companyName || 'N/A'}</p>
                 </div>
               </div>
@@ -254,7 +254,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   제품 설명
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-gray-900 whitespace-pre-wrap">{product.description}</p>
                 </div>
               </div>
@@ -293,7 +293,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   현재 재고 수량
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-lg font-semibold text-gray-900">
                     {(product?.inventory?.currentStock || inventory?.currentStock || 0).toLocaleString()}개
                   </p>
@@ -305,7 +305,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   단가
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-lg font-semibold text-gray-900">
                     ₩{(product?.unitPrice || 0).toLocaleString()}
                   </p>
@@ -316,7 +316,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   최소 재고 기준
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-lg font-semibold text-gray-900">
                     {(product?.inventory?.minimumStock || inventory?.minimumStock || 0).toLocaleString()}개
                   </p>
@@ -332,7 +332,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   창고 위치
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-gray-900">{product?.inventory?.warehouseLocation || inventory?.warehouseLocation || 'N/A'}</p>
                 </div>
               </div>
@@ -340,7 +340,7 @@ export function ProductDetailPage() {
                 <label className="text-sm font-medium text-gray-700 block mb-2">
                   총 재고 가치
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <p className="text-lg font-semibold text-gray-900">
                     ₩{getTotalValue().toLocaleString()}
                   </p>
@@ -376,7 +376,7 @@ export function ProductDetailPage() {
                   ₩{getTotalValue().toLocaleString()}
                 </span>
               </div>
-              <div className="pt-4 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-100">
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                     className={`h-2 rounded-full ${

@@ -1,4 +1,4 @@
-import { FormPageWrapperProps } from "@/types/forms";
+import type { FormPageWrapperProps } from "@/types/forms";
 import { cn } from "@/lib/utils";
 
 export function FormPageWrapper({

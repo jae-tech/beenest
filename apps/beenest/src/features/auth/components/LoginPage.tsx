@@ -77,7 +77,7 @@ export const LoginPage = ({
                 {...register('email')}
                 type="email"
                 placeholder="이메일을 입력하세요"
-                className={`h-12 w-full px-3 py-2 border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400 text-sm ${
+                className={`h-12 w-full px-3 py-2 border border-gray-100 rounded-md focus:border-yellow-400 focus:ring-yellow-400 text-sm ${
                   errors.email ? 'border-red-300' : ''
                 }`}
               />
@@ -95,7 +95,7 @@ export const LoginPage = ({
                   {...register('password')}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="비밀번호를 입력하세요"
-                  className={`h-12 w-full px-3 py-2 border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400 text-sm ${
+                  className={`h-12 w-full px-3 py-2 border border-gray-100 rounded-md focus:border-yellow-400 focus:ring-yellow-400 text-sm ${
                     errors.password ? 'border-red-300' : ''
                   }`}
                 />

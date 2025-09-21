@@ -5,10 +5,6 @@ import {
   AlertTriangle,
   TrendingDown,
   CheckCircle,
-  Plus,
-  Filter,
-  Download,
-  RefreshCw,
   History
 } from "lucide-react";
 import { PageLayout } from "@/components/layout";
@@ -22,35 +18,29 @@ import {
   useLowStockAlerts,
   useAllStockMovements
 } from "@/hooks/useInventory";
-import type { LowStockAlert, MovementType, StockMovement } from "@/types/api";
+import type { LowStockAlert, StockMovement } from "@beenest/types";
+import { MovementType, AlertType } from "@beenest/types";
 import type { StatItem } from "@/types/design-system";
 import { type ColumnDef } from "@tanstack/react-table";
 
 const movementTypeLabels: Record<MovementType, string> = {
-  'IN': '입고',
-  'OUT': '출고',
-  'ADJUST': '조정',
-  'TRANSFER': '이동'
+  [MovementType.IN]: '입고',
+  [MovementType.OUT]: '출고',
+  [MovementType.ADJUST]: '조정',
+  [MovementType.TRANSFER]: '이동'
 };
 
 const movementTypeColors: Record<MovementType, string> = {
-  'IN': 'bg-green-100 text-green-800',
-  'OUT': 'bg-red-100 text-red-800',
-  'ADJUST': 'bg-blue-100 text-blue-800',
-  'TRANSFER': 'bg-purple-100 text-purple-800'
+  [MovementType.IN]: 'bg-green-100 text-green-800',
+  [MovementType.OUT]: 'bg-red-100 text-red-800',
+  [MovementType.ADJUST]: 'bg-blue-100 text-blue-800',
+  [MovementType.TRANSFER]: 'bg-purple-100 text-purple-800'
 };
 
 export function InventoryPage() {
   const navigate = useNavigate();
   const [view, setView] = useState<'alerts' | 'movements'>('alerts');
 
-  // 임시: 테스트를 위한 JWT 토큰 설정
-  if (!localStorage.getItem("auth_token")) {
-    localStorage.setItem(
-      "auth_token",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NTgyNDczMjcsImV4cCI6MTc1ODI0ODIyN30.1ohRu9WzKKLFB882jEooXEcGiUXCuyHFwKIE8rL-8FA"
-    );
-  }
 
   const {
     data: statsResponse,
@@ -69,9 +59,9 @@ export function InventoryPage() {
     isLoading: isMovementsLoading
   } = useAllStockMovements({ page: 1, limit: 20 });
 
-  const stats = statsResponse?.data;
-  const alerts = alertsResponse?.data || [];
-  const movements = movementsResponse?.data?.data || [];
+  const stats = statsResponse;
+  const alerts = alertsResponse || [];
+  const movements = movementsResponse?.data || [];
 
   // 통계 데이터
   const statItems: StatItem[] = [
@@ -150,14 +140,14 @@ export function InventoryPage() {
       cell: ({ row }) => {
         const alert = row.original.inventory.alertType;
         const colors = {
-          'OUT_OF_STOCK': 'bg-red-100 text-red-800',
-          'REORDER_POINT': 'bg-orange-100 text-orange-800',
-          'LOW_STOCK': 'bg-yellow-100 text-yellow-800'
+          [AlertType.OUT_OF_STOCK]: 'bg-red-100 text-red-800',
+          [AlertType.REORDER_POINT]: 'bg-orange-100 text-orange-800',
+          [AlertType.LOW_STOCK]: 'bg-yellow-100 text-yellow-800'
         };
         const labels = {
-          'OUT_OF_STOCK': '품절',
-          'REORDER_POINT': '재주문 필요',
-          'LOW_STOCK': '재고 부족'
+          [AlertType.OUT_OF_STOCK]: '품절',
+          [AlertType.REORDER_POINT]: '재주문 필요',
+          [AlertType.LOW_STOCK]: '재고 부족'
         };
 
         return (
@@ -287,14 +277,11 @@ export function InventoryPage() {
       title="재고 관리"
       actionText="재고 조정"
       stats={statItems}
-      showExport={true}
       onAction={() => navigate({ to: "/inventory/adjust" })}
-      onFilter={() => console.log("필터")}
-      onExport={() => console.log("내보내기")}
     >
       {/* 탭 네비게이션 */}
       <div className="mb-6">
-        <div className="border-b border-gray-200">
+        <div className="border-b border-gray-100">
           <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setView('alerts')}
@@ -307,7 +294,7 @@ export function InventoryPage() {
               <div className="flex items-center space-x-2">
                 <AlertTriangle className="h-4 w-4" />
                 <span>저재고 알림</span>
-                {alerts.length > 0 && (
+                {alerts && alerts.length > 0 && (
                   <Badge variant="destructive" className="ml-2">
                     {alerts.length}
                   </Badge>
@@ -337,16 +324,6 @@ export function InventoryPage() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">저재고 알림</h3>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  새로고침
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Filter className="h-4 w-4 mr-2" />
-                  필터
-                </Button>
-              </div>
             </div>
 
             {isAlertsLoading ? (
@@ -362,9 +339,9 @@ export function InventoryPage() {
                 <p className="text-gray-600">현재 재고 부족이나 품절 상품이 없습니다.</p>
               </div>
             ) : (
-              <DataTable
+              <DataTable<LowStockAlert, unknown>
                 columns={alertsColumns}
-                data={alerts as any}
+                data={alerts}
                 searchKey="product.productName"
                 searchPlaceholder="상품명으로 검색..."
               />
@@ -376,20 +353,6 @@ export function InventoryPage() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">최근 재고 이동 이력</h3>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  새로고침
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Filter className="h-4 w-4 mr-2" />
-                  필터
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  내보내기
-                </Button>
-              </div>
             </div>
 
             {isMovementsLoading ? (
@@ -401,9 +364,9 @@ export function InventoryPage() {
                 <p className="text-gray-600">재고 조정을 수행하면 이력이 표시됩니다.</p>
               </div>
             ) : (
-              <DataTable
+              <DataTable<StockMovement, unknown>
                 columns={movementsColumns}
-                data={movements as any}
+                data={movements}
                 searchKey="product.productName"
                 searchPlaceholder="상품명으로 검색..."
               />

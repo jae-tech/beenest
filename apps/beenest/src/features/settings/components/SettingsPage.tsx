@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
 import { authApi, type ChangePasswordData } from "@/lib/auth-api";
@@ -7,7 +6,6 @@ import { successToast, errorToast } from "@/lib/toast";
 import {
   Camera,
   HardDrive,
-  LogOut,
   User,
   CheckCircle,
   AlertTriangle,
@@ -33,7 +31,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function SettingsPage() {
-  const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState("account");
@@ -214,56 +211,45 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">설정</h1>
-              <p className="text-gray-600 dark:text-gray-300 mt-2">계정 및 시스템 설정을 관리하세요</p>
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => navigate({ to: "/" })}
-              className="cursor-pointer whitespace-nowrap"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              대시보드로 돌아가기
-            </Button>
-          </div>
+    <div className="p-6 space-y-6 bg-gray-50">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">설정</h1>
+          <p className="text-gray-600 mt-2">계정 및 시스템 설정을 관리하세요</p>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <Card className="p-0 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Tab Navigation */}
-            <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6">
-              <TabsList className="grid w-full grid-cols-2 bg-transparent h-16">
-                <TabsTrigger
-                  value="account"
-                  className="flex items-center space-x-2 data-[state=active]:border-b-2 data-[state=active]:border-yellow-400 data-[state=active]:bg-transparent rounded-none h-full"
-                >
-                  <User className="h-4 w-4" />
-                  <span>계정 설정</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="system"
-                  className="flex items-center space-x-2 data-[state=active]:border-b-2 data-[state=active]:border-yellow-400 data-[state=active]:bg-transparent rounded-none h-full"
-                >
-                  <HardDrive className="h-4 w-4" />
-                  <span>시스템 설정</span>
-                </TabsTrigger>
-              </TabsList>
-            </div>
+      {/* Main Content */}
+      <Card className="p-0 overflow-hidden">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          {/* Tab Navigation */}
+          <div className="border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 px-6">
+            <TabsList className="grid w-full grid-cols-2 bg-transparent h-16">
+              <TabsTrigger
+                value="account"
+                className="flex items-center space-x-2 data-[state=active]:border-b-2 data-[state=active]:border-yellow-400 data-[state=active]:bg-transparent rounded-none h-full"
+              >
+                <User className="h-4 w-4" />
+                <span>계정 설정</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="system"
+                className="flex items-center space-x-2 data-[state=active]:border-b-2 data-[state=active]:border-yellow-400 data-[state=active]:bg-transparent rounded-none h-full"
+              >
+                <HardDrive className="h-4 w-4" />
+                <span>시스템 설정</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-            {/* Tab Contents */}
-            <div className="p-6">
+          {/* Tab Contents */}
+          <div className="p-6">
               {/* Account Settings */}
               <TabsContent value="account" className="mt-0 space-y-8">
                 <div className="max-w-4xl space-y-6">
                   {/* Profile Section */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="bg-white rounded-lg border border-gray-100 p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-6">프로필 정보</h3>
                     <div className="flex flex-col items-center mb-8">
                       <Avatar className="w-24 h-24 mb-4">
@@ -287,7 +273,7 @@ export function SettingsPage() {
                           value={profileData.name}
                           onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                           placeholder="이름을 입력하세요"
-                          className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         />
                       </div>
                       <div className="space-y-2">
@@ -297,7 +283,7 @@ export function SettingsPage() {
                           value={profileData.email}
                           onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                           placeholder="이메일을 입력하세요"
-                          className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         />
                       </div>
                       <div className="space-y-2">
@@ -306,7 +292,7 @@ export function SettingsPage() {
                           value={profileData.phone}
                           onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                           placeholder="전화번호를 입력하세요"
-                          className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         />
                       </div>
                       <div className="space-y-2">
@@ -315,7 +301,7 @@ export function SettingsPage() {
                           value={profileData.department}
                           onChange={(e) => setProfileData({ ...profileData, department: e.target.value })}
                           placeholder="부서를 입력하세요"
-                          className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         />
                       </div>
                     </div>
@@ -342,7 +328,7 @@ export function SettingsPage() {
                   </div>
 
                   {/* Password Change Section */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="bg-white rounded-lg border border-gray-100 p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-6">비밀번호 변경</h3>
                     <div className="space-y-4 max-w-md">
                       {passwordError && (
@@ -367,7 +353,7 @@ export function SettingsPage() {
                           }}
                           disabled={passwordLoading}
                           placeholder="현재 비밀번호를 입력하세요"
-                          className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         />
                       </div>
                       <div className="space-y-2">
@@ -382,7 +368,7 @@ export function SettingsPage() {
                           }}
                           disabled={passwordLoading}
                           placeholder="새 비밀번호를 입력하세요 (최소 8자)"
-                          className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         />
                       </div>
                       <div className="space-y-2">
@@ -397,7 +383,7 @@ export function SettingsPage() {
                           }}
                           disabled={passwordLoading}
                           placeholder="새 비밀번호를 다시 입력하세요"
-                          className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         />
                       </div>
                       <Button
@@ -416,7 +402,7 @@ export function SettingsPage() {
               <TabsContent value="system" className="mt-0 space-y-8">
                 <div className="max-w-6xl space-y-6">
                   {/* E-commerce API Keys Management */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="bg-white rounded-lg border border-gray-100 p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-6">전자상거래 플랫폼 API 키 관리</h3>
                     <p className="text-gray-600 mb-8">판매 채널별 API 키를 설정하여 재고 및 주문 정보를 자동으로 동기화하세요.</p>
 
@@ -427,7 +413,7 @@ export function SettingsPage() {
                         const isTesting = testingConnection[platform];
 
                         return (
-                          <div key={platform} className="border border-gray-200 rounded-lg p-6">
+                          <div key={platform} className="border border-gray-100 rounded-lg p-6">
                             {/* Platform Header */}
                             <div className="flex items-center justify-between mb-6">
                               <div className="flex items-center space-x-3">
@@ -463,7 +449,7 @@ export function SettingsPage() {
                                       value={platformData.clientId}
                                       onChange={(e) => updateApiKey(platform, 'clientId', e.target.value)}
                                       placeholder="클라이언트 ID를 입력하세요"
-                                      className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                                      className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -474,7 +460,7 @@ export function SettingsPage() {
                                         value={platformData.clientSecret}
                                         onChange={(e) => updateApiKey(platform, 'clientSecret', e.target.value)}
                                         placeholder="클라이언트 Secret을 입력하세요"
-                                        className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 pr-10"
+                                        className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 pr-10"
                                       />
                                       <Button
                                         type="button"
@@ -502,7 +488,7 @@ export function SettingsPage() {
                                       value={platformData.accessKey}
                                       onChange={(e) => updateApiKey(platform, 'accessKey', e.target.value)}
                                       placeholder="Access Key를 입력하세요"
-                                      className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                                      className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -513,7 +499,7 @@ export function SettingsPage() {
                                         value={platformData.secretKey}
                                         onChange={(e) => updateApiKey(platform, 'secretKey', e.target.value)}
                                         placeholder="Secret Key를 입력하세요"
-                                        className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 pr-10"
+                                        className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 pr-10"
                                       />
                                       <Button
                                         type="button"
@@ -541,7 +527,7 @@ export function SettingsPage() {
                                       value={platformData.apiKey}
                                       onChange={(e) => updateApiKey(platform, 'apiKey', e.target.value)}
                                       placeholder="API Key를 입력하세요"
-                                      className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                                      className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -552,7 +538,7 @@ export function SettingsPage() {
                                         value={platformData.apiSecret}
                                         onChange={(e) => updateApiKey(platform, 'apiSecret', e.target.value)}
                                         placeholder="API Secret을 입력하세요"
-                                        className="border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 pr-10"
+                                        className="border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 pr-10"
                                       />
                                       <Button
                                         type="button"
@@ -613,7 +599,7 @@ export function SettingsPage() {
                   </div>
 
                   {/* Theme Settings */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">테마 설정</h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
@@ -638,7 +624,6 @@ export function SettingsPage() {
             </div>
           </Tabs>
         </Card>
-      </div>
     </div>
   );
 }

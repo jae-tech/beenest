@@ -1,9 +1,12 @@
+import { PageLayout } from "@/components/layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { PageLayout } from "@/components/layout";
-import { type ColumnDef } from "@tanstack/react-table";
+import { useSuppliers, useSupplierStats } from "@/hooks/useSuppliers";
+import { type StatItem } from "@/types/design-system";
+import { type Supplier } from "@beenest/types";
 import { useNavigate } from "@tanstack/react-router";
+import { type ColumnDef } from "@tanstack/react-table";
 import {
   Building,
   CheckCircle,
@@ -14,34 +17,25 @@ import {
   Star,
   Truck,
 } from "lucide-react";
-import { useSuppliers, useSupplierStats } from "../hooks/useSuppliers";
-import { type Supplier } from "@/types/api";
-import { type StatItem } from "@/types/design-system";
 import { useMemo, useState } from "react";
 
 export function SuppliersPage() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [search] = useState("");
+  const [page] = useState(1);
 
-  const {
-    data: suppliersResponse,
-    isLoading,
-    error
-  } = useSuppliers({
+  const { data: suppliersResponse } = useSuppliers({
     page,
     limit: 10,
-    search: search || undefined
+    search: search || undefined,
   });
 
-  const {
-    data: statsResponse,
-    isLoading: isStatsLoading
-  } = useSupplierStats();
+  const { data: statsResponse } = useSupplierStats();
+  console.log(statsResponse);
+  console.log(suppliersResponse);
 
-  const suppliers = suppliersResponse?.success ? suppliersResponse.data?.data || [] : [];
-  const pagination = suppliersResponse?.success ? suppliersResponse.data?.pagination : null;
-  const statsData = statsResponse?.success ? statsResponse.data : null;
+  const suppliers = suppliersResponse?.data || [];
+  const statsData = statsResponse;
 
   const stats: StatItem[] = useMemo(() => {
     if (!statsData) {
@@ -61,16 +55,16 @@ export function SuppliersPage() {
           color: "green",
         },
         {
-          title: "대기 중인 주문",
+          title: "비활성 공급업체",
           value: "0",
-          description: "대기 중인 주문",
+          description: "비활성 공급업체",
           icon: Clock,
           color: "yellow",
         },
         {
-          title: "평균 평점",
-          value: "0.0",
-          description: "평균 평점",
+          title: "상위 공급업체",
+          value: "0",
+          description: "상위 공급업체",
           icon: Star,
           color: "purple",
         },
@@ -93,16 +87,16 @@ export function SuppliersPage() {
         color: "green",
       },
       {
-        title: "대기 중인 주문",
-        value: statsData.pendingOrders?.toString() || "0",
-        description: "대기 중인 주문",
+        title: "비활성 공급업체",
+        value: statsData.inactiveSuppliers?.toString() || "0",
+        description: "비활성 공급업체",
         icon: Clock,
         color: "yellow",
       },
       {
-        title: "평균 평점",
-        value: statsData.avgRating?.toFixed(1) || "0.0",
-        description: "평균 평점",
+        title: "상위 공급업체",
+        value: statsData.topSuppliers?.length?.toString() || "0",
+        description: "상위 공급업체",
         icon: Star,
         color: "purple",
       },
@@ -122,9 +116,7 @@ export function SuppliersPage() {
             <p className="font-medium text-gray-900 text-sm">
               {row.getValue("companyName")}
             </p>
-            <p className="text-xs text-gray-500">
-              {row.original.supplierCode}
-            </p>
+            <p className="text-xs text-gray-500">{row.original.supplierCode}</p>
           </div>
         </div>
       ),
@@ -133,21 +125,27 @@ export function SuppliersPage() {
       accessorKey: "contactPerson",
       header: "담당자",
       cell: ({ row }) => (
-        <div className="text-sm text-gray-900">{row.getValue("contactPerson") || "-"}</div>
+        <div className="text-sm text-gray-900">
+          {row.getValue("contactPerson") || "-"}
+        </div>
       ),
     },
     {
       accessorKey: "email",
       header: "이메일",
       cell: ({ row }) => (
-        <div className="text-sm text-gray-600">{row.getValue("email") || "-"}</div>
+        <div className="text-sm text-gray-600">
+          {row.getValue("email") || "-"}
+        </div>
       ),
     },
     {
       accessorKey: "phone",
       header: "전화번호",
       cell: ({ row }) => (
-        <div className="text-sm text-gray-600">{row.getValue("phone") || "-"}</div>
+        <div className="text-sm text-gray-600">
+          {row.getValue("phone") || "-"}
+        </div>
       ),
     },
     {
@@ -163,10 +161,10 @@ export function SuppliersPage() {
       ),
     },
     {
-      accessorKey: "status",
+      accessorKey: "supplierStatus",
       header: "상태",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string;
+        const status = row.getValue("supplierStatus") as string;
         return (
           <Badge
             className={`${
@@ -195,7 +193,9 @@ export function SuppliersPage() {
             variant="outline"
             size="sm"
             className="p-2 cursor-pointer"
-            onClick={() => console.log("공급업체 수정:", row.original.id)}
+            onClick={() =>
+              navigate({ to: `/suppliers/${row.original.id}/edit` })
+            }
           >
             <Edit className="w-3 h-3 text-gray-600" />
           </Button>
@@ -203,7 +203,7 @@ export function SuppliersPage() {
             variant="outline"
             size="sm"
             className="p-2 cursor-pointer"
-            onClick={() => console.log("공급업체 보기:", row.original.id)}
+            onClick={() => navigate({ to: `/suppliers/${row.original.id}` })}
           >
             <Eye className="w-3 h-3 text-gray-600" />
           </Button>
@@ -211,7 +211,9 @@ export function SuppliersPage() {
             variant="outline"
             size="sm"
             className="p-2 cursor-pointer"
-            onClick={() => console.log("공급업체 연락:", row.original.id)}
+            onClick={() =>
+              window.open(`mailto:${row.original.email}`, "_blank")
+            }
           >
             <Mail className="w-3 h-3 text-gray-600" />
           </Button>
@@ -225,16 +227,14 @@ export function SuppliersPage() {
       title="공급업체 관리"
       actionText="신규 추가"
       stats={stats}
-      onAction={() => navigate({ to: '/suppliers/add' })}
-      onFilter={() => console.log("필터")}
+      onAction={() => navigate({ to: "/suppliers/add" })}
+      onFilter={() => {}}
     >
       <DataTable
         columns={columns}
         data={suppliers}
         searchKey="companyName"
         searchPlaceholder="공사명 또는 코드 검색..."
-        isLoading={isLoading}
-        error={error ? "공급업체 목록을 불러오는데 실패했습니다." : undefined}
       />
     </PageLayout>
   );

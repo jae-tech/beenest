@@ -25,38 +25,21 @@ import { useState } from "react";
 
 export function ProductsPage() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useState({});
+  const [searchParams] = useState({});
 
-  // 임시: 테스트를 위한 JWT 토큰 설정
-  if (!localStorage.getItem("auth_token")) {
-    localStorage.setItem(
-      "auth_token",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NTgyNDczMjcsImV4cCI6MTc1ODI0ODIyN30.1ohRu9WzKKLFB882jEooXEcGiUXCuyHFwKIE8rL-8FA"
-    );
-  }
 
   const {
     data: productsResponse,
     isLoading: isProductsLoading,
     error: productsError,
   } = useProducts(searchParams);
-  const { data: lowStockResponse, isLoading: isLowStockLoading } =
+  const { data: lowStockResponse } =
     useLowStockProducts();
   const deleteProduct = useDeleteProduct();
 
   const products = productsResponse?.data || [];
-  const totalProducts = productsResponse?.data?.pagination?.total || 0;
-  const lowStockProducts = lowStockResponse?.data || [];
+  const totalProducts = productsResponse?.pagination?.total || 0;
 
-  // 디버깅을 위한 콘솔 로그
-  console.log("=== ProductsPage 디버깅 ===");
-  console.log("API Response:", productsResponse);
-  console.log("Products Array:", products);
-  console.log("Total Products:", totalProducts);
-  console.log("Low Stock Products:", lowStockProducts);
-  console.log("Loading:", isProductsLoading);
-  console.log("Error:", productsError);
-  console.log("Search Params:", searchParams);
 
   // 실제 API 데이터 구조에 맞게 통계 계산
   const stockProducts = products.filter((p) => {
@@ -112,7 +95,7 @@ export function ProductsPage() {
     if (confirm("정말로 이 상품을 삭제하시겠습니까?")) {
       try {
         await deleteProduct.mutateAsync(productId);
-      } catch (error) {
+      } catch {
         // 에러는 hook에서 처리됨
       }
     }
@@ -275,8 +258,8 @@ export function ProductsPage() {
       stats={stats}
       showExport={true}
       onAction={() => navigate({ to: "/products/add" })}
-      onFilter={() => console.log("필터")}
-      onExport={() => console.log("내보내기")}
+      onFilter={() => {}}
+      onExport={() => {}}
     >
       {isProductsLoading ? (
         <TableSkeleton rows={10} cols={7} />

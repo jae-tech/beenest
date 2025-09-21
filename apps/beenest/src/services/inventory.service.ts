@@ -1,38 +1,34 @@
 import { api } from '@/lib/api-client'
+import type { Inventory, StockMovement, LowStockAlert, InventoryByProduct, InventoryStats } from '@beenest/types'
 import type {
-  InventoryStats,
-  StockMovement,
   AdjustStockRequest,
   UpdateInventoryRequest,
-  LowStockAlert,
-  InventoryByProduct,
-  PaginatedResponse,
-  ApiResponse
+  PaginatedResponse
 } from '@/types/api'
 
 export const inventoryService = {
   // 재고 조정
-  async adjustStock(productId: string, data: AdjustStockRequest): Promise<ApiResponse<any>> {
+  async adjustStock(productId: string, data: AdjustStockRequest): Promise<any> {
     return api.post<any>(`/inventory/products/${productId}/adjust`, data)
   },
 
   // 재고 설정 업데이트
-  async updateInventorySettings(productId: string, data: UpdateInventoryRequest): Promise<ApiResponse<any>> {
+  async updateInventorySettings(productId: string, data: UpdateInventoryRequest): Promise<any> {
     return api.patch<any>(`/inventory/products/${productId}/settings`, data)
   },
 
   // 상품별 재고 현황 조회
-  async getInventoryByProduct(productId: string): Promise<ApiResponse<InventoryByProduct>> {
+  async getInventoryByProduct(productId: string): Promise<InventoryByProduct> {
     return api.get<InventoryByProduct>(`/inventory/products/${productId}`)
   },
 
   // 재고 부족 알림 조회
-  async getLowStockAlerts(): Promise<ApiResponse<LowStockAlert[]>> {
+  async getLowStockAlerts(): Promise<LowStockAlert[]> {
     return api.get<LowStockAlert[]>('/inventory/alerts/low-stock')
   },
 
   // 상품별 재고 이동 이력 조회
-  async getStockMovements(productId: string, page = 1, limit = 20): Promise<ApiResponse<{
+  async getStockMovements(productId: string, page = 1, limit = 20): Promise<{
     data: StockMovement[];
     pagination: {
       page: number;
@@ -40,7 +36,7 @@ export const inventoryService = {
       total: number;
       totalPages: number;
     };
-  }>> {
+  }> {
     return api.get<{
       data: StockMovement[];
       pagination: {
@@ -56,7 +52,7 @@ export const inventoryService = {
   },
 
   // 재고 통계 조회
-  async getInventoryStats(): Promise<ApiResponse<InventoryStats>> {
+  async getInventoryStats(): Promise<InventoryStats> {
     return api.get<InventoryStats>('/inventory/stats')
   },
 
@@ -65,7 +61,7 @@ export const inventoryService = {
     page?: number
     limit?: number
     productId?: string
-  }): Promise<ApiResponse<{
+  }): Promise<{
     data: StockMovement[];
     pagination: {
       page: number;
@@ -73,7 +69,7 @@ export const inventoryService = {
       total: number;
       totalPages: number;
     };
-  }>> {
+  }> {
     return api.get<{
       data: StockMovement[];
       pagination: {

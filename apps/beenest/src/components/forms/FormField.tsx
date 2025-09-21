@@ -23,7 +23,7 @@ export const FormField = ({ name, label, type = 'text', placeholder, className }
             {...field}
             type={type}
             placeholder={placeholder}
-            className={`h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 text-sm ${className}`}
+            className={`h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 text-sm ${className}`}
           />
         )}
       />

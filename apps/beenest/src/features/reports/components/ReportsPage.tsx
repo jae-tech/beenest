@@ -187,7 +187,7 @@ export const ReportsPage = () => (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
+                <tr className="border-b border-gray-100">
                   <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
                     Period
                   </th>

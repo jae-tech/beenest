@@ -9,8 +9,10 @@ import {
   Max,
   IsBoolean,
   IsDecimal,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { SupplierStatus } from '@beenest/types';
 
 export class CreateSupplierDto {
   @ApiProperty({
@@ -183,12 +185,12 @@ export class CreateSupplierDto {
   @ApiProperty({
     description: '공급업체 상태',
     example: 'active',
-    enum: ['active', 'inactive', 'pending', 'suspended'],
+    enum: SupplierStatus,
     default: 'active',
   })
   @IsOptional()
-  @IsString()
-  supplierStatus?: string;
+  @IsEnum(SupplierStatus)
+  supplierStatus?: SupplierStatus;
 
   @ApiProperty({
     description: '비고',

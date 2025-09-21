@@ -179,7 +179,7 @@ export function DetailPageHeader({
 
         {/* 모바일 액션 버튼들 */}
         {actions && (
-          <div className="md:hidden mt-4 pt-4 border-t border-gray-200">
+          <div className="md:hidden mt-4 pt-4 border-t border-gray-100">
             <div className="flex flex-wrap gap-2">
               {actions.map((action, index) => (
                 <Button
@@ -199,7 +199,7 @@ export function DetailPageHeader({
 
         {/* 모바일 우측 정보 */}
         {rightInfo && (
-          <div className="lg:hidden mt-4 pt-4 border-t border-gray-200">
+          <div className="lg:hidden mt-4 pt-4 border-t border-gray-100">
             <div className="text-sm">
               <span className="text-muted-foreground">{rightInfo.label}: </span>
               <span className="font-medium text-gray-900">{rightInfo.value}</span>

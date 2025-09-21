@@ -19,7 +19,7 @@ export const MetricCard = ({
   color,
   trend,
 }: MetricCardProps) => (
-  <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+  <Card className="p-6 cursor-pointer">
     <div className="flex items-center justify-between mb-4">
       <div
         className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}

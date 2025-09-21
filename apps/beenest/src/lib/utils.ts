@@ -5,9 +5,20 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// 가격 포맷팅 함수
-export function formatPrice(price: number, currency = '₩'): string {
-  return `${currency}${price.toLocaleString()}`
+// 통화 포맷팅 (Intl API 사용)
+export function formatCurrency(value: number, options?: {
+  compact?: boolean
+  currency?: string
+  locale?: string
+}): string {
+  const { compact = false, currency = 'KRW', locale = 'ko-KR' } = options || {}
+
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    notation: compact ? 'compact' : 'standard',
+    maximumFractionDigits: 0,
+  }).format(value)
 }
 
 // 퍼센트 포맷팅 함수

@@ -75,7 +75,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-border">
+              <tr key={headerGroup.id} className="border-b border-gray-100">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
@@ -97,7 +97,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border hover:bg-muted/50"
+                  className="border-b border-gray-100 hover:bg-muted/50"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="py-4 px-4">

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FormPageFooterProps } from "@/types/forms";
+import type { FormPageFooterProps } from "@/types/forms";
 import { useStickyFooter } from "@/hooks/useStickyFooter";
 import { Loader2, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -82,7 +82,7 @@ export function FormPageFooter({
       {/* 원본 푸터 */}
       <div
         ref={footerRef}
-        className="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200"
+        className="flex items-center justify-end space-x-4 pt-4 border-t border-gray-100"
       >
         {renderButtons(false)}
       </div>
@@ -94,7 +94,7 @@ export function FormPageFooter({
           aria-label="하단 고정 작업 버튼"
           className={cn(
             "fixed bottom-0 right-0 z-50",
-            "bg-white border-t border-gray-200 shadow-lg",
+            "bg-white border-t border-gray-100 shadow-lg",
             "transform transition-all duration-300 ease-in-out",
             showStickyFooter ? "translate-y-0" : "translate-y-full"
           )}

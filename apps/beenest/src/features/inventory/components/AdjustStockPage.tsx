@@ -32,13 +32,14 @@ import {
 
 import { useProducts } from "@/hooks/useProducts";
 import { useInventoryByProduct, useAdjustStock } from "@/hooks/useInventory";
-import type { MovementType, AdjustStockRequest } from "@/types/api";
+import { MovementType } from "@beenest/types";
+import type { AdjustStockRequest } from "@/types/api";
 
 // Zod 스키마 정의
 const adjustStockSchema = z.object({
   productId: z.string().min(1, "상품을 선택해주세요"),
   movementType: z.enum(['IN', 'OUT', 'ADJUST'] as const, {
-    required_error: "조정 유형을 선택해주세요"
+    message: "조정 유형을 선택해주세요"
   }),
   quantity: z
     .number()
@@ -86,8 +87,8 @@ export default function AdjustStockPage() {
   const adjustStock = useAdjustStock();
 
   const products = productsResponse?.data || [];
-  const inventory = inventoryResponse?.data?.inventory;
-  const product = inventoryResponse?.data?.product;
+  const inventory = inventoryResponse?.inventory;
+  const product = inventoryResponse?.product;
 
   const form = useForm<AdjustStockFormData>({
     resolver: zodResolver(adjustStockSchema),
@@ -117,11 +118,11 @@ export default function AdjustStockPage() {
     if (!watchedQuantity || !watchedMovementType) return currentStock;
 
     switch (watchedMovementType) {
-      case 'IN':
+      case MovementType.IN:
         return currentStock + watchedQuantity;
-      case 'OUT':
+      case MovementType.OUT:
         return Math.max(0, currentStock - watchedQuantity);
-      case 'ADJUST':
+      case MovementType.ADJUST:
         return Math.max(0, currentStock + watchedQuantity);
       default:
         return currentStock;
@@ -147,7 +148,7 @@ export default function AdjustStockPage() {
       });
 
       // 성공 시 재고 관리 페이지로 이동
-      navigate({ to: "/_layout/inventory" });
+      navigate({ to: "/inventory" });
     } catch (error: any) {
       console.error("재고 조정 실패:", error);
 
@@ -159,7 +160,7 @@ export default function AdjustStockPage() {
   };
 
   const handleCancel = () => {
-    navigate({ to: "/_layout/inventory" });
+    navigate({ to: "/inventory" });
   };
 
   // 로딩 중 화면
@@ -202,7 +203,7 @@ export default function AdjustStockPage() {
           {/* 상품 선택 */}
           <Card className="p-6">
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">
+              <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-100 pb-3">
                 상품 선택
               </h2>
 
@@ -216,7 +217,7 @@ export default function AdjustStockPage() {
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400">
+                        <SelectTrigger className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400">
                           <SelectValue placeholder="상품을 선택하세요" />
                         </SelectTrigger>
                       </FormControl>
@@ -269,7 +270,7 @@ export default function AdjustStockPage() {
           {/* 조정 정보 */}
           <Card className="p-6">
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">
+              <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-100 pb-3">
                 조정 정보
               </h2>
 
@@ -284,7 +285,7 @@ export default function AdjustStockPage() {
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400">
+                          <SelectTrigger className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400">
                             <SelectValue placeholder="조정 유형을 선택하세요" />
                           </SelectTrigger>
                         </FormControl>
@@ -319,7 +320,7 @@ export default function AdjustStockPage() {
                         <Input
                           type="number"
                           placeholder="조정할 수량을 입력하세요"
-                          className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value) || 0)}
                         />
@@ -329,7 +330,7 @@ export default function AdjustStockPage() {
                   )}
                 />
 
-                {watchedMovementType === 'IN' && (
+                {watchedMovementType === MovementType.IN && (
                   <FormField
                     control={form.control}
                     name="unitCost"
@@ -346,7 +347,7 @@ export default function AdjustStockPage() {
                             <Input
                               type="number"
                               placeholder="0"
-                              className="h-12 pl-8 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                              className="h-12 pl-8 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                               {...field}
                               onChange={(e) => field.onChange(Number(e.target.value) || 0)}
                             />
@@ -369,7 +370,7 @@ export default function AdjustStockPage() {
                       <FormControl>
                         <Input
                           placeholder="조정 사유를 입력하세요"
-                          className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                           {...field}
                         />
                       </FormControl>
@@ -390,7 +391,7 @@ export default function AdjustStockPage() {
                     <FormControl>
                       <Textarea
                         placeholder="추가 메모나 설명을 입력하세요..."
-                        className="min-h-24 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 resize-none"
+                        className="min-h-24 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 resize-none"
                         rows={4}
                         {...field}
                       />

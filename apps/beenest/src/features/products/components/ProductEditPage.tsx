@@ -86,9 +86,9 @@ export default function ProductEditPage() {
   const { data: productResponse, isLoading: isProductLoading, error: productError } = useProduct(productId);
   const updateProduct = useUpdateProduct();
 
-  const categories = categoriesResponse?.data || [];
-  const suppliers = suppliersResponse?.data?.data || [];
-  const product = productResponse?.data;
+  const categories = categoriesResponse || [];
+  const suppliers = suppliersResponse?.data || [];
+  const product = productResponse;
 
   // 데이터 로딩 상태
   const isInitialLoading = isCategoriesLoading || isSuppliersLoading || isProductLoading;
@@ -304,7 +304,7 @@ export default function ProductEditPage() {
             <div className="space-y-8">
               {/* 기본 정보 섹션 */}
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">
+                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-100 pb-3">
                   기본 정보
                 </h2>
 
@@ -320,7 +320,7 @@ export default function ProductEditPage() {
                         <FormControl>
                           <Input
                             placeholder="상품명을 입력하세요"
-                            className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                            className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                             {...field}
                           />
                         </FormControl>
@@ -340,7 +340,7 @@ export default function ProductEditPage() {
                         <FormControl>
                           <Input
                             placeholder="상품 코드를 입력하세요 (예: PRD001)"
-                            className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 font-mono"
+                            className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 font-mono"
                             {...field}
                             onChange={(e) => {
                               // 자동 대문자 변환 및 특수문자 제거
@@ -364,7 +364,7 @@ export default function ProductEditPage() {
                         </FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400">
+                            <SelectTrigger className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400">
                               <SelectValue placeholder="카테고리를 선택하세요" />
                             </SelectTrigger>
                           </FormControl>
@@ -399,7 +399,7 @@ export default function ProductEditPage() {
                             <Input
                               type="number"
                               placeholder="0"
-                              className="h-12 pl-8 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                              className="h-12 pl-8 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                               {...field}
                               onChange={(e) => field.onChange(Number(e.target.value) || 0)}
                             />
@@ -422,7 +422,7 @@ export default function ProductEditPage() {
                       <FormControl>
                         <Textarea
                           placeholder="상품에 대한 자세한 설명을 입력하세요..."
-                          className="min-h-24 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 resize-none"
+                          className="min-h-24 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 resize-none"
                           rows={4}
                           {...field}
                         />
@@ -435,7 +435,7 @@ export default function ProductEditPage() {
 
               {/* 가격 정보 섹션 */}
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">
+                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-100 pb-3">
                   가격 정보
                 </h2>
 
@@ -456,7 +456,7 @@ export default function ProductEditPage() {
                             <Input
                               type="number"
                               placeholder="0"
-                              className="h-12 pl-8 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                              className="h-12 pl-8 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                               {...field}
                               onChange={(e) => field.onChange(Number(e.target.value) || 0)}
                             />
@@ -483,7 +483,7 @@ export default function ProductEditPage() {
                             <Input
                               type="number"
                               placeholder="0"
-                              className="h-12 pl-8 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                              className="h-12 pl-8 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                               {...field}
                               onChange={(e) => field.onChange(Number(e.target.value) || 0)}
                             />
@@ -512,7 +512,7 @@ export default function ProductEditPage() {
 
               {/* 상품 세부 정보 섹션 */}
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">
+                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-100 pb-3">
                   상품 세부 정보
                 </h2>
 
@@ -528,7 +528,7 @@ export default function ProductEditPage() {
                         <FormControl>
                           <Input
                             placeholder="바코드를 입력하세요"
-                            className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 font-mono"
+                            className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 font-mono"
                             {...field}
                           />
                         </FormControl>
@@ -549,7 +549,7 @@ export default function ProductEditPage() {
                           <Input
                             type="number"
                             placeholder="0"
-                            className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                            className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                             {...field}
                             onChange={(e) => field.onChange(Number(e.target.value) || 0)}
                           />
@@ -570,7 +570,7 @@ export default function ProductEditPage() {
                         <FormControl>
                           <Input
                             placeholder="예: 20cm x 18cm x 8cm"
-                            className="h-12 border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                            className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                             {...field}
                           />
                         </FormControl>
@@ -583,7 +583,7 @@ export default function ProductEditPage() {
 
               {/* 상품 이미지 섹션 */}
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-200 pb-3">
+                <h2 className="text-xl font-semibold text-gray-900 border-b border-gray-100 pb-3">
                   상품 이미지
                 </h2>
 

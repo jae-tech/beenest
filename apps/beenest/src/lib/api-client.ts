@@ -1,8 +1,8 @@
-import { ApiResponse } from "@/types/api";
+import type { ApiResponse } from "@/types/api";
 import axios, {
   AxiosError,
-  AxiosInstance,
-  InternalAxiosRequestConfig,
+  type AxiosInstance,
+  type InternalAxiosRequestConfig,
 } from "axios";
 import { errorToast } from "./toast";
 
@@ -91,8 +91,7 @@ class ApiClient {
 
         // 네트워크 에러 처리
         if (!error.response) {
-          const networkError: ApiResponse = {
-            success: false,
+          const networkError = {
             error: {
               code: "NETWORK_ERROR",
               message: "네트워크 연결을 확인해주세요.",
@@ -101,19 +100,8 @@ class ApiClient {
           return Promise.reject(networkError);
         }
 
-        // 서버 에러 응답 표준화
-        const errorResponse: ApiResponse = {
-          success: false,
-          error: {
-            code: error.response.data?.error?.code || "UNKNOWN_ERROR",
-            message:
-              error.response.data?.error?.message ||
-              "알 수 없는 오류가 발생했습니다.",
-            details: error.response.data?.error?.details,
-          },
-        };
-
-        return Promise.reject(errorResponse);
+        // 서버 에러 응답을 그대로 전달
+        return Promise.reject(error.response.data || error);
       }
     );
   }
@@ -122,31 +110,31 @@ class ApiClient {
   async get<T>(
     url: string,
     params?: Record<string, unknown>
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const response = await this.instance.get(url, { params });
     return response.data;
   }
 
   // POST 요청
-  async post<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
+  async post<T>(url: string, data?: unknown): Promise<T> {
     const response = await this.instance.post(url, data);
     return response.data;
   }
 
   // PUT 요청
-  async put<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
+  async put<T>(url: string, data?: unknown): Promise<T> {
     const response = await this.instance.put(url, data);
     return response.data;
   }
 
   // PATCH 요청
-  async patch<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
+  async patch<T>(url: string, data?: unknown): Promise<T> {
     const response = await this.instance.patch(url, data);
     return response.data;
   }
 
   // DELETE 요청
-  async delete<T>(url: string): Promise<ApiResponse<T>> {
+  async delete<T>(url: string): Promise<T> {
     const response = await this.instance.delete(url);
     return response.data;
   }
@@ -156,7 +144,7 @@ class ApiClient {
     url: string,
     file: File,
     onProgress?: (progress: number) => void
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const formData = new FormData();
     formData.append("file", file);
 

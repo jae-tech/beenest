@@ -145,18 +145,8 @@ export interface PaginationState {
   totalPages: number
 }
 
-// API Response Types
-export interface ApiResponse<T = any> {
-  success: boolean
-  data?: T
-  message?: string
-  error?: string
-  errors?: Record<string, string[]>
-}
-
-export interface PaginatedResponse<T = any> extends ApiResponse<T[]> {
-  pagination: PaginationState
-}
+// API Response Types (이제 api.ts에서 import 사용)
+// 중복 제거: ApiResponse, PaginatedResponse는 api.ts에서 정의됨
 
 // Component Props Types
 export interface BaseComponentProps {

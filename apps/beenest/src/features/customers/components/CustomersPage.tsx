@@ -72,7 +72,7 @@ export const CustomersPage = () => (
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200">
+            <tr className="border-b border-gray-100">
               <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
                 Customer
               </th>
@@ -210,7 +210,7 @@ export const CustomersPage = () => (
         </table>
       </div>
 
-      <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+      <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
         <p className="text-sm text-gray-600">Showing 1-5 of 2,847 customers</p>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" className="cursor-pointer">

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FormPageHeaderProps } from "@/types/forms";
+import type { FormPageHeaderProps } from "@/types/forms";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 

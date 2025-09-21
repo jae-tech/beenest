@@ -53,7 +53,7 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
   <div className="overflow-x-auto">
     <table className="w-full">
       <thead>
-        <tr className="border-b border-gray-200">
+        <tr className="border-b border-gray-100">
           <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
             상품 정보
           </th>
@@ -127,10 +127,10 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
             </td>
             <td className="py-4 px-4">
               <div className="flex items-center space-x-2">
-                <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
+                <button className="border border-gray-100 p-1 rounded cursor-pointer hover:bg-gray-50">
                   <Edit className="w-3 h-3 text-gray-600" />
                 </button>
-                <button className="border border-gray-200 p-1 rounded cursor-pointer hover:bg-gray-50">
+                <button className="border border-gray-100 p-1 rounded cursor-pointer hover:bg-gray-50">
                   <Trash2 className="w-3 h-3 text-red-600" />
                 </button>
               </div>
@@ -233,11 +233,11 @@ export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
               <div className="relative">
                 <input
                   placeholder="상품 검색..."
-                  className="pl-8 pr-4 py-2 w-64 text-sm border border-gray-200 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
+                  className="pl-8 pr-4 py-2 w-64 text-sm border border-gray-100 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
                 />
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
-              <button className="border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
+              <button className="border border-gray-100 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
                 <Calendar className="w-4 h-4 mr-2 inline" />
                 월별
               </button>
@@ -252,7 +252,7 @@ export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
               <h3 className="text-lg font-semibold text-gray-900">
                 베스트셀러 상품
               </h3>
-              <button className="border border-gray-200 p-1 rounded cursor-pointer">
+              <button className="border border-gray-100 p-1 rounded cursor-pointer">
                 <ExternalLink className="w-3 h-3" />
               </button>
             </div>

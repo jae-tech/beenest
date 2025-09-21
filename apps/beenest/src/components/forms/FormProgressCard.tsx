@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { FormProgressCardProps } from "@/types/forms";
+import type { FormProgressCardProps } from "@/types/forms";
 import { CheckCircle, Info } from "lucide-react";
 
 export function FormProgressCard({

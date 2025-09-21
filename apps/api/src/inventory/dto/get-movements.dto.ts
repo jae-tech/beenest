@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsNumberString } from 'class-validator';
+import { MovementType, ReferenceType } from '@beenest/types';
 
 export class GetMovementsDto {
   @ApiProperty({
@@ -39,8 +40,8 @@ export class MovementResponseDto {
   @ApiProperty({ description: '상품 ID' })
   productId: string;
 
-  @ApiProperty({ description: '이동 타입', enum: ['IN', 'OUT', 'ADJUST', 'TRANSFER'] })
-  movementType: string;
+  @ApiProperty({ description: '이동 타입', enum: MovementType })
+  movementType: MovementType;
 
   @ApiProperty({ description: '수량' })
   quantity: number;
@@ -48,8 +49,8 @@ export class MovementResponseDto {
   @ApiProperty({ description: '단가', required: false })
   unitCost?: number;
 
-  @ApiProperty({ description: '참조 타입', required: false })
-  referenceType?: string;
+  @ApiProperty({ description: '참조 타입', enum: ReferenceType, required: false })
+  referenceType?: ReferenceType;
 
   @ApiProperty({ description: '참조 ID', required: false })
   referenceId?: string;

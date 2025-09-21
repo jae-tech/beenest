@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { type LucideIcon, Package, DollarSign, ShoppingCart, Users, TrendingUp } from 'lucide-react'
 import { queryKeys } from '@/lib/query-client'
 import { dashboardService } from '@/services/dashboard.service'
+import { formatCurrency } from '@/lib/utils'
 
 export interface DashboardMetric {
   icon: LucideIcon
@@ -72,16 +73,15 @@ export const useDashboard = () => {
 
   // API 데이터를 UI 형태로 변환
   const metrics = useMemo((): DashboardMetric[] => {
-    if (!statsResponse?.success || !statsResponse.data) {
+    if (!statsResponse) {
       return []
     }
 
-    const apiData = statsResponse.data as any
+    const apiData = statsResponse as any
     const overview = apiData.overview || {}
     const inventory = apiData.inventory || {}
 
     const formatNumber = (num: number) => new Intl.NumberFormat('ko-KR').format(num)
-    const formatCurrency = (num: number) => `₩${formatNumber(num)}`
 
     return [
       {
@@ -128,15 +128,15 @@ export const useDashboard = () => {
   }, [statsResponse])
 
   const monthlyRevenue = useMemo(() => {
-    if (!chartsResponse?.success || !chartsResponse.data) {
+    if (!chartsResponse) {
       return []
     }
 
-    const chartData = chartsResponse.data
+    const chartData = chartsResponse as any
     if (!chartData.labels || !Array.isArray(chartData.labels)) {
       return []
     }
-    return chartData.labels.map((label, index) => ({
+    return chartData.labels.map((label: any, index: any) => ({
       month: label,
       revenue: (chartData.revenue && chartData.revenue[index]) || 0
     }))
@@ -193,6 +193,6 @@ export const useDashboard = () => {
     isLoading: isStatsLoading || isChartsLoading || isAlertsLoading,
     error: statsError || chartsError ? '데이터를 불러오는데 실패했습니다.' : null,
     refreshMetrics,
-    alerts: alertsResponse?.data || []
+    alerts: alertsResponse || []
   }
 }

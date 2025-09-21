@@ -120,7 +120,6 @@ export default function AddSupplierPage() {
     setIsSubmitting(true);
 
     try {
-      // TODO: 실제 API 호출로 교체
       console.log("Submitting supplier data:", data);
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -128,7 +127,6 @@ export default function AddSupplierPage() {
       navigate({ to: "/suppliers" });
     } catch (error) {
       console.error("Failed to add supplier:", error);
-      // TODO: 에러 토스트 표시
     } finally {
       setIsSubmitting(false);
     }
@@ -178,7 +176,7 @@ export default function AddSupplierPage() {
                     <FormControl>
                       <Input
                         placeholder="회사명을 입력하세요"
-                        className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                        className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         {...field}
                       />
                     </FormControl>
@@ -198,7 +196,7 @@ export default function AddSupplierPage() {
                     <FormControl>
                       <Input
                         placeholder="담당자명을 입력하세요"
-                        className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                        className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         {...field}
                       />
                     </FormControl>
@@ -219,7 +217,7 @@ export default function AddSupplierPage() {
                       <Input
                         type="email"
                         placeholder="이메일 주소를 입력하세요"
-                        className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                        className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         {...field}
                       />
                     </FormControl>
@@ -239,7 +237,7 @@ export default function AddSupplierPage() {
                     <FormControl>
                       <Input
                         placeholder="전화번호를 입력하세요"
-                        className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                        className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         {...field}
                       />
                     </FormControl>
@@ -273,7 +271,7 @@ export default function AddSupplierPage() {
                     <FormControl>
                       <Input
                         placeholder="도로명 주소를 입력하세요"
-                        className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                        className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         {...field}
                       />
                     </FormControl>
@@ -294,7 +292,7 @@ export default function AddSupplierPage() {
                       <FormControl>
                         <Input
                           placeholder="시/군/구"
-                          className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                           {...field}
                         />
                       </FormControl>
@@ -314,7 +312,7 @@ export default function AddSupplierPage() {
                       <FormControl>
                         <Input
                           placeholder="시/도"
-                          className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                           {...field}
                         />
                       </FormControl>
@@ -334,7 +332,7 @@ export default function AddSupplierPage() {
                       <FormControl>
                         <Input
                           placeholder="우편번호"
-                          className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                          className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                           {...field}
                         />
                       </FormControl>
@@ -355,7 +353,7 @@ export default function AddSupplierPage() {
                     <FormControl>
                       <Input
                         placeholder="국가를 입력하세요"
-                        className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400"
+                        className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                         {...field}
                       />
                     </FormControl>
@@ -443,7 +441,7 @@ export default function AddSupplierPage() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="h-12 text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400">
+                        <SelectTrigger className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400">
                           <SelectValue placeholder="결제 조건을 선택하세요" />
                         </SelectTrigger>
                       </FormControl>
@@ -512,7 +510,7 @@ export default function AddSupplierPage() {
                     <FormControl>
                       <Textarea
                         placeholder="공급업체에 대한 추가 정보나 특이사항을 입력하세요..."
-                        className="min-h-[100px] text-sm border-gray-200 focus:border-yellow-400 focus:ring-yellow-400 resize-none"
+                        className="min-h-[100px] text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 resize-none"
                         maxLength={500}
                         {...field}
                       />

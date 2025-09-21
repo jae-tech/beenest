@@ -7,12 +7,7 @@ import {
   MinLength,
   IsEnum,
 } from 'class-validator';
-
-enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user',
-  MANAGER = 'manager',
-}
+import { UserRole } from '@beenest/types';
 
 export class RegisterDto {
   @ApiProperty({

@@ -8,7 +8,7 @@ export function BrandLoadingScreen() {
           <div className="absolute inset-0 rounded-full border-4 border-yellow-200 dark:border-yellow-800 animate-spin border-t-yellow-400 dark:border-t-yellow-300"></div>
 
           {/* 중간 원형 반대 회전 애니메이션 */}
-          <div className="absolute inset-4 rounded-full border-2 border-gray-200 dark:border-gray-700 animate-spin-reverse border-b-yellow-300 dark:border-b-yellow-400"></div>
+          <div className="absolute inset-4 rounded-full border-2 border-gray-100 dark:border-gray-700 animate-spin-reverse border-b-yellow-300 dark:border-b-yellow-400"></div>
 
           {/* 로고 중앙 컨테이너 */}
           <div className="relative w-24 h-24 bg-yellow-400 dark:bg-yellow-500 rounded-2xl flex items-center justify-center shadow-lg animate-pulse">

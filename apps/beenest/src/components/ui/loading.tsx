@@ -80,7 +80,7 @@ export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: nu
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200">
+            <tr className="border-b border-gray-100">
               {Array.from({ length: cols }).map((_, i) => (
                 <th key={i} className="p-4">
                   <div className="h-4 bg-gray-200 rounded"></div>

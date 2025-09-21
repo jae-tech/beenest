@@ -80,5 +80,9 @@ export const queryKeys = {
     all: ['categories'] as const,
     lists: () => [...queryKeys.categories.all, 'list'] as const,
     list: (params?: any) => [...queryKeys.categories.lists(), params] as const,
+    active: () => [...queryKeys.categories.all, 'active'] as const,
+    tree: () => [...queryKeys.categories.all, 'tree'] as const,
+    details: () => [...queryKeys.categories.all, 'detail'] as const,
+    detail: (id: string) => [...queryKeys.categories.details(), id] as const,
   },
 } as const

@@ -1,5 +1,4 @@
 import { api } from '@/lib/api-client'
-import type { ApiResponse } from '@/types/api'
 
 interface Category {
   id: string
@@ -29,22 +28,22 @@ interface Category {
 
 export const categoriesService = {
   // 카테고리 목록 조회
-  async getCategories(): Promise<ApiResponse<Category[]>> {
+  async getCategories(): Promise<Category[]> {
     return api.get<Category[]>('/categories')
   },
 
   // 활성 카테고리 목록 (드롭다운용)
-  async getActiveCategories(): Promise<ApiResponse<Category[]>> {
+  async getActiveCategories(): Promise<Category[]> {
     return api.get<Category[]>('/categories', { active: true })
   },
 
   // 카테고리 트리 구조
-  async getCategoryTree(): Promise<ApiResponse<Category[]>> {
+  async getCategoryTree(): Promise<Category[]> {
     return api.get<Category[]>('/categories/tree')
   },
 
   // 카테고리 상세 조회
-  async getCategory(id: string): Promise<ApiResponse<Category>> {
+  async getCategory(id: string): Promise<Category> {
     return api.get<Category>(`/categories/${id}`)
   },
 
@@ -53,7 +52,7 @@ export const categoriesService = {
     categoryName: string
     parentCategoryId?: string
     displayOrder?: number
-  }): Promise<ApiResponse<Category>> {
+  }): Promise<Category> {
     return api.post<Category>('/categories', data)
   },
 
@@ -63,12 +62,12 @@ export const categoriesService = {
     parentCategoryId?: string
     displayOrder?: number
     isActive?: boolean
-  }): Promise<ApiResponse<Category>> {
+  }): Promise<Category> {
     return api.patch<Category>(`/categories/${id}`, data)
   },
 
   // 카테고리 삭제
-  async deleteCategory(id: string): Promise<ApiResponse<void>> {
+  async deleteCategory(id: string): Promise<void> {
     return api.delete<void>(`/categories/${id}`)
   }
 }

@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { formatCurrency } from "@/lib/utils";
 
 interface RevenueData {
   month: string;
@@ -21,23 +22,15 @@ interface RevenueChartProps {
   height?: number;
 }
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("ko-KR", {
-    style: "currency",
-    currency: "KRW",
-    notation: "compact",
-    maximumFractionDigits: 0,
-  }).format(value);
-};
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+      <div className="bg-white p-3 border border-gray-100 rounded-lg shadow-lg">
         <p className="text-sm font-medium text-gray-900">{`${label}`}</p>
         <p className="text-sm text-blue-600">
           <span className="font-medium">매출: </span>
-          {formatCurrency(payload[0].value)}
+          {formatCurrency(payload[0].value, { compact: true })}
         </p>
       </div>
     );
@@ -71,17 +64,17 @@ export const RevenueChart = ({
           <h3 className="text-lg font-semibold text-gray-900">Revenue</h3>
           <div className="flex items-center space-x-4 mt-2">
             <span className="text-2xl font-bold text-gray-900">
-              ₩
               {formatCurrency(
-                data.reduce((sum, d) => sum + d.revenue, 0)
-              ).replace("₩", "")}
+                data.reduce((sum, d) => sum + d.revenue, 0),
+                { compact: true }
+              )}
             </span>
             <span className="text-sm font-medium text-green-600">
               +15% Compared to last month
             </span>
           </div>
         </div>
-        <button className="border border-gray-200 px-3 py-1 rounded text-sm cursor-pointer whitespace-nowrap hover:bg-gray-50">
+        <button className="border border-gray-100 px-3 py-1 rounded text-sm cursor-pointer whitespace-nowrap hover:bg-gray-50">
           <Calendar className="w-4 h-4 mr-2" />
           Monthly
         </button>

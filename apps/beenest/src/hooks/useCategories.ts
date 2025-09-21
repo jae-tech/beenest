@@ -6,7 +6,7 @@ import { handleApiSuccess, handleApiError } from '@/lib/toast'
 // 카테고리 목록 조회
 export function useCategories() {
   return useQuery({
-    queryKey: queryKeys.categories?.all || ['categories'],
+    queryKey: queryKeys.categories.all,
     queryFn: () => categoriesService.getCategories(),
     enabled: true,
   })
@@ -15,7 +15,7 @@ export function useCategories() {
 // 활성 카테고리 목록 (드롭다운 등에서 사용)
 export function useActiveCategories() {
   return useQuery({
-    queryKey: queryKeys.categories?.active || ['categories', 'active'],
+    queryKey: queryKeys.categories.active(),
     queryFn: () => categoriesService.getActiveCategories(),
     staleTime: 5 * 60 * 1000, // 5분
   })
@@ -24,7 +24,7 @@ export function useActiveCategories() {
 // 카테고리 트리 구조
 export function useCategoryTree() {
   return useQuery({
-    queryKey: queryKeys.categories?.tree || ['categories', 'tree'],
+    queryKey: queryKeys.categories.tree(),
     queryFn: () => categoriesService.getCategoryTree(),
     staleTime: 5 * 60 * 1000, // 5분
   })
@@ -33,7 +33,7 @@ export function useCategoryTree() {
 // 카테고리 상세 조회
 export function useCategory(id: string) {
   return useQuery({
-    queryKey: queryKeys.categories?.detail?.(id) || ['categories', id],
+    queryKey: queryKeys.categories.detail(id),
     queryFn: () => categoriesService.getCategory(id),
     enabled: !!id,
   })

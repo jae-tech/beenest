@@ -1,8 +1,9 @@
 import { api, apiClient } from "@/lib/api-client";
 import { handleApiError } from "@/lib/toast";
-import type { LoginCredentials, User } from "@/types";
+import type { LoginCredentials } from "@/types";
+import type { User } from "@beenest/types";
+import { UserRole } from "@beenest/types";
 import type {
-  User as ApiUser,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -49,28 +50,30 @@ export const useAuthStore = create<AuthState>()(
               password: credentials.password,
             };
 
-            const response = await api.post<LoginResponse>(
+            const response = await api.post<any>(
               "/auth/login",
               loginData
             );
 
-            // API는 직접 {user, accessToken, refreshToken, token} 형식으로 응답함
-            const { user: apiUser, accessToken, refreshToken, token } = response as any;
-
-            // JWT 토큰 저장 (신규 형식 우선, 기존 호환성 유지)
-            apiClient.setToken(accessToken || token);
-            if (refreshToken) {
-              apiClient.setRefreshToken(refreshToken);
+            // 백엔드가 직접 로그인 데이터를 반환하므로 response.data가 아닌 response를 사용
+            if (!response || !response.user || !response.accessToken) {
+              throw new Error("로그인에 실패했습니다.");
             }
+
+            const { user: apiUser, accessToken, refreshToken } = response
+
+            // JWT 토큰 저장
+            apiClient.setToken(accessToken);
+            apiClient.setRefreshToken(refreshToken);
 
             // API 사용자 타입을 앱 사용자 타입으로 변환
             const user: User = {
               id: apiUser.id,
               email: apiUser.email,
               name: apiUser.name,
-              role: "admin", // 기본값으로 설정, 필요시 API 스키마 확장
-              avatar: undefined,
-              lastLogin: new Date().toISOString(),
+              role: apiUser.role || UserRole.USER,
+              createdAt: apiUser.createdAt || new Date().toISOString(),
+              updatedAt: apiUser.updatedAt || new Date().toISOString(),
             };
 
             // 사용자 정보 로컬 스토리지에 저장
@@ -92,7 +95,7 @@ export const useAuthStore = create<AuthState>()(
               state.isLoading = false;
               state.error = errorMessage;
             });
-            handleApiError(error);
+            handleApiError(error as any);
             throw error;
           }
         },
@@ -104,28 +107,30 @@ export const useAuthStore = create<AuthState>()(
           });
 
           try {
-            const response = await api.post<LoginResponse>(
+            const response = await api.post<any>(
               "/auth/register",
               data
             );
 
-            // API는 직접 {user, accessToken, refreshToken, token} 형식으로 응답함
-            const { user: apiUser, accessToken, refreshToken, token } = response as any;
-
-            // JWT 토큰 저장 (신규 형식 우선, 기존 호환성 유지)
-            apiClient.setToken(accessToken || token);
-            if (refreshToken) {
-              apiClient.setRefreshToken(refreshToken);
+            // 백엔드가 직접 로그인 데이터를 반환하므로 response.data가 아닌 response를 사용
+            if (!response || !response.user || !response.accessToken) {
+              throw new Error("회원가입에 실패했습니다.");
             }
+
+            const { user: apiUser, accessToken, refreshToken } = response
+
+            // JWT 토큰 저장
+            apiClient.setToken(accessToken);
+            apiClient.setRefreshToken(refreshToken);
 
             // API 사용자 타입을 앱 사용자 타입으로 변환
             const user: User = {
               id: apiUser.id,
               email: apiUser.email,
               name: apiUser.name,
-              role: "admin",
-              avatar: undefined,
-              lastLogin: new Date().toISOString(),
+              role: apiUser.role || UserRole.USER,
+              createdAt: apiUser.createdAt || new Date().toISOString(),
+              updatedAt: apiUser.updatedAt || new Date().toISOString(),
             };
 
             // 사용자 정보 로컬 스토리지에 저장
@@ -138,10 +143,11 @@ export const useAuthStore = create<AuthState>()(
               state.error = null;
             });
           } catch (error: unknown) {
+            const errorObj = error as any;
             set((state) => {
               state.isLoading = false;
               state.error =
-                error.error?.message || error.message || "Registration failed";
+                errorObj.error?.message || errorObj.message || "Registration failed";
             });
             throw error;
           }
@@ -198,7 +204,7 @@ export const useAuthStore = create<AuthState>()(
           });
 
           try {
-            const response = await api.get<ApiUser>("/auth/me");
+            const response = await api.get<User>("/auth/me");
 
             // API는 직접 사용자 객체를 반환함
             if (response && (response as any).id) {
@@ -207,9 +213,9 @@ export const useAuthStore = create<AuthState>()(
                 id: apiUser.id,
                 email: apiUser.email,
                 name: apiUser.name,
-                role: "admin",
-                avatar: undefined,
-                lastLogin: new Date().toISOString(),
+                role: apiUser.role || UserRole.USER,
+                createdAt: apiUser.createdAt || new Date().toISOString(),
+                updatedAt: apiUser.updatedAt || new Date().toISOString(),
               };
 
               localStorage.setItem("user", JSON.stringify(user));
@@ -238,28 +244,29 @@ export const useAuthStore = create<AuthState>()(
           if (!refreshToken) return;
 
           try {
-            const response = await api.post<LoginResponse>("/auth/refresh", {
+            const response = await api.post<any>("/auth/refresh", {
               refreshToken,
               deviceId: localStorage.getItem('device_id'),
             });
 
-            // API 응답이 성공인지 확인
-            const responseData = response.success ? response.data : response;
-            const { user: apiUser, accessToken, refreshToken: newRefreshToken, token } = responseData as any;
+            // 백엔드가 직접 로그인 데이터를 반환하므로 response.data가 아닌 response를 사용
+            if (!response || !response.user || !response.accessToken) {
+              throw new Error("토큰 갱신에 실패했습니다.");
+            }
+
+            const { user: apiUser, accessToken, refreshToken: newRefreshToken } = response
 
             // 새 토큰 저장
-            apiClient.setToken(accessToken || token);
-            if (newRefreshToken) {
-              apiClient.setRefreshToken(newRefreshToken);
-            }
+            apiClient.setToken(accessToken);
+            apiClient.setRefreshToken(newRefreshToken);
 
             const user: User = {
               id: apiUser.id,
               email: apiUser.email,
               name: apiUser.name,
-              role: "admin",
-              avatar: undefined,
-              lastLogin: new Date().toISOString(),
+              role: apiUser.role || UserRole.USER,
+              createdAt: apiUser.createdAt || new Date().toISOString(),
+              updatedAt: apiUser.updatedAt || new Date().toISOString(),
             };
 
             localStorage.setItem("user", JSON.stringify(user));

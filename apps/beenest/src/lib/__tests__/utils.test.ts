@@ -1,7 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   cn,
-  formatPrice,
   formatPercent,
   formatDate,
   getRelativeTime,
@@ -31,21 +30,6 @@ describe('utils', () => {
     })
   })
 
-  describe('formatPrice', () => {
-    it('should format price with default currency', () => {
-      expect(formatPrice(1000)).toBe('₩1,000')
-      expect(formatPrice(1234567)).toBe('₩1,234,567')
-    })
-
-    it('should format price with custom currency', () => {
-      expect(formatPrice(1000, '$')).toBe('$1,000')
-      expect(formatPrice(1000, '€')).toBe('€1,000')
-    })
-
-    it('should handle decimal values', () => {
-      expect(formatPrice(1234.56)).toBe('₩1,234.56')
-    })
-  })
 
   describe('formatPercent', () => {
     it('should format percentage with default decimals', () => {

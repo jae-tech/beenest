@@ -2,8 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-client'
 import { suppliersService } from '@/services/suppliers.service'
 import { handleApiSuccess, handleApiError } from '@/lib/toast'
+import type { Supplier } from '@beenest/types'
 import type {
-  Supplier,
   CreateSupplierRequest,
   UpdateSupplierRequest,
   SuppliersSearchParams
@@ -46,8 +46,16 @@ export function useSupplierSearch(query: string, enabled = true) {
   })
 }
 
+// 공급업체 전체 통계
+export function useSupplierStats() {
+  return useQuery({
+    queryKey: [...queryKeys.suppliers.all, 'stats'],
+    queryFn: () => suppliersService.getAllSupplierStats(),
+  })
+}
+
 // 공급업체별 통계
-export function useSupplierStats(id: string) {
+export function useSupplierStatsById(id: string) {
   return useQuery({
     queryKey: queryKeys.suppliers.stats(id),
     queryFn: () => suppliersService.getSupplierStats(id),
@@ -80,14 +88,16 @@ export function useUpdateSupplier() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateSupplierRequest }) =>
       suppliersService.updateSupplier(id, data),
-    onSuccess: (response, variables) => {
+    onSuccess: (supplier, variables) => {
+      handleApiSuccess('공급업체가 성공적으로 수정되었습니다.')
       // 해당 공급업체 상세 쿼리 업데이트
-      if (response.success && response.data) {
-        queryClient.setQueryData(queryKeys.suppliers.detail(variables.id), response)
-      }
+      queryClient.setQueryData(queryKeys.suppliers.detail(variables.id), supplier)
       // 공급업체 목록 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.lists() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+    },
+    onError: (error) => {
+      handleApiError(error)
     },
   })
 }
@@ -99,11 +109,15 @@ export function useDeleteSupplier() {
   return useMutation({
     mutationFn: (id: string) => suppliersService.deleteSupplier(id),
     onSuccess: (_, id) => {
+      handleApiSuccess('공급업체가 성공적으로 삭제되었습니다.')
       // 해당 공급업체 관련 쿼리 제거
       queryClient.removeQueries({ queryKey: queryKeys.suppliers.detail(id) })
       // 공급업체 목록 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.lists() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+    },
+    onError: (error) => {
+      handleApiError(error)
     },
   })
 }

@@ -92,7 +92,7 @@ describe('Orders (e2e)', () => {
     await prisma.stockMovement.deleteMany();
     await prisma.product.deleteMany();
     await prisma.supplier.deleteMany();
-    await prisma.categories.deleteMany();
+    await prisma.productCategory.deleteMany();
     await prisma.user.deleteMany();
   }
 
