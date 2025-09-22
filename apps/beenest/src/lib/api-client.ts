@@ -1,4 +1,4 @@
-import type { ApiResponse } from "@/types/api";
+import type { ErrorResponse } from "@beenest/types";
 import axios, {
   AxiosError,
   type AxiosInstance,
@@ -49,7 +49,7 @@ class ApiClient {
         console.log(`API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`, response.data);
         return response;
       },
-      async (error: AxiosError<ApiResponse>) => {
+      async (error: AxiosError<ErrorResponse>) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
         // 401 Unauthorized - 토큰 만료 또는 인증 실패
@@ -91,16 +91,16 @@ class ApiClient {
 
         // 네트워크 에러 처리
         if (!error.response) {
-          const networkError = {
+          const networkError: ErrorResponse = {
             error: {
-              code: "NETWORK_ERROR",
+              code: "NETWORK_ERROR_0",
               message: "네트워크 연결을 확인해주세요.",
             },
           };
           return Promise.reject(networkError);
         }
 
-        // 서버 에러 응답을 그대로 전달
+        // 서버 에러 응답을 그대로 전달 (이미 ErrorResponse 형식)
         return Promise.reject(error.response.data || error);
       }
     );
@@ -162,6 +162,18 @@ class ApiClient {
       },
     });
 
+    return response.data;
+  }
+
+  // Blob 다운로드 (파일 내보내기용)
+  async getBlob(
+    url: string,
+    params?: Record<string, unknown>
+  ): Promise<Blob> {
+    const response = await this.instance.get(url, {
+      params,
+      responseType: 'blob'
+    });
     return response.data;
   }
 
@@ -248,6 +260,8 @@ export const api = {
     file: File,
     onProgress?: (progress: number) => void
   ) => apiClient.upload<T>(url, file, onProgress),
+  getBlob: (url: string, params?: Record<string, unknown>) =>
+    apiClient.getBlob(url, params),
 };
 
 export default apiClient;

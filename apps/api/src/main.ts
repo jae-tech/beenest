@@ -7,12 +7,16 @@ import {
 } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from '@/app.module';
+import { HttpExceptionFilter } from '@/common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
   );
+
+  // 전역 Exception Filter 설정
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // 전역 검증 파이프 설정
   app.useGlobalPipes(

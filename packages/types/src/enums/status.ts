@@ -52,3 +52,16 @@ export enum AlertType {
   OUT_OF_STOCK = 'OUT_OF_STOCK',
   OVERSTOCKED = 'OVERSTOCKED'
 }
+
+// 거래 타입
+export enum TransactionType {
+  PURCHASE = 'PURCHASE',  // 매입
+  SALE = 'SALE'          // 매출
+}
+
+// 거래 상태
+export enum TransactionStatus {
+  PENDING = 'PENDING',     // 대기 (임시저장)
+  CONFIRMED = 'CONFIRMED', // 확정 (정식 등록)
+  CANCELLED = 'CANCELLED'  // 취소
+}

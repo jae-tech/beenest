@@ -5,11 +5,11 @@ export * from './enums'
 
 // Commonly used types
 export type {
-  ApiResponse,
   PaginatedResponse,
   Pagination,
   BaseSearchParams,
-  ApiError
+  ApiError,
+  ErrorResponse
 } from './api/common'
 
 export type {
@@ -42,11 +42,37 @@ export type {
   OrderStats
 } from './entities/order'
 
+export type {
+  Transaction,
+  TransactionItem,
+  TransactionStats,
+  TransactionSummary,
+  TransactionFilters
+} from './entities/transaction'
+
+export type {
+  GetTransactionsParams,
+  GetTransactionsResponse,
+  TransactionStatsResponse,
+  CreateTransactionRequest,
+  CreateTransactionItemRequest,
+  UpdateTransactionRequest,
+  UpdateTransactionItemRequest,
+  GetTransactionResponse,
+  DeleteTransactionResponse,
+  GetTransactionStatsParams,
+  MonthlyTransactionStats,
+  PartnerTransactionStats,
+  ProductTransactionStats
+} from './api/transaction'
+
 export {
   UserRole,
   SupplierStatus,
   ProductStatus,
   OrderStatus,
   MovementType,
-  AlertType
+  AlertType,
+  TransactionType,
+  TransactionStatus
 } from './enums/status'

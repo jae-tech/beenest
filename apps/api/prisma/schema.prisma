@@ -24,11 +24,12 @@ model User {
   deletedAt     DateTime? @map("deleted_at")
 
   // Relations
-  refreshTokens       RefreshToken[]
-  createdProducts     Product[]        @relation("ProductCreator")
-  createdSuppliers    Supplier[]       @relation("SupplierCreator")
-  createdStockMovements StockMovement[] @relation("StockMovementCreator")
-  createdPurchaseOrders PurchaseOrder[] @relation("PurchaseOrderCreator")
+  refreshTokens         RefreshToken[]
+  createdProducts       Product[]        @relation("ProductCreator")
+  createdSuppliers      Supplier[]       @relation("SupplierCreator")
+  createdStockMovements StockMovement[]  @relation("StockMovementCreator")
+  createdPurchaseOrders PurchaseOrder[]  @relation("PurchaseOrderCreator")
+  createdTransactions   Transaction[]    @relation("TransactionCreator")
 
   @@map("users")
 }
@@ -93,12 +94,13 @@ model Product {
   deletedAt   DateTime? @map("deleted_at")
 
   // Relations
-  category       ProductCategory? @relation(fields: [categoryId], references: [id])
-  creator        User             @relation("ProductCreator", fields: [createdBy], references: [id])
-  inventory      Inventory?
-  stockMovements StockMovement[]
-  supplierProducts SupplierProduct[]
+  category          ProductCategory? @relation(fields: [categoryId], references: [id])
+  creator           User             @relation("ProductCreator", fields: [createdBy], references: [id])
+  inventory         Inventory?
+  stockMovements    StockMovement[]
+  supplierProducts  SupplierProduct[]
   purchaseOrderItems PurchaseOrderItem[]
+  transactionItems  TransactionItem[]
 
   @@map("products")
   @@index([productCode])
@@ -187,6 +189,7 @@ model Supplier {
   creator          User              @relation("SupplierCreator", fields: [createdBy], references: [id])
   supplierProducts SupplierProduct[]
   purchaseOrders   PurchaseOrder[]
+  transactions     Transaction[]
 
   @@map("suppliers")
   @@index([supplierCode])
@@ -264,4 +267,83 @@ model PurchaseOrderItem {
   @@map("purchase_order_items")
   @@index([orderId])
   @@index([productId])
+}
+
+// 거래 관리 (매입/매출 통합)
+model Transaction {
+  id                 BigInt            @id @default(autoincrement())
+  transactionNumber  String            @unique @map("transaction_number") @db.VarChar(100)
+  transactionType    TransactionType   @map("transaction_type")
+
+  // 거래 상대방 정보
+  supplierId         BigInt?           @map("supplier_id")
+  customerName       String?           @map("customer_name") @db.VarChar(255) // 매출시 고객명
+  customerPhone      String?           @map("customer_phone") @db.VarChar(50)  // 매출시 고객 연락처
+
+  // 거래 일시 및 금액
+  transactionDate    DateTime          @map("transaction_date")
+  subtotalAmount     Decimal           @default(0) @map("subtotal_amount") @db.Decimal(15, 2) // 공급가액
+  vatAmount          Decimal           @default(0) @map("vat_amount") @db.Decimal(15, 2)      // 부가세
+  totalAmount        Decimal           @default(0) @map("total_amount") @db.Decimal(15, 2)    // 총액
+
+  // 상태 및 메모
+  status             TransactionStatus @default(PENDING)
+  notes              String?           @db.Text
+
+  // 메타데이터
+  createdBy          BigInt            @map("created_by")
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  deletedAt          DateTime?         @map("deleted_at")
+
+  // Relations
+  supplier           Supplier?         @relation(fields: [supplierId], references: [id])
+  creator            User              @relation("TransactionCreator", fields: [createdBy], references: [id])
+  transactionItems   TransactionItem[]
+
+  @@map("transactions")
+  @@index([transactionNumber])
+  @@index([transactionType])
+  @@index([supplierId])
+  @@index([transactionDate])
+  @@index([status])
+  @@index([createdBy])
+}
+
+// 거래 품목 (거래별 상품 정보)
+model TransactionItem {
+  id            BigInt      @id @default(autoincrement())
+  transactionId BigInt      @map("transaction_id")
+  productId     BigInt      @map("product_id")
+
+  // 거래 품목 정보
+  quantity      Int
+  unitPrice     Decimal     @map("unit_price") @db.Decimal(10, 2)     // 단가
+  totalPrice    Decimal     @map("total_price") @db.Decimal(15, 2)    // 소계 (quantity * unitPrice)
+  vatRate       Decimal     @default(0.1) @map("vat_rate") @db.Decimal(3, 2) // 부가세율 (기본 10%)
+
+  // Relations
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  product       Product     @relation(fields: [productId], references: [id])
+
+  @@map("transaction_items")
+  @@index([transactionId])
+  @@index([productId])
+}
+
+// 거래 타입 Enum
+enum TransactionType {
+  PURCHASE  // 매입
+  SALE      // 매출
+
+  @@map("transaction_type")
+}
+
+// 거래 상태 Enum
+enum TransactionStatus {
+  PENDING   // 대기 (임시저장)
+  CONFIRMED // 확정 (정식 등록)
+  CANCELLED // 취소
+
+  @@map("transaction_status")
 }

@@ -8,6 +8,8 @@ async function main() {
 
   // 기존 데이터 정리 (개발 환경에서만)
   if (process.env.NODE_ENV === 'development') {
+    await prisma.transactionItem.deleteMany();
+    await prisma.transaction.deleteMany();
     await prisma.supplierProduct.deleteMany();
     await prisma.stockMovement.deleteMany();
     await prisma.inventory.deleteMany();
@@ -397,6 +399,234 @@ async function main() {
   ]);
   console.log('📈 재고 이동 기록 생성 완료');
 
+  // 현실적인 거래 데이터 생성 (5가지 핵심 요소 중심)
+  console.log('💰 거래 데이터 생성 시작...');
+
+  // 매출 거래 1 - 카페 온더코너
+  const saleTransaction1 = await prisma.transaction.create({
+    data: {
+      transactionNumber: 'SAL-20240115-001',
+      transactionType: 'SALE',
+      transactionDate: new Date('2024-01-15'),
+      customerName: '카페 온더코너',
+      customerPhone: '02-555-1234',
+      subtotalAmount: 100000,
+      vatAmount: 10000,
+      totalAmount: 110000,
+      status: 'CONFIRMED',
+      notes: '신규 카페 오픈 축하 할인 10% 적용',
+      createdBy: generalUser.id,
+    },
+  });
+
+  await Promise.all([
+    prisma.transactionItem.create({
+      data: {
+        transactionId: saleTransaction1.id,
+        productId: products[0].id, // 무선 블루투스 헤드폰
+        quantity: 2,
+        unitPrice: 35000,
+        totalPrice: 70000,
+      },
+    }),
+    prisma.transactionItem.create({
+      data: {
+        transactionId: saleTransaction1.id,
+        productId: products[1].id, // 프리미엄 코튼 반팔 티셔츠
+        quantity: 6,
+        unitPrice: 5000,
+        totalPrice: 30000,
+      },
+    }),
+  ]);
+
+  // 매출 거래 2 - 청년 창업 카페
+  const saleTransaction2 = await prisma.transaction.create({
+    data: {
+      transactionNumber: 'SAL-20240118-002',
+      transactionType: 'SALE',
+      transactionDate: new Date('2024-01-18'),
+      customerName: '청년 창업 카페',
+      customerPhone: '010-9876-5432',
+      subtotalAmount: 189000,
+      vatAmount: 18900,
+      totalAmount: 207900,
+      status: 'CONFIRMED',
+      notes: '단골 고객 특가 제공',
+      createdBy: generalUser.id,
+    },
+  });
+
+  await prisma.transactionItem.create({
+    data: {
+      transactionId: saleTransaction2.id,
+      productId: products[4].id, // 프로 러닝화 에어 맥스
+      quantity: 1,
+      unitPrice: 189000,
+      totalPrice: 189000,
+    },
+  });
+
+  // 매출 거래 3 - 스마트오피스
+  const saleTransaction3 = await prisma.transaction.create({
+    data: {
+      transactionNumber: 'SAL-20240120-003',
+      transactionType: 'SALE',
+      transactionDate: new Date('2024-01-20'),
+      customerName: '스마트오피스',
+      customerPhone: '031-123-4567',
+      subtotalAmount: 318000,
+      vatAmount: 31800,
+      totalAmount: 349800,
+      status: 'PENDING',
+      notes: '사무실 이전 기념 대량 주문',
+      createdBy: generalUser.id,
+    },
+  });
+
+  await Promise.all([
+    prisma.transactionItem.create({
+      data: {
+        transactionId: saleTransaction3.id,
+        productId: products[3].id, // 포터블 블루투스 스피커
+        quantity: 2,
+        unitPrice: 159000,
+        totalPrice: 318000,
+      },
+    }),
+  ]);
+
+  // 매입 거래 1 - 테크노 일렉트로닉스
+  const purchaseTransaction1 = await prisma.transaction.create({
+    data: {
+      transactionNumber: 'PUR-20240110-001',
+      transactionType: 'PURCHASE',
+      transactionDate: new Date('2024-01-10'),
+      supplierId: suppliers[0].id,
+      subtotalAmount: 700000,
+      vatAmount: 70000,
+      totalAmount: 770000,
+      status: 'CONFIRMED',
+      notes: '신년 첫 물품 입고 - 볼륨 디스카운트 적용',
+      createdBy: adminUser.id,
+    },
+  });
+
+  await Promise.all([
+    prisma.transactionItem.create({
+      data: {
+        transactionId: purchaseTransaction1.id,
+        productId: products[0].id, // 무선 블루투스 헤드폰
+        quantity: 20,
+        unitPrice: 25000, // 할인된 가격
+        totalPrice: 500000,
+      },
+    }),
+    prisma.transactionItem.create({
+      data: {
+        transactionId: purchaseTransaction1.id,
+        productId: products[3].id, // 포터블 블루투스 스피커
+        quantity: 10,
+        unitPrice: 20000, // 할인된 가격
+        totalPrice: 200000,
+      },
+    }),
+  ]);
+
+  // 매입 거래 2 - 패션플러스
+  const purchaseTransaction2 = await prisma.transaction.create({
+    data: {
+      transactionNumber: 'PUR-20240112-002',
+      transactionType: 'PURCHASE',
+      transactionDate: new Date('2024-01-12'),
+      supplierId: suppliers[1].id,
+      subtotalAmount: 400000,
+      vatAmount: 40000,
+      totalAmount: 440000,
+      status: 'CONFIRMED',
+      notes: '봄 시즌 준비 물품 입고',
+      createdBy: adminUser.id,
+    },
+  });
+
+  await Promise.all([
+    prisma.transactionItem.create({
+      data: {
+        transactionId: purchaseTransaction2.id,
+        productId: products[1].id, // 프리미엄 코튼 반팔 티셔츠
+        quantity: 100,
+        unitPrice: 3000, // 대량 구매 할인가
+        totalPrice: 300000,
+      },
+    }),
+    prisma.transactionItem.create({
+      data: {
+        transactionId: purchaseTransaction2.id,
+        productId: products[2].id, // 비즈니스 노트북 백팩
+        quantity: 20,
+        unitPrice: 5000, // 할인된 가격
+        totalPrice: 100000,
+      },
+    }),
+  ]);
+
+  // 매입 거래 3 - 스포츠월드
+  const purchaseTransaction3 = await prisma.transaction.create({
+    data: {
+      transactionNumber: 'PUR-20240114-003',
+      transactionType: 'PURCHASE',
+      transactionDate: new Date('2024-01-14'),
+      supplierId: suppliers[2].id,
+      subtotalAmount: 960000,
+      vatAmount: 96000,
+      totalAmount: 1056000,
+      status: 'CONFIRMED',
+      notes: '인기 모델 추가 입고',
+      createdBy: adminUser.id,
+    },
+  });
+
+  await prisma.transactionItem.create({
+    data: {
+      transactionId: purchaseTransaction3.id,
+      productId: products[4].id, // 프로 러닝화 에어 맥스
+      quantity: 8,
+      unitPrice: 120000,
+      totalPrice: 960000,
+    },
+  });
+
+  // 매출 거래 4 - 데일리카페
+  const saleTransaction4 = await prisma.transaction.create({
+    data: {
+      transactionNumber: 'SAL-20240122-004',
+      transactionType: 'SALE',
+      transactionDate: new Date('2024-01-22'),
+      customerName: '데일리카페',
+      customerPhone: '02-777-8888',
+      subtotalAmount: 267000,
+      vatAmount: 26700,
+      totalAmount: 293700,
+      status: 'CONFIRMED',
+      notes: '주말 이벤트용 추가 주문',
+      createdBy: generalUser.id,
+    },
+  });
+
+  await Promise.all([
+    prisma.transactionItem.create({
+      data: {
+        transactionId: saleTransaction4.id,
+        productId: products[2].id, // 비즈니스 노트북 백팩
+        quantity: 3,
+        unitPrice: 89000,
+        totalPrice: 267000,
+      },
+    }),
+  ]);
+
+  console.log('💰 거래 데이터 생성 완료');
+
   console.log('✅ ERP 시드 데이터 생성 완료!');
   console.log('');
   console.log('🔐 로그인 정보:');
@@ -411,6 +641,13 @@ async function main() {
   console.log(`   - 재고 정보: ${inventories.length}개`);
   console.log(`   - 재고 부족: 1개 (티셔츠)`);
   console.log(`   - 품절: 1개 (백팩)`);
+  console.log('');
+  console.log('💰 거래 통계 (2024년 1월):');
+  console.log('   매출 거래: 4건 / 총 961,400원');
+  console.log('   매입 거래: 3건 / 총 2,266,000원');
+  console.log('   매출 총이익: -1,304,600원 (창업 초기 재고 확보 단계)');
+  console.log('   주요 고객: 카페 온더코너, 청년 창업 카페, 스마트오피스 등');
+  console.log('   주요 공급업체: 테크노 일렉트로닉스, 패션플러스, 스포츠월드');
 }
 
 main()

@@ -7,44 +7,12 @@ export {
   ProductStatus,
   OrderStatus,
   MovementType,
-  AlertType
+  AlertType,
+  ApiError,
+  ErrorResponse,
+  PaginatedResponse,
+  Pagination
 } from '@beenest/types'
-
-// ================================
-// 공통 API 타입 (표준화된 응답 구조)
-// ================================
-
-// 에러 구조 표준화
-export interface ApiError {
-  code: string
-  message: string
-  details?: unknown
-}
-
-// 기본 API 응답 (모든 API의 기본 구조)
-export interface ApiResponse<T = unknown> {
-  success: boolean
-  data?: T
-  message?: string
-  error?: ApiError
-}
-
-// 페이지네이션 메타 정보
-export interface PaginationMeta {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
-// 페이지네이션 데이터 구조
-export interface PaginatedData<T> {
-  data: T[]
-  pagination: PaginationMeta
-}
-
-// 페이지네이션 응답 (ApiResponse로 감싸진 형태)
-export type PaginatedResponse<T> = ApiResponse<PaginatedData<T>>
 
 // ================================
 // 엔티티 타입
@@ -68,8 +36,8 @@ export interface LoginData {
   token: string // 기존 호환성을 위해 유지
 }
 
-// 로그인 응답 (표준화된 ApiResponse 구조)
-export type LoginResponse = ApiResponse<LoginData>
+// 로그인 응답 (직접 데이터 반환)
+export type LoginResponse = LoginData
 
 // 상품 타입 (백엔드와 동기화)
 export interface Product {
