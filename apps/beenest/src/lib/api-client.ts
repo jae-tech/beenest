@@ -52,6 +52,12 @@ class ApiClient {
       async (error: AxiosError<ErrorResponse>) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+        console.error(`API Error: ${error.config?.method?.toUpperCase()} ${error.config?.url}`, {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        });
+
         // 401 Unauthorized - 토큰 만료 또는 인증 실패
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
@@ -61,6 +67,7 @@ class ApiClient {
           // Refresh token이 있으면 갱신 시도
           if (refreshToken) {
             try {
+              console.log('Attempting token refresh...');
               const response = await this.instance.post('/auth/refresh', {
                 refreshToken,
                 deviceId: this.getDeviceId(),
@@ -77,31 +84,83 @@ class ApiClient {
                 originalRequest.headers.Authorization = `Bearer ${accessToken}`;
               }
 
+              console.log('Token refresh successful, retrying original request');
               return this.instance(originalRequest);
             } catch (refreshError) {
               // Refresh 실패 시 로그아웃 처리
-              console.log('Token refresh failed:', refreshError);
+              console.error('Token refresh failed:', refreshError);
               this.handleAuthFailure();
             }
           } else {
             // Refresh token이 없으면 로그아웃 처리
+            console.log('No refresh token available, logging out');
             this.handleAuthFailure();
           }
+        }
+
+        // 403 Forbidden - 권한 부족
+        if (error.response?.status === 403) {
+          const forbiddenError: ErrorResponse = {
+            error: {
+              code: "ACCESS_DENIED",
+              message: "접근 권한이 없습니다.",
+            },
+          };
+          errorToast("접근 권한이 없습니다.");
+          return Promise.reject(forbiddenError);
+        }
+
+        // 404 Not Found
+        if (error.response?.status === 404) {
+          const notFoundError: ErrorResponse = {
+            error: {
+              code: "NOT_FOUND",
+              message: "요청한 리소스를 찾을 수 없습니다.",
+            },
+          };
+          return Promise.reject(notFoundError);
+        }
+
+        // 500 Internal Server Error
+        if (error.response?.status === 500) {
+          const serverError: ErrorResponse = {
+            error: {
+              code: "INTERNAL_SERVER_ERROR",
+              message: "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+            },
+          };
+          errorToast("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+          return Promise.reject(serverError);
         }
 
         // 네트워크 에러 처리
         if (!error.response) {
           const networkError: ErrorResponse = {
             error: {
-              code: "NETWORK_ERROR_0",
+              code: "NETWORK_ERROR",
               message: "네트워크 연결을 확인해주세요.",
             },
           };
+          errorToast("네트워크 연결을 확인해주세요.");
           return Promise.reject(networkError);
         }
 
         // 서버 에러 응답을 그대로 전달 (이미 ErrorResponse 형식)
-        return Promise.reject(error.response.data || error);
+        const apiError = error.response.data;
+
+        // 서버에서 제공하는 에러 메시지가 있으면 토스트로 표시
+        if (apiError && typeof apiError === 'object' && 'message' in apiError) {
+          const message = Array.isArray(apiError.message)
+            ? apiError.message.join(', ')
+            : apiError.message || "알 수 없는 오류가 발생했습니다.";
+
+          // 중요한 에러만 토스트로 표시 (4xx, 5xx)
+          if (error.response.status >= 400) {
+            errorToast(message);
+          }
+        }
+
+        return Promise.reject(apiError || error);
       }
     );
   }

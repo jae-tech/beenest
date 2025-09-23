@@ -1,34 +1,54 @@
 // ================================
 // Re-export types from @beenest/types
 // ================================
-export {
+export type {
   UserRole,
   SupplierStatus,
   ProductStatus,
   OrderStatus,
   MovementType,
   AlertType,
+  TransactionType,
+  TransactionStatus,
   ApiError,
   ErrorResponse,
   PaginatedResponse,
-  Pagination
+  Pagination,
+  BaseSearchParams
 } from '@beenest/types'
 
+// Re-export entity types
+export type {
+  User,
+  UserProfile,
+  Supplier,
+  SupplierStats,
+  Product as BackendProduct,
+  Category,
+  ProductStats,
+  Inventory,
+  StockMovement,
+  LowStockAlert,
+  InventoryByProduct,
+  InventoryStats,
+  Order,
+  OrderItem,
+  OrderStats,
+  Transaction,
+  TransactionItem,
+  TransactionStats,
+  TransactionSummary,
+  TransactionFilters
+} from '@beenest/types'
+
+// 거래 관련 타입들은 백엔드에 다른 이름으로 존재하므로 주석 처리
+// 필요시 별도로 정의
+
 // ================================
-// 엔티티 타입
+// 프론트엔드 전용 타입
 // ================================
 
-// 사용자 타입
-export interface User {
-  id: string
-  email: string
-  name: string
-  companyName?: string
-  createdAt: string
-  updatedAt: string
-}
-
-// 로그인 데이터 구조
+// 로그인 데이터 구조 (프론트엔드 전용)
 export interface LoginData {
   user: User
   accessToken: string
@@ -39,27 +59,8 @@ export interface LoginData {
 // 로그인 응답 (직접 데이터 반환)
 export type LoginResponse = LoginData
 
-// 상품 타입 (백엔드와 동기화)
-export interface Product {
-  id: string
-  productCode: string
-  productName: string
-  description?: string
-  categoryId?: string
-  unitPrice: number
-  costPrice?: number
-  barcode?: string
-  weight?: number
-  dimensions?: string
-  imageUrl?: string
-  status: ProductStatus
-  createdAt: string
-  updatedAt: string
-  createdBy: string
-  category?: {
-    id: string
-    categoryName: string
-  }
+// 프론트엔드에서 사용하는 Product 타입 (백엔드 Product 확장)
+export interface Product extends BackendProduct {
   inventory?: {
     id: string
     productId: string
@@ -76,78 +77,19 @@ export interface Product {
   }
 }
 
-// 공급업체 타입
-export interface Supplier {
-  id: string
-  supplierCode: string
-  companyName: string
-  contactPerson?: string
-  email?: string
-  phone?: string
-  address?: string
-  website?: string
-  taxNumber?: string
-  supplierStatus: SupplierStatus
-  rating?: number
-  notes?: string
-  createdBy: string
-  createdAt: string
-  updatedAt: string
-}
-
-// 카테고리 타입
-export interface Category {
-  id: string
-  userId: string
-  name: string
-  description?: string
-  createdAt: string
-  updatedAt: string
-}
-
-// 주문 타입
-export interface Order {
-  id: string
-  orderNumber: string
-  supplierId: string
-  status: OrderStatus
-  orderDate: string
-  expectedDeliveryDate?: string
-  totalAmount: number
-  notes?: string
-  createdBy: string
-  createdAt: string
-  updatedAt: string
-  supplier?: {
-    id: string
-    companyName: string
-    supplierCode: string
-  }
-  orderItems?: OrderItem[]
-}
-
-// 주문 아이템 타입
-export interface OrderItem {
-  id: string
-  orderId: string
-  productId: string
-  quantity: number
-  unitPrice: number
-  totalPrice: number
-  product?: Product
-}
-
-
-// 대시보드 통계 타입
+// 대시보드 통계 타입 (프론트엔드 전용)
 export interface DashboardStats {
-  totalRevenue: number
-  totalOrders: number
-  totalProducts: number
-  totalSuppliers: number
-  lowStockProducts: number
-  pendingOrders: number
-  revenueGrowth: number
-  ordersGrowth: number
+  overview: {
+    totalProducts: number
+    totalInventoryValue: number
+    recentOrders: number
+    totalSuppliers: number
+  }
+  inventory: {
+    lowStockCount: number
+    outOfStockCount: number
+    reorderRequired: number
+  }
 }
 
 // 차트 데이터 타입
@@ -165,7 +107,7 @@ export interface CreateProductRequest {
   productCode: string
   productName: string
   description?: string
-  categoryId?: string
+  categoryId?: number
   unitPrice: number
   costPrice?: number
   barcode?: string
@@ -180,8 +122,15 @@ export interface CreateProductRequest {
   reorderPoint?: number
 }
 
-export interface UpdateProductRequest extends Partial<CreateProductRequest> {
-  id?: string
+export interface UpdateProductRequest extends Partial<CreateProductRequest> {}
+
+export interface ProductsSearchParams extends BaseSearchParams {
+  categoryId?: string
+  status?: ProductStatus
+  minPrice?: number
+  maxPrice?: number
+  lowStock?: boolean
+  [key: string]: unknown
 }
 
 // ================================
@@ -197,12 +146,20 @@ export interface CreateSupplierRequest {
   address?: string
   website?: string
   taxNumber?: string
-  supplierStatus?: SupplierStatus
+  paymentTerms?: string
+  deliveryTerms?: string
   rating?: number
   notes?: string
+  isActive?: boolean
 }
 
 export interface UpdateSupplierRequest extends Partial<CreateSupplierRequest> {}
+
+export interface SuppliersSearchParams extends BaseSearchParams {
+  status?: SupplierStatus
+  rating?: number
+  [key: string]: unknown
+}
 
 // ================================
 // API 요청 타입 (주문 관리)
@@ -224,110 +181,12 @@ export interface UpdateOrderRequest extends Partial<CreateOrderRequest> {
   status?: OrderStatus
 }
 
-// ================================
-// API 요청 타입 (인증)
-// ================================
-
-export interface LoginRequest {
-  email: string
-  password: string
-}
-
-// ================================
-// 재고 관리 타입
-// ================================
-
-// 재고 관리 타입
-export type ReferenceType = 'ORDER' | 'PURCHASE' | 'ADJUSTMENT' | 'RETURN' | 'INITIAL'
-
-export interface Inventory {
-  id: string
-  productId: string
-  currentStock: number
-  reservedStock: number
-  availableStock: number
-  minimumStock: number
-  maximumStock?: number
-  reorderPoint: number
-  warehouseLocation: string
-  lastStockCheckAt?: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface StockMovement {
-  id: string
-  productId: string
-  movementType: MovementType
-  quantity: number
-  unitCost?: number
-  referenceType?: string
-  referenceId?: string
-  notes?: string
-  createdAt: string
-  createdBy: string
-  creator?: {
-    id: string
-    name: string
-  }
-  product?: {
-    id: string
-    productCode: string
-    productName: string
-    unitPrice: number
-    category?: {
-      id: string
-      categoryName: string
-    }
-  }
-}
-
-export interface InventoryByProduct {
-  product: {
-    id: string
-    productCode: string
-    productName: string
-    unitPrice: number
-    costPrice?: number
-    category?: {
-      id: string
-      categoryName: string
-    }
-  }
-  inventory?: Inventory
-}
-
-export interface LowStockAlert {
-  product: {
-    id: string
-    productCode: string
-    productName: string
-    unitPrice: number
-    category?: {
-      id: string
-      categoryName: string
-    }
-  }
-  inventory: Inventory & {
-    alertType: AlertType
-  }
-  preferredSupplier?: {
-    id: string
-    companyName: string
-    supplierCode: string
-    contactPerson?: string
-    phone?: string
-    email?: string
-  }
-}
-
-export interface InventoryStats {
-  totalProducts: number
-  lowStockCount: number
-  outOfStockCount: number
-  normalStockCount: number
-  totalInventoryValue: number
-  alertsCount: number
+export interface OrdersSearchParams extends BaseSearchParams {
+  supplierId?: string
+  status?: OrderStatus
+  startDate?: string
+  endDate?: string
+  [key: string]: unknown
 }
 
 // ================================
@@ -336,20 +195,24 @@ export interface InventoryStats {
 
 export interface AdjustStockRequest {
   quantity: number
-  movementType: MovementType
-  unitCost?: number
-  referenceType?: ReferenceType
-  referenceId?: string
+  reason?: string
   notes?: string
-  reason: string
 }
 
-export interface UpdateInventoryRequest {
-  warehouseLocation?: string
-  reservedStock?: number
-  minimumStock?: number
-  maximumStock?: number
-  reorderPoint?: number
+export interface InventorySearchParams extends BaseSearchParams {
+  productId?: string
+  lowStock?: boolean
+  outOfStock?: boolean
+  [key: string]: unknown
+}
+
+// ================================
+// 인증 관련 타입
+// ================================
+
+export interface LoginRequest {
+  email: string
+  password: string
 }
 
 export interface RegisterRequest {
@@ -360,39 +223,15 @@ export interface RegisterRequest {
 }
 
 // ================================
-// 검색 및 필터 파라미터
+// 공통 유틸리티 타입
 // ================================
-export interface ProductsSearchParams {
-  page?: number
-  limit?: number
-  search?: string
-  supplierId?: string
-  categoryId?: string
-  status?: string
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-  [key: string]: unknown
-}
 
-export interface SuppliersSearchParams {
-  page?: number
-  limit?: number
-  search?: string
-  status?: string
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-  [key: string]: unknown
-}
+export type PaginatedData<T> = PaginatedResponse<T>
 
-export interface OrdersSearchParams {
-  page?: number
-  limit?: number
-  search?: string
-  status?: string
-  supplierId?: string
-  startDate?: string
-  endDate?: string
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-  [key: string]: unknown
+// TooltipPayload 타입 추가 (차트에서 사용)
+export interface TooltipPayload {
+  value: number
+  name: string
+  color: string
+  payload: any
 }

@@ -20,7 +20,9 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { TransactionType } from "@beenest/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { transactionSchema, type TransactionFormData } from "@/schemas/transactionSchema";
+import { toast } from "sonner";
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -67,6 +69,18 @@ const TransactionModal = ({
       },
     ]
   );
+
+  // Validation 에러 상태
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 모달이 열릴 때마다 에러 상태 초기화
+  useEffect(() => {
+    if (isOpen) {
+      setErrors({});
+      setIsSubmitting(false);
+    }
+  }, [isOpen]);
 
   // 임시 상품 목록 (실제로는 API에서 가져올 예정)
   const mockProducts = [
@@ -146,17 +160,57 @@ const TransactionModal = ({
     return calculateSubtotal() + calculateVAT();
   };
 
-  const handleSave = () => {
-    const transactionData = {
-      ...formData,
-      items: items.filter((item) => item.productId && item.quantity > 0),
-      subtotalAmount: calculateSubtotal(),
-      vatAmount: calculateVAT(),
-      totalAmount: calculateTotal(),
-    };
+  const validateAndSave = async () => {
+    setIsSubmitting(true);
+    setErrors({});
 
-    onSave(transactionData);
-    onClose();
+    try {
+      const transactionData = {
+        ...formData,
+        transactionType: formData.transactionType as TransactionType,
+        items: items.filter((item) => item.productId && item.quantity > 0),
+        subtotalAmount: calculateSubtotal(),
+        vatAmount: calculateVAT(),
+        totalAmount: calculateTotal(),
+      };
+
+      // Zod validation
+      const validatedData = transactionSchema.parse(transactionData);
+
+      // 추가 비즈니스 로직 검증
+      if (validatedData.items.length === 0) {
+        throw new Error("최소 1개의 품목을 선택해주세요");
+      }
+
+      if (validatedData.totalAmount <= 0) {
+        throw new Error("총액은 0보다 커야 합니다");
+      }
+
+      // 성공 시 저장
+      await onSave(validatedData);
+      toast.success(mode === "create" ? "거래가 등록되었습니다" : "거래가 수정되었습니다");
+      onClose();
+    } catch (error: any) {
+      if (error.errors) {
+        // Zod validation 에러
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err: any) => {
+          const path = err.path.join('.');
+          fieldErrors[path] = err.message;
+        });
+        setErrors(fieldErrors);
+        toast.error("입력 정보를 확인해주세요");
+      } else {
+        // 일반 에러
+        toast.error(error.message || "저장 중 오류가 발생했습니다");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSave = () => {
+    validateAndSave();
   };
 
   const formatCurrency = (amount: number) => {
@@ -191,8 +245,11 @@ const TransactionModal = ({
                   type="date"
                   value={formData.transactionDate}
                   onChange={(e) => handleFormChange("transactionDate", e.target.value)}
-                  className="mt-1"
+                  className={`mt-1 ${errors.transactionDate ? "border-red-500" : ""}`}
                 />
+                {errors.transactionDate && (
+                  <p className="text-red-500 text-sm mt-1">{errors.transactionDate}</p>
+                )}
               </div>
 
               {/* 거래 구분 */}
@@ -247,8 +304,11 @@ const TransactionModal = ({
                       value={formData.customerName}
                       onChange={(e) => handleFormChange("customerName", e.target.value)}
                       placeholder="고객명을 입력하세요"
-                      className="mt-1"
+                      className={`mt-1 ${errors.customerName ? "border-red-500" : ""}`}
                     />
+                    {errors.customerName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.customerName}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="customerPhone">고객 연락처</Label>
@@ -257,8 +317,11 @@ const TransactionModal = ({
                       value={formData.customerPhone}
                       onChange={(e) => handleFormChange("customerPhone", e.target.value)}
                       placeholder="연락처를 입력하세요"
-                      className="mt-1"
+                      className={`mt-1 ${errors.customerPhone ? "border-red-500" : ""}`}
                     />
+                    {errors.customerPhone && (
+                      <p className="text-red-500 text-sm mt-1">{errors.customerPhone}</p>
+                    )}
                   </div>
                 </>
               )}
@@ -412,9 +475,16 @@ const TransactionModal = ({
           <Button
             onClick={handleSave}
             className="bg-yellow-400 hover:bg-yellow-500 text-black cursor-pointer"
-            disabled={items.length === 0 || !items.some(item => item.productId)}
+            disabled={isSubmitting || items.length === 0 || !items.some(item => item.productId)}
           >
-            {mode === "create" ? "등록" : "수정"}
+            {isSubmitting ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                {mode === "create" ? "등록 중..." : "수정 중..."}
+              </>
+            ) : (
+              mode === "create" ? "등록" : "수정"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
