@@ -65,3 +65,9 @@ export const useAuth = () => {
     refreshAuth,
   };
 };
+
+// useRegister 별칭 추가 (기존 코드 호환성을 위해)
+export const useRegister = () => {
+  const { register, isLoading, error } = useAuth();
+  return { register, isLoading, error };
+};

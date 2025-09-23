@@ -1,13 +1,18 @@
+import { useCategories } from "@/hooks/useCategories";
+import { useProduct, useUpdateProduct } from "@/hooks/useProducts";
+import { useSuppliers } from "@/hooks/useSuppliers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { CloudUpload, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useCategories } from "@/hooks/useCategories";
-import { useSuppliers } from "@/hooks/useSuppliers";
-import { useProduct, useUpdateProduct } from "@/hooks/useProducts";
 
+import {
+  FormPageFooter,
+  FormPageHeader,
+  FormPageWrapper,
+} from "@/components/forms";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -27,11 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  FormPageWrapper,
-  FormPageHeader,
-  FormPageFooter,
-} from "@/components/forms";
 
 // Zod 스키마 정의 - AddProductPage와 동일
 const productSchema = z.object({
@@ -77,13 +77,27 @@ type ProductFormData = z.infer<typeof productSchema>;
 
 export default function ProductEditPage() {
   const navigate = useNavigate();
-  const { productId } = useParams({ from: "/_layout/products/$productId/edit" });
+  const { productId } = useParams({
+    from: "/_layout/products/$productId/edit",
+  });
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   // API 훅들
-  const { data: categoriesResponse, isLoading: isCategoriesLoading, error: categoriesError } = useCategories();
-  const { data: suppliersResponse, isLoading: isSuppliersLoading, error: suppliersError } = useSuppliers();
-  const { data: productResponse, isLoading: isProductLoading, error: productError } = useProduct(productId);
+  const {
+    data: categoriesResponse,
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useCategories();
+  const {
+    data: suppliersResponse,
+    isLoading: isSuppliersLoading,
+    error: suppliersError,
+  } = useSuppliers();
+  const {
+    data: productResponse,
+    isLoading: isProductLoading,
+    error: productError,
+  } = useProduct(productId);
   const updateProduct = useUpdateProduct();
 
   const categories = categoriesResponse || [];
@@ -91,7 +105,8 @@ export default function ProductEditPage() {
   const product = productResponse;
 
   // 데이터 로딩 상태
-  const isInitialLoading = isCategoriesLoading || isSuppliersLoading || isProductLoading;
+  const isInitialLoading =
+    isCategoriesLoading || isSuppliersLoading || isProductLoading;
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -154,7 +169,10 @@ export default function ProductEditPage() {
         productName: data.productName.trim(),
         productCode: data.productCode.trim().toUpperCase(),
         description: data.description?.trim() || undefined,
-        categoryId: data.categoryId && data.categoryId !== "none" ? parseInt(data.categoryId, 10) : undefined,
+        categoryId:
+          data.categoryId && data.categoryId !== "none"
+            ? parseInt(data.categoryId, 10)
+            : undefined,
         unitPrice: data.unitPrice,
         costPrice: data.costPrice || undefined,
         barcode: data.barcode?.trim() || undefined,
@@ -169,7 +187,7 @@ export default function ProductEditPage() {
       await updateProduct.mutateAsync({ id: productId, data: productData });
 
       // 성공 시 상품 목록으로 이동
-      navigate({ to: "/_layout/products" });
+      navigate({ to: "/products" });
     } catch (error: any) {
       console.error("상품 수정 실패:", error);
 
@@ -177,24 +195,24 @@ export default function ProductEditPage() {
       if (error?.error?.message?.includes("이미 존재하는 상품 코드")) {
         form.setError("productCode", {
           type: "manual",
-          message: "이미 사용 중인 상품 코드입니다. 다른 코드를 입력해주세요."
+          message: "이미 사용 중인 상품 코드입니다. 다른 코드를 입력해주세요.",
         });
       } else if (error?.error?.message?.includes("카테고리")) {
         form.setError("categoryId", {
           type: "manual",
-          message: "선택한 카테고리가 유효하지 않습니다."
+          message: "선택한 카테고리가 유효하지 않습니다.",
         });
       } else {
         form.setError("root", {
           type: "manual",
-          message: error?.error?.message || "상품 수정 중 오류가 발생했습니다."
+          message: error?.error?.message || "상품 수정 중 오류가 발생했습니다.",
         });
       }
     }
   };
 
   const handleCancel = () => {
-    navigate({ to: "/_layout/products" });
+    navigate({ to: "/products" });
   };
 
   // 로딩 중 화면
@@ -202,7 +220,7 @@ export default function ProductEditPage() {
     return (
       <FormPageWrapper>
         <FormPageHeader
-          backPath="/_layout/products"
+          backPath="/products"
           backText="상품 관리로 돌아가기"
           title="상품 수정"
           subtitle="상품 정보를 수정하세요."
@@ -229,7 +247,7 @@ export default function ProductEditPage() {
     return (
       <FormPageWrapper>
         <FormPageHeader
-          backPath="/_layout/products"
+          backPath="/products"
           backText="상품 관리로 돌아가기"
           title="상품 수정"
           subtitle="상품 정보를 수정하세요."
@@ -239,12 +257,14 @@ export default function ProductEditPage() {
             <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-white text-xl font-bold">!</span>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">상품을 찾을 수 없습니다</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              상품을 찾을 수 없습니다
+            </h3>
             <p className="text-gray-600 mb-4">
               요청하신 상품이 존재하지 않거나 삭제되었습니다.
             </p>
             <Button
-              onClick={() => navigate({ to: "/_layout/products" })}
+              onClick={() => navigate({ to: "/products" })}
               className="bg-yellow-500 text-white hover:bg-yellow-600"
             >
               상품 목록으로 돌아가기
@@ -260,7 +280,7 @@ export default function ProductEditPage() {
     return (
       <FormPageWrapper>
         <FormPageHeader
-          backPath="/_layout/products"
+          backPath="/products"
           backText="상품 관리로 돌아가기"
           title="상품 수정"
           subtitle="상품 정보를 수정하세요."
@@ -270,7 +290,9 @@ export default function ProductEditPage() {
             <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-white text-xl font-bold">!</span>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">데이터 로딩 실패</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              데이터 로딩 실패
+            </h3>
             <p className="text-gray-600 mb-4">
               카테고리 또는 공급업체 정보를 불러오는데 실패했습니다.
             </p>
@@ -292,7 +314,7 @@ export default function ProductEditPage() {
   return (
     <FormPageWrapper>
       <FormPageHeader
-        backPath="/_layout/products"
+        backPath="/products"
         backText="상품 관리로 돌아가기"
         title="상품 수정"
         subtitle="상품 정보를 수정하세요."
@@ -344,7 +366,9 @@ export default function ProductEditPage() {
                             {...field}
                             onChange={(e) => {
                               // 자동 대문자 변환 및 특수문자 제거
-                              const value = e.target.value.toUpperCase().replace(/[^A-Z0-9\-_]/g, '');
+                              const value = e.target.value
+                                .toUpperCase()
+                                .replace(/[^A-Z0-9\-_]/g, "");
                               field.onChange(value);
                             }}
                           />
@@ -362,17 +386,26 @@ export default function ProductEditPage() {
                         <FormLabel className="text-sm font-medium text-gray-700">
                           카테고리
                         </FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400">
                               <SelectValue placeholder="카테고리를 선택하세요" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="none">카테고리 선택 안함</SelectItem>
+                            <SelectItem value="none">
+                              카테고리 선택 안함
+                            </SelectItem>
                             {categories.map((category) => (
-                              <SelectItem key={category.id} value={category.id.toString()}>
-                                {category.parentCategory && `${category.parentCategory.categoryName} > `}
+                              <SelectItem
+                                key={category.id}
+                                value={category.id.toString()}
+                              >
+                                {category.parentCategory &&
+                                  `${category.parentCategory.categoryName} > `}
                                 {category.categoryName}
                               </SelectItem>
                             ))}
@@ -401,7 +434,9 @@ export default function ProductEditPage() {
                               placeholder="0"
                               className="h-12 pl-8 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value) || 0)
+                              }
                             />
                           </div>
                         </FormControl>
@@ -458,7 +493,9 @@ export default function ProductEditPage() {
                               placeholder="0"
                               className="h-12 pl-8 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value) || 0)
+                              }
                             />
                           </div>
                         </FormControl>
@@ -485,7 +522,9 @@ export default function ProductEditPage() {
                               placeholder="0"
                               className="h-12 pl-8 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value) || 0)
+                              }
                             />
                           </div>
                         </FormControl>
@@ -501,9 +540,12 @@ export default function ProductEditPage() {
                       <span className="text-white text-xs font-bold">i</span>
                     </div>
                     <div>
-                      <h4 className="font-medium text-blue-900 mb-1">재고 관리 안내</h4>
+                      <h4 className="font-medium text-blue-900 mb-1">
+                        재고 관리 안내
+                      </h4>
                       <p className="text-sm text-blue-700">
-                        재고 수량 변경은 별도의 재고 관리 페이지에서 처리하실 수 있습니다.
+                        재고 수량 변경은 별도의 재고 관리 페이지에서 처리하실 수
+                        있습니다.
                       </p>
                     </div>
                   </div>
@@ -551,7 +593,9 @@ export default function ProductEditPage() {
                             placeholder="0"
                             className="h-12 border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                             {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value) || 0)
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -608,7 +652,8 @@ export default function ProductEditPage() {
                             이미지를 업로드하세요
                           </p>
                           <p className="text-sm text-gray-500 mt-1">
-                            JPG, PNG, GIF 파일을 드래그하거나 클릭하여 선택하세요
+                            JPG, PNG, GIF 파일을 드래그하거나 클릭하여
+                            선택하세요
                           </p>
                           <p className="text-xs text-gray-400 mt-2">
                             최대 10개 파일, 각 파일당 최대 5MB

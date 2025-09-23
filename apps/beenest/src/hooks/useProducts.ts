@@ -1,7 +1,6 @@
 import { queryKeys } from "@/lib/query-client";
 import { handleApiError, handleApiSuccess } from "@/lib/toast";
 import { productsService } from "@/services/products.service";
-import type { Product } from "@beenest/types";
 import type {
   CreateProductRequest,
   ProductsSearchParams,

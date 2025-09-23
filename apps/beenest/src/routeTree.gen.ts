@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
@@ -28,9 +30,19 @@ import { Route as LayoutInventoryAdjustRouteImport } from './routes/_layout/inve
 import { Route as LayoutProductsProductIdEditRouteImport } from './routes/_layout/products/$productId/edit'
 import { Route as LayoutInventoryProductIdAdjustRouteImport } from './routes/_layout/inventory/$productId/adjust'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LayoutRoute = LayoutRouteImport.update({
@@ -123,7 +135,9 @@ const LayoutInventoryProductIdAdjustRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/analytics': typeof AnalyticsRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/dashboard': typeof LayoutDashboardRoute
   '/inventory': typeof LayoutInventoryRouteWithChildren
   '/orders': typeof LayoutOrdersRoute
@@ -142,7 +156,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/analytics': typeof AnalyticsRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/dashboard': typeof LayoutDashboardRoute
   '/orders': typeof LayoutOrdersRoute
   '/settings': typeof LayoutSettingsRoute
@@ -162,7 +178,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/analytics': typeof AnalyticsRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/_layout/dashboard': typeof LayoutDashboardRoute
   '/_layout/inventory': typeof LayoutInventoryRouteWithChildren
   '/_layout/orders': typeof LayoutOrdersRoute
@@ -183,7 +201,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$'
+    | '/analytics'
     | '/login'
+    | '/register'
     | '/dashboard'
     | '/inventory'
     | '/orders'
@@ -202,7 +222,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$'
+    | '/analytics'
     | '/login'
+    | '/register'
     | '/dashboard'
     | '/orders'
     | '/settings'
@@ -221,7 +243,9 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/_layout'
+    | '/analytics'
     | '/login'
+    | '/register'
     | '/_layout/dashboard'
     | '/_layout/inventory'
     | '/_layout/orders'
@@ -242,16 +266,32 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   LayoutRoute: typeof LayoutRouteWithChildren
+  AnalyticsRoute: typeof AnalyticsRoute
   LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_layout': {
@@ -439,7 +479,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   LayoutRoute: LayoutRouteWithChildren,
+  AnalyticsRoute: AnalyticsRoute,
   LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

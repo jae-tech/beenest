@@ -1,138 +1,107 @@
+import { PageLayout } from "@/components/layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DataTable } from "@/components/ui/data-table";
+import { TableSkeleton } from "@/components/ui/loading";
 import { useTransactions, useTransactionStats } from "@/hooks/useTransactions";
 import { TransactionType, TransactionStatus, GetTransactionsParams } from "@beenest/types";
+import type { StatItem } from "@/types/design-system";
 import { useState, useMemo } from "react";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DollarSign, TrendingUp, TrendingDown, Percent, Edit, Eye, Receipt } from "lucide-react";
 import TransactionModal from "./TransactionModal";
 
-// 필터링 상태 타입
-interface FilterState {
-  search: string;
-  startDate: string;
-  endDate: string;
-  supplier: string;
-  product: string;
-  transactionType?: TransactionType;
-  status?: TransactionStatus;
+// 거래 타입 정의 (임시 - 실제 API 타입과 맞춰야 함)
+interface Transaction {
+  id: string;
+  transactionNumber: string;
+  transactionDate: string;
+  transactionType: TransactionType;
+  status: TransactionStatus;
+  customerName?: string;
+  supplier?: {
+    companyName: string;
+  };
+  items?: {
+    product?: {
+      productName: string;
+    };
+    quantity: number;
+    unitPrice: string;
+  }[];
+  totalAmount: string;
 }
 
-const TransactionsPage = () => {
+export default function TransactionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
-  const [activeTab, setActiveTab] = useState("all");
-
-  // 필터링 상태
-  const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    startDate: "",
-    endDate: "",
-    supplier: "",
-    product: "",
-  });
-
-  // API 쿼리 파라미터 생성
-  const queryParams = useMemo<GetTransactionsParams>(() => ({
-    page: 1,
-    limit: 50,
-    search: filters.search || undefined,
-    startDate: filters.startDate || undefined,
-    endDate: filters.endDate || undefined,
-    transactionType: filters.transactionType,
-    status: filters.status,
-  }), [filters]);
-
-  // 탭에 따른 필터 적용
-  const tabQueryParams = useMemo<GetTransactionsParams>(() => {
-    switch (activeTab) {
-      case "sale":
-        return { ...queryParams, transactionType: TransactionType.SALE };
-      case "purchase":
-        return { ...queryParams, transactionType: TransactionType.PURCHASE };
-      case "pending":
-        return { ...queryParams, status: TransactionStatus.PENDING };
-      default:
-        return queryParams;
-    }
-  }, [activeTab, queryParams]);
+  const [searchParams] = useState({});
 
   // API 호출
-  const { data: transactionsData, isLoading, error } = useTransactions(tabQueryParams);
+  const { data: transactionsData, isLoading, error } = useTransactions(searchParams);
   const { data: statsData, isLoading: statsLoading } = useTransactionStats();
 
-  // 거래 목록
-  const transactions = transactionsData?.data || [];
-  const pagination = transactionsData?.pagination;
+  // 거래 목록 (실제 API 데이터 우선, 없으면 빈 배열)
+  const transactions: Transaction[] = transactionsData?.data || [];
+  const totalTransactions = transactionsData?.pagination?.total || 0;
 
   // 임시 목업 데이터 (백엔드 연결 전까지 사용)
-  const mockTransactions = [
+  const mockTransactions: Transaction[] = [
     {
       id: "1",
       transactionNumber: "SAL-20241201-001",
-      date: "2024-12-01",
+      transactionDate: "2024-12-01",
       customerName: "홍길동 고객",
-      productName: "프리미엄 원두커피 1kg",
-      quantity: 10,
-      unitPrice: 125000,
-      totalAmount: 1250000,
-      type: "SALE",
-      status: "CONFIRMED",
+      totalAmount: "1250000",
+      transactionType: TransactionType.SALE,
+      status: TransactionStatus.CONFIRMED,
+      items: [{
+        product: { productName: "프리미엄 원두커피 1kg" },
+        quantity: 10,
+        unitPrice: "125000"
+      }]
     },
     {
       id: "2",
       transactionNumber: "PUR-20241130-002",
-      date: "2024-11-30",
-      supplierName: "㈜한국자재",
-      productName: "스테인리스 보온병 500ml",
-      quantity: 50,
-      unitPrice: 17800,
-      totalAmount: 890000,
-      type: "PURCHASE",
-      status: "CONFIRMED",
+      transactionDate: "2024-11-30",
+      supplier: { companyName: "㈜한국자재" },
+      totalAmount: "890000",
+      transactionType: TransactionType.PURCHASE,
+      status: TransactionStatus.CONFIRMED,
+      items: [{
+        product: { productName: "스테인리스 보온병 500ml" },
+        quantity: 50,
+        unitPrice: "17800"
+      }]
     },
     {
       id: "3",
       transactionNumber: "SAL-20241129-003",
-      date: "2024-11-29",
+      transactionDate: "2024-11-29",
       customerName: "ABC마트",
-      productName: "유기농 녹차 티백 100개입",
-      quantity: 100,
-      unitPrice: 21000,
-      totalAmount: 2100000,
-      type: "SALE",
-      status: "PENDING",
-    },
-    {
-      id: "4",
-      transactionNumber: "PUR-20241128-004",
-      date: "2024-11-28",
-      supplierName: "대한장비㈜",
-      productName: "커피 그라인딩 머신",
-      quantity: 1,
-      unitPrice: 5450000,
-      totalAmount: 5450000,
-      type: "PURCHASE",
-      status: "CONFIRMED",
-    },
-    {
-      id: "5",
-      transactionNumber: "SAL-20241127-005",
-      date: "2024-11-27",
-      customerName: "이영희 고객",
-      productName: "디카페인 원두커피 500g",
-      quantity: 8,
-      unitPrice: 40000,
-      totalAmount: 320000,
-      type: "SALE",
-      status: "CONFIRMED",
-    },
+      totalAmount: "2100000",
+      transactionType: TransactionType.SALE,
+      status: TransactionStatus.PENDING,
+      items: [{
+        product: { productName: "유기농 녹차 티백 100개입" },
+        quantity: 100,
+        unitPrice: "21000"
+      }]
+    }
   ];
 
+  // 데이터가 없으면 목업 데이터 사용
+  const displayTransactions = transactions.length > 0 ? transactions : mockTransactions;
+
+  const formatCurrency = (amount: number | string) => {
+    const numAmount = typeof amount === 'string' ? Number(amount) : amount;
+    return `₩${numAmount.toLocaleString('ko-KR')}`;
+  };
+
   // 통계 데이터 (API 우선, 로딩 중에는 기본값)
-  const stats = statsData || {
+  const statsValues = statsData || {
     totalSales: 0,
     totalPurchases: 0,
     totalProfit: 0,
@@ -141,19 +110,36 @@ const TransactionsPage = () => {
     thisMonthPurchases: 0,
   };
 
-  // 필터 핸들러
-  const handleFilterChange = (key: keyof FilterState, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  // 검색 핸들러
-  const handleSearch = (searchTerm: string) => {
-    handleFilterChange('search', searchTerm);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return `₩${amount.toLocaleString('ko-KR')}`;
-  };
+  const stats: StatItem[] = [
+    {
+      title: "매출 총이익",
+      value: formatCurrency(statsValues.totalProfit),
+      description: "총매출액 - 총매입액",
+      icon: DollarSign,
+      color: "blue",
+    },
+    {
+      title: "이번 달 매출액",
+      value: formatCurrency(statsValues.thisMonthSales),
+      description: `${new Date().getMonth() + 1}월 매출 합계`,
+      icon: TrendingUp,
+      color: "green",
+    },
+    {
+      title: "이번 달 매입액",
+      value: formatCurrency(statsValues.thisMonthPurchases),
+      description: `${new Date().getMonth() + 1}월 매입 합계`,
+      icon: TrendingDown,
+      color: "red",
+    },
+    {
+      title: "수익률",
+      value: `${statsValues.profitMargin.toFixed(1)}%`,
+      description: "(총이익/총매출) × 100",
+      icon: Percent,
+      color: "purple",
+    },
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -191,10 +177,17 @@ const TransactionsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleEditTransaction = (transaction: any) => {
+  const handleEditTransaction = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setModalMode("edit");
     setIsModalOpen(true);
+  };
+
+  const handleDelete = async (transactionId: string) => {
+    if (confirm("정말로 이 거래를 삭제하시겠습니까?")) {
+      console.log("삭제할 거래 ID:", transactionId);
+      // 실제로는 API 호출로 삭제 처리
+    }
   };
 
   const handleSaveTransaction = (transactionData: any) => {
@@ -202,358 +195,188 @@ const TransactionsPage = () => {
     // 실제로는 API 호출로 저장 처리
   };
 
-  return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between">
+  // DataTable 컬럼 정의
+  const columns: ColumnDef<Transaction>[] = [
+    {
+      accessorKey: "transactionNumber",
+      header: "거래번호",
+      cell: ({ row }) => (
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            매입/매출 관리
-          </h1>
-          <p className="text-gray-600 mt-2">
-            언제, 누구와, 무엇을, 얼마나, 얼마에 거래했는지 한눈에 확인하세요
-          </p>
+          <div className="text-sm font-medium text-gray-900">
+            {new Date(row.original.transactionDate).toLocaleDateString('ko-KR')}
+          </div>
+          <div className="text-xs text-gray-500 font-mono">
+            {row.getValue("transactionNumber")}
+          </div>
         </div>
-        <Button
-          onClick={handleCreateTransaction}
-          className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-3 !rounded-button whitespace-nowrap cursor-pointer text-lg"
-        >
-          <i className="fas fa-plus mr-3 text-lg"></i>
-          새 거래 등록
-        </Button>
-      </div>
-
-      {/* 분석 정보 카드 */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-          <div className="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <i className="fas fa-chart-line text-2xl text-white"></i>
+      ),
+    },
+    {
+      id: "party",
+      header: "거래처",
+      cell: ({ row }) => {
+        const transaction = row.original;
+        const partyName = transaction.supplier?.companyName || transaction.customerName || "정보 없음";
+        return (
+          <Badge className="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">
+            {partyName}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "product",
+      header: "품목",
+      cell: ({ row }) => {
+        const transaction = row.original;
+        const firstItem = transaction.items?.[0];
+        return (
+          <div className="text-sm font-medium text-gray-900">
+            {firstItem?.product?.productName || "정보 없음"}
+            {transaction.items && transaction.items.length > 1 && (
+              <span className="text-xs text-gray-500 ml-1">
+                외 {transaction.items.length - 1}건
+              </span>
+            )}
           </div>
-          <p className="text-3xl font-bold text-gray-900">
-            {statsLoading ? "..." : formatCurrency(stats.totalProfit)}
-          </p>
-          <p className="text-base font-medium text-gray-600">매출 총이익</p>
-          <p className="text-sm text-gray-400 mt-2">총매출액 - 총매입액</p>
-        </Card>
-
-        <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-          <div className="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <i className="fas fa-arrow-up text-2xl text-white"></i>
+        );
+      },
+    },
+    {
+      id: "quantity",
+      header: "수량",
+      cell: ({ row }) => {
+        const transaction = row.original;
+        const totalQuantity = transaction.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+        return (
+          <div className="text-sm font-medium text-gray-900">
+            {totalQuantity}개
           </div>
-          <p className="text-3xl font-bold text-gray-900">
-            {statsLoading ? "..." : formatCurrency(stats.thisMonthSales)}
-          </p>
-          <p className="text-base font-medium text-gray-600">이번 달 매출액</p>
-          <p className="text-sm text-gray-400 mt-2">{new Date().getMonth() + 1}월 매출 합계</p>
-        </Card>
-
-        <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-          <div className="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <i className="fas fa-arrow-down text-2xl text-white"></i>
-          </div>
-          <p className="text-3xl font-bold text-gray-900">
-            {statsLoading ? "..." : formatCurrency(stats.thisMonthPurchases)}
-          </p>
-          <p className="text-base font-medium text-gray-600">이번 달 매입액</p>
-          <p className="text-sm text-gray-400 mt-2">{new Date().getMonth() + 1}월 매입 합계</p>
-        </Card>
-
-        <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-          <div className="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <i className="fas fa-percentage text-2xl text-white"></i>
-          </div>
-          <p className="text-3xl font-bold text-gray-900">
-            {statsLoading ? "..." : `${stats.profitMargin.toFixed(1)}%`}
-          </p>
-          <p className="text-base font-medium text-gray-600">수익률</p>
-          <p className="text-sm text-gray-400 mt-2">(총이익/총매출) × 100</p>
-        </Card>
-      </div>
-
-      {/* 거래 목록 */}
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <Tabs defaultValue="all" className="w-full">
-            <div className="flex items-center justify-between">
-              <TabsList className="grid w-fit grid-cols-4">
-                <TabsTrigger value="all" onClick={() => setActiveTab("all")}>
-                  전체 거래
-                </TabsTrigger>
-                <TabsTrigger value="sale" onClick={() => setActiveTab("sale")}>
-                  매출
-                </TabsTrigger>
-                <TabsTrigger value="purchase" onClick={() => setActiveTab("purchase")}>
-                  매입
-                </TabsTrigger>
-                <TabsTrigger value="pending" onClick={() => setActiveTab("pending")}>
-                  대기중
-                </TabsTrigger>
-              </TabsList>
-
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  {/* 기간별 필터 */}
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      type="date"
-                      className="w-40 text-sm"
-                      placeholder="시작일"
-                      value={filters.startDate}
-                      onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                    />
-                    <span className="text-gray-400">~</span>
-                    <Input
-                      type="date"
-                      className="w-40 text-sm"
-                      placeholder="종료일"
-                      value={filters.endDate}
-                      onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                    />
-                  </div>
-
-                  {/* 거래처별 필터 */}
-                  <select
-                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                    value={filters.supplier}
-                    onChange={(e) => handleFilterChange('supplier', e.target.value)}
-                  >
-                    <option value="">전체 거래처</option>
-                    <option value="카페 온더코너">카페 온더코너</option>
-                    <option value="청년 창업 카페">청년 창업 카페</option>
-                    <option value="스마트오피스">스마트오피스</option>
-                    <option value="테크노 일렉트로닉스">테크노 일렉트로닉스</option>
-                    <option value="패션플러스">패션플러스</option>
-                  </select>
-
-                  {/* 품목별 필터 */}
-                  <select
-                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                    value={filters.product}
-                    onChange={(e) => handleFilterChange('product', e.target.value)}
-                  >
-                    <option value="">전체 품목</option>
-                    <option value="헤드폰">헤드폰</option>
-                    <option value="티셔츠">티셔츠</option>
-                    <option value="스피커">스피커</option>
-                    <option value="백팩">백팩</option>
-                    <option value="러닝화">러닝화</option>
-                  </select>
-                </div>
-
-                <div className="relative">
-                  <Input
-                    placeholder="거래처명, 품목명 검색..."
-                    className="pl-10 pr-4 py-2 w-80 text-sm"
-                    value={filters.search}
-                    onChange={(e) => handleSearch(e.target.value)}
-                  />
-                  <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                </div>
+        );
+      },
+    },
+    {
+      id: "amount",
+      header: "단가/합계",
+      cell: ({ row }) => {
+        const transaction = row.original;
+        const firstItem = transaction.items?.[0];
+        return (
+          <div>
+            {firstItem && (
+              <div className="text-sm text-gray-600">
+                단가: {formatCurrency(firstItem.unitPrice)}
               </div>
+            )}
+            <div className="text-sm font-bold">
+              <span
+                className={
+                  transaction.transactionType === TransactionType.SALE
+                    ? "text-green-600"
+                    : "text-red-600"
+                }
+              >
+                {transaction.transactionType === TransactionType.SALE ? "+" : "-"}
+                {formatCurrency(transaction.totalAmount)}
+              </span>
             </div>
-
-            <TabsContent value="all" className="mt-6">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                        거래일자
-                        <span className="text-xs text-gray-400 block font-normal">언제</span>
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                        거래처
-                        <span className="text-xs text-gray-400 block font-normal">누구와</span>
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                        품목
-                        <span className="text-xs text-gray-400 block font-normal">무엇을</span>
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                        수량
-                        <span className="text-xs text-gray-400 block font-normal">얼마나</span>
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                        단가/합계
-                        <span className="text-xs text-gray-400 block font-normal">얼마에</span>
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                        거래유형
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                        상태
-                      </th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-600 text-sm">
-                        작업
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {isLoading ? (
-                      <tr>
-                        <td colSpan={8} className="py-8 text-center text-gray-500">
-                          <div className="flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-400"></div>
-                            <span className="ml-2">데이터를 불러오는 중...</span>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : error ? (
-                      <tr>
-                        <td colSpan={8} className="py-8 text-center text-red-500">
-                          데이터를 불러오는데 실패했습니다.
-                        </td>
-                      </tr>
-                    ) : transactions.length === 0 ? (
-                      <tr>
-                        <td colSpan={8} className="py-8 text-center text-gray-500">
-                          거래 데이터가 없습니다.
-                        </td>
-                      </tr>
-                    ) : (
-                      transactions.map((transaction) => (
-                      <tr
-                        key={transaction.id}
-                        className="border-b border-gray-100 hover:bg-gray-50"
-                      >
-                        {/* 거래일자 - 언제 */}
-                        <td className="py-4 px-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {new Date(transaction.transactionDate).toLocaleDateString('ko-KR')}
-                          </div>
-                          <div className="text-xs text-gray-500 font-mono">
-                            {transaction.transactionNumber}
-                          </div>
-                        </td>
-
-                        {/* 거래처 - 누구와 */}
-                        <td className="py-4 px-4">
-                          <Badge className="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">
-                            {transaction.supplier?.companyName || transaction.customerName || "정보 없음"}
-                          </Badge>
-                        </td>
-
-                        {/* 품목 - 무엇을 */}
-                        <td className="py-4 px-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {transaction.items?.[0]?.product?.productName || "정보 없음"}
-                            {transaction.items && transaction.items.length > 1 && (
-                              <span className="text-xs text-gray-500 ml-1">
-                                외 {transaction.items.length - 1}건
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* 수량 - 얼마나 */}
-                        <td className="py-4 px-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {transaction.items?.reduce((sum, item) => sum + item.quantity, 0) || 0}개
-                          </div>
-                        </td>
-
-                        {/* 단가/합계 - 얼마에 */}
-                        <td className="py-4 px-4">
-                          <div className="text-sm text-gray-600">
-                            {transaction.items?.[0] && (
-                              <>단가: {formatCurrency(Number(transaction.items[0].unitPrice))}</>
-                            )}
-                          </div>
-                          <div className="text-sm font-bold">
-                            <span
-                              className={
-                                transaction.transactionType === TransactionType.SALE
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }
-                            >
-                              {transaction.transactionType === TransactionType.SALE ? "+" : "-"}
-                              {formatCurrency(Number(transaction.totalAmount))}
-                            </span>
-                          </div>
-                        </td>
-
-                        {/* 거래유형 */}
-                        <td className="py-4 px-4">
-                          <Badge
-                            className={`${
-                              transaction.transactionType === TransactionType.SALE
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            } text-xs font-medium px-2 py-1 rounded-full`}
-                          >
-                            {getTransactionTypeText(transaction.transactionType)}
-                          </Badge>
-                        </td>
-
-                        {/* 상태 */}
-                        <td className="py-4 px-4">
-                          <Badge
-                            className={`${getStatusColor(transaction.status)} text-xs font-medium px-2 py-1 rounded-full`}
-                          >
-                            {getStatusText(transaction.status)}
-                          </Badge>
-                        </td>
-
-                        {/* 작업 */}
-                        <td className="py-4 px-4">
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="p-2 cursor-pointer"
-                              title="상세보기"
-                            >
-                              <i className="fas fa-eye text-gray-600 text-xs"></i>
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="p-2 cursor-pointer"
-                              title="수정"
-                              onClick={() => handleEditTransaction(transaction)}
-                            >
-                              <i className="fas fa-edit text-gray-600 text-xs"></i>
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="p-2 cursor-pointer"
-                              title="영수증 출력"
-                            >
-                              <i className="fas fa-receipt text-gray-600 text-xs"></i>
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </TabsContent>
-
-            {/* 다른 탭 콘텐츠들도 동일한 구조로 필터링만 다르게 */}
-            <TabsContent value="sale" className="mt-6">
-              <div className="text-center text-gray-500 py-8">
-                매출 거래만 표시 (필터링 로직 구현 예정)
-              </div>
-            </TabsContent>
-
-            <TabsContent value="purchase" className="mt-6">
-              <div className="text-center text-gray-500 py-8">
-                매입 거래만 표시 (필터링 로직 구현 예정)
-              </div>
-            </TabsContent>
-
-            <TabsContent value="pending" className="mt-6">
-              <div className="text-center text-gray-500 py-8">
-                대기중 거래만 표시 (필터링 로직 구현 예정)
-              </div>
-            </TabsContent>
-          </Tabs>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "transactionType",
+      header: "거래유형",
+      cell: ({ row }) => {
+        const type = row.getValue("transactionType") as TransactionType;
+        return (
+          <Badge
+            className={`${
+              type === TransactionType.SALE
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            } text-xs font-medium px-2 py-1 rounded-full`}
+          >
+            {getTransactionTypeText(type)}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "상태",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        return (
+          <Badge
+            className={`${getStatusColor(status)} text-xs font-medium px-2 py-1 rounded-full`}
+          >
+            {getStatusText(status)}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "작업",
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="p-2 cursor-pointer"
+            title="상세보기"
+          >
+            <Eye className="h-3 w-3 text-gray-600" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="p-2 cursor-pointer"
+            title="수정"
+            onClick={() => handleEditTransaction(row.original)}
+          >
+            <Edit className="h-3 w-3 text-gray-600" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="p-2 cursor-pointer"
+            title="영수증 출력"
+          >
+            <Receipt className="h-3 w-3 text-gray-600" />
+          </Button>
         </div>
-      </Card>
+      ),
+    },
+  ];
+
+  return (
+    <PageLayout
+      title="매입/매출 관리"
+      actionText="새 거래 등록"
+      stats={stats}
+      showExport={true}
+      onAction={handleCreateTransaction}
+      onFilter={() => {}}
+      onExport={() => {}}
+    >
+      {isLoading ? (
+        <TableSkeleton rows={10} cols={8} />
+      ) : error ? (
+        <div className="text-center py-8">
+          <p className="text-red-600">
+            거래 데이터를 불러오는 중 오류가 발생했습니다.
+          </p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={displayTransactions}
+          searchKey="transactionNumber"
+          searchPlaceholder="거래번호 또는 거래처명으로 검색..."
+        />
+      )}
 
       {/* 거래 등록/수정 모달 */}
       <TransactionModal
@@ -563,8 +386,6 @@ const TransactionsPage = () => {
         initialData={selectedTransaction}
         mode={modalMode}
       />
-    </div>
+    </PageLayout>
   );
-};
-
-export default TransactionsPage;
+}

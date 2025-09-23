@@ -1,5 +1,10 @@
+import {
+  FormPageFooter,
+  FormPageHeader,
+  FormPageWrapper,
+  FormProgressCard,
+} from "@/components/forms";
 import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -9,28 +14,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  FormPageHeader,
-  FormPageFooter,
-  FormPageWrapper,
-  FormProgressCard,
-} from "@/components/forms";
+import { useCreateSupplier } from "@/hooks/useSuppliers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
 import { Star } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-// Zod 스키마 정의
+// Zod 스키마 정의 - 백엔드 API와 일치하도록 수정
 const supplierFormSchema = z.object({
   companyName: z
     .string()
@@ -51,20 +43,28 @@ const supplierFormSchema = z.object({
   address: z
     .string()
     .min(1, "주소를 입력해주세요.")
-    .max(200, "주소는 200자 이내로 입력해주세요."),
-  city: z.string().max(50, "시/군/구는 50자 이내로 입력해주세요.").optional(),
-  state: z.string().max(50, "시/도는 50자 이내로 입력해주세요.").optional(),
-  postalCode: z
+    .max(500, "주소는 500자 이내로 입력해주세요."),
+  website: z
     .string()
-    .max(20, "우편번호는 20자 이내로 입력해주세요.")
+    .url("올바른 웹사이트 URL을 입력해주세요.")
+    .optional()
+    .or(z.literal("")),
+  taxNumber: z
+    .string()
+    .max(50, "사업자등록번호는 50자 이내로 입력해주세요.")
     .optional(),
-  country: z.string().max(50, "국가는 50자 이내로 입력해주세요.").optional(),
-  products: z.array(z.string()).default([]),
-  paymentTerms: z.string().min(1, "결제 조건을 선택해주세요."),
+  paymentTerms: z
+    .string()
+    .max(100, "결제 조건은 100자 이내로 입력해주세요.")
+    .optional(),
+  deliveryTerms: z
+    .string()
+    .max(100, "배송 조건은 100자 이내로 입력해주세요.")
+    .optional(),
   rating: z.number().min(0).max(5).default(0),
   notes: z
     .string()
-    .max(500, "추가 메모는 500자 이내로 입력해주세요.")
+    .max(1000, "추가 메모는 1000자 이내로 입력해주세요.")
     .optional(),
 });
 
@@ -72,22 +72,21 @@ type SupplierFormData = z.infer<typeof supplierFormSchema>;
 
 export default function AddSupplierPage() {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const createSupplier = useCreateSupplier();
 
   const form = useForm<SupplierFormData>({
     resolver: zodResolver(supplierFormSchema),
+    mode: "onChange",
     defaultValues: {
       companyName: "",
       contactPerson: "",
       email: "",
       phone: "",
       address: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      country: "",
-      products: [],
+      website: "",
+      taxNumber: "",
       paymentTerms: "",
+      deliveryTerms: "",
       rating: 0,
       notes: "",
     },
@@ -96,39 +95,58 @@ export default function AddSupplierPage() {
   const { control, handleSubmit, watch, formState } = form;
   const watchedValues = watch();
 
-  const productOptions = [
-    "전자제품",
-    "의류 및 패션",
-    "가정용품",
-    "스포츠 용품",
-    "사무용품",
-    "건강 및 미용",
-    "자동차 부품",
-    "산업 장비",
-  ];
-
-  const paymentTermsOptions = [
-    "즉시 결제",
-    "15일 내 결제",
-    "30일 내 결제",
-    "45일 내 결제",
-    "60일 내 결제",
-    "90일 내 결제",
-  ];
-
   const onSubmit = async (data: SupplierFormData) => {
-    setIsSubmitting(true);
-
     try {
-      console.log("Submitting supplier data:", data);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // 백엔드 API 스키마에 맞춰 데이터 변환
+      const supplierData = {
+        companyName: data.companyName.trim(),
+        contactPerson: data.contactPerson.trim(),
+        email: data.email.trim().toLowerCase(),
+        phone: data.phone.trim(),
+        address: data.address.trim(),
+        website: data.website?.trim() || undefined,
+        taxNumber: data.taxNumber?.trim() || undefined,
+        paymentTerms: data.paymentTerms?.trim() || undefined,
+        deliveryTerms: data.deliveryTerms?.trim() || undefined,
+        rating: data.rating || 0,
+        notes: data.notes?.trim() || undefined,
+        isActive: true,
+      };
 
-      // 성공 후 공급업체 목록 페이지로 이동
+      console.log("공급업체 저장 요청:", supplierData);
+
+      await createSupplier.mutateAsync(supplierData);
+
+      // 성공 시 공급업체 목록으로 이동
       navigate({ to: "/suppliers" });
-    } catch (error) {
-      console.error("Failed to add supplier:", error);
-    } finally {
-      setIsSubmitting(false);
+    } catch (error: any) {
+      console.error("공급업체 저장 실패:", error);
+
+      // 특정 에러에 대한 폼 레벨 에러 설정
+      if (error?.error?.message?.includes("이미 존재")) {
+        if (error.error.message.includes("이메일")) {
+          form.setError("email", {
+            type: "manual",
+            message: "이미 등록된 이메일 주소입니다.",
+          });
+        } else if (error.error.message.includes("회사명")) {
+          form.setError("companyName", {
+            type: "manual",
+            message: "이미 등록된 회사명입니다.",
+          });
+        }
+      } else if (error?.error?.message?.includes("유효하지 않은")) {
+        form.setError("root", {
+          type: "manual",
+          message: "입력한 정보가 유효하지 않습니다. 다시 확인해주세요.",
+        });
+      } else {
+        form.setError("root", {
+          type: "manual",
+          message:
+            error?.error?.message || "공급업체 등록 중 오류가 발생했습니다.",
+        });
+      }
     }
   };
 
@@ -138,8 +156,7 @@ export default function AddSupplierPage() {
       watchedValues.contactPerson &&
       watchedValues.email &&
       watchedValues.phone &&
-      watchedValues.address &&
-      watchedValues.paymentTerms
+      watchedValues.address
   );
 
   return (
@@ -248,14 +265,14 @@ export default function AddSupplierPage() {
             </div>
           </Card>
 
-          {/* 주소 정보 섹션 */}
+          {/* 주소 및 추가 정보 섹션 */}
           <Card className="p-8">
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                주소 정보
+                주소 및 추가 정보
               </h2>
               <p className="text-sm text-gray-600">
-                공급업체의 사업장 주소를 입력해주세요.
+                공급업체의 사업장 주소와 추가 정보를 입력해주세요.
               </p>
             </div>
 
@@ -266,12 +283,13 @@ export default function AddSupplierPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700 flex items-center">
-                      도로명 주소 <span className="text-red-500 ml-1">*</span>
+                      사업장 주소 <span className="text-red-500 ml-1">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="도로명 주소를 입력하세요"
-                        className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
+                      <Textarea
+                        placeholder="사업장 주소를 입력하세요"
+                        className="min-h-[80px] text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 resize-none"
+                        rows={3}
                         {...field}
                       />
                     </FormControl>
@@ -280,18 +298,19 @@ export default function AddSupplierPage() {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={control}
-                  name="city"
+                  name="website"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        시/군/구
+                        웹사이트
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="시/군/구"
+                          type="url"
+                          placeholder="https://example.com"
                           className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                           {...field}
                         />
@@ -303,35 +322,15 @@ export default function AddSupplierPage() {
 
                 <FormField
                   control={control}
-                  name="state"
+                  name="taxNumber"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        시/도
+                        사업자등록번호
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="시/도"
-                          className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={control}
-                  name="postalCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        우편번호
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="우편번호"
+                          placeholder="123-45-67890"
                           className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                           {...field}
                         />
@@ -341,122 +340,62 @@ export default function AddSupplierPage() {
                   )}
                 />
               </div>
-
-              <FormField
-                control={control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      국가
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="국가를 입력하세요"
-                        className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
           </Card>
 
-          {/* 사업 세부정보 섹션 */}
+          {/* 거래 조건 및 평가 섹션 */}
           <Card className="p-8">
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                사업 세부정보
+                거래 조건 및 평가
               </h2>
               <p className="text-sm text-gray-600">
-                공급업체의 사업 관련 정보를 입력해주세요.
+                공급업체와의 거래 조건과 평가 정보를 입력해주세요.
               </p>
             </div>
 
             <div className="space-y-6">
-              <FormField
-                control={control}
-                name="products"
-                render={() => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      공급 제품/서비스
-                    </FormLabel>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {productOptions.map((product) => (
-                        <FormField
-                          key={product}
-                          control={control}
-                          name="products"
-                          render={({ field }) => {
-                            return (
-                              <FormItem
-                                key={product}
-                                className="flex items-center space-x-2"
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(product)}
-                                    onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([
-                                            ...field.value,
-                                            product,
-                                          ])
-                                        : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== product
-                                            )
-                                          );
-                                    }}
-                                    className="border-gray-300 text-yellow-400 focus:ring-yellow-400"
-                                  />
-                                </FormControl>
-                                <FormLabel className="text-sm text-gray-700 cursor-pointer">
-                                  {product}
-                                </FormLabel>
-                              </FormItem>
-                            );
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="paymentTerms"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700 flex items-center">
-                      결제 조건 <span className="text-red-500 ml-1">*</span>
-                    </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={control}
+                  name="paymentTerms"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        결제 조건
+                      </FormLabel>
                       <FormControl>
-                        <SelectTrigger className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400">
-                          <SelectValue placeholder="결제 조건을 선택하세요" />
-                        </SelectTrigger>
+                        <Input
+                          placeholder="예: 월말 결제, 45일 후 지급 등"
+                          className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
+                          {...field}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        {paymentTermsOptions.map((term) => (
-                          <SelectItem key={term} value={term}>
-                            {term}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={control}
+                  name="deliveryTerms"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        배송 조건
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="예: 3-5일 배송, 무료배송 등"
+                          className="h-12 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={control}
@@ -511,12 +450,12 @@ export default function AddSupplierPage() {
                       <Textarea
                         placeholder="공급업체에 대한 추가 정보나 특이사항을 입력하세요..."
                         className="min-h-[100px] text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400 resize-none"
-                        maxLength={500}
+                        maxLength={1000}
                         {...field}
                       />
                     </FormControl>
                     <div className="text-right text-xs text-gray-500">
-                      {field.value?.length || 0}/500자
+                      {field.value?.length || 0}/1000자
                     </div>
                     <FormMessage />
                   </FormItem>
@@ -530,10 +469,27 @@ export default function AddSupplierPage() {
             message="양식 작성 진행 상태"
           />
 
+          {/* 전역 에러 메시지 */}
+          {form.formState.errors.root && (
+            <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center mt-0.5">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
+                <div>
+                  <h4 className="font-medium text-red-900 mb-1">오류</h4>
+                  <p className="text-sm text-red-700">
+                    {form.formState.errors.root.message}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <FormPageFooter
             onCancel={() => navigate({ to: "/suppliers" })}
-            onSubmit={() => {}} // handleSubmit은 form onSubmit에서 처리
-            isSubmitting={isSubmitting}
+            onSubmit={form.handleSubmit(onSubmit)}
+            isSubmitting={createSupplier.isPending}
             submitText="공급업체 등록"
             cancelText="취소"
             isValid={formState.isValid}

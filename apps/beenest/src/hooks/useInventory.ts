@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-client'
 import { inventoryService } from '@/services/inventory.service'
 import { handleApiError, handleApiSuccess } from '@/lib/toast'
-import type { Inventory, StockMovement } from '@beenest/types'
 import type {
   AdjustStockRequest,
   UpdateInventoryRequest

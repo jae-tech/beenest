@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-client'
 import { suppliersService } from '@/services/suppliers.service'
 import { handleApiSuccess, handleApiError } from '@/lib/toast'
-import type { Supplier } from '@beenest/types'
 import type {
   CreateSupplierRequest,
   UpdateSupplierRequest,
