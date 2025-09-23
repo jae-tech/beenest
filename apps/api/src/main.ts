@@ -1,4 +1,9 @@
 import 'tsconfig-paths/register';
+
+// BigInt 직렬화 지원 추가
+(BigInt.prototype as any).toJSON = function() {
+  return this.toString();
+};
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
@@ -8,6 +13,7 @@ import {
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from '@/app.module';
 import { HttpExceptionFilter } from '@/common/filters/http-exception.filter';
+import { TransformInterceptor } from '@/common/interceptors/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -17,6 +23,9 @@ async function bootstrap() {
 
   // 전역 Exception Filter 설정
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // 전역 응답 변환 인터셉터 설정 (BigInt 처리)
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   // 전역 검증 파이프 설정
   app.useGlobalPipes(

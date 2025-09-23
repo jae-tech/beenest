@@ -14,7 +14,7 @@ export class DashboardController {
   @ApiResponse({ status: 401, description: '인증 실패' })
   async getDashboardStats() {
     // 임시 사용자 ID 사용 (개발 중)
-    const temporaryUserId = 1;
+    const temporaryUserId = '1';
     const stats = await this.dashboardService.getDashboardStats(temporaryUserId);
     return {
       success: true,
@@ -27,7 +27,7 @@ export class DashboardController {
   @ApiOperation({ summary: '카테고리별 재고 현황 차트 데이터' })
   @ApiResponse({ status: 200, description: '차트 데이터 조회 성공' })
   async getInventoryChart() {
-    const temporaryUserId = 1;
+    const temporaryUserId = '1';
     const chartData = await this.dashboardService.getInventoryChart(temporaryUserId);
     return {
       success: true,
@@ -41,7 +41,7 @@ export class DashboardController {
   @ApiQuery({ name: 'days', required: false, description: '조회 기간 (일수, 기본값: 7)' })
   @ApiResponse({ status: 200, description: '차트 데이터 조회 성공' })
   async getStockMovementChart(@Query('days') days = 7) {
-    const temporaryUserId = 1;
+    const temporaryUserId = '1';
     const chartData = await this.dashboardService.getStockMovementChart(
       temporaryUserId,
       Number(days),
@@ -58,7 +58,7 @@ export class DashboardController {
   @ApiQuery({ name: 'limit', required: false, description: '조회할 알림 수 (기본값: 10)' })
   @ApiResponse({ status: 200, description: '알림 목록 조회 성공' })
   async getRecentAlerts(@Query('limit') limit = 10) {
-    const temporaryUserId = 1;
+    const temporaryUserId = '1';
     const alerts = await this.dashboardService.getRecentAlerts(
       temporaryUserId,
       Number(limit),

@@ -185,7 +185,7 @@ export function ProductDetailPage() {
           {
             label: "변경 이력",
             icon: History,
-            onClick: () => navigate({ to: `/products/${productId}/history` }),
+            onClick: () => navigate({ to: `/inventory/history/${productId}` }),
             variant: 'outline'
           },
           {
