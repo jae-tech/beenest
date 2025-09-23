@@ -9,7 +9,7 @@ import type { StatItem } from "@/types/design-system";
 import { useState, useMemo } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DollarSign, TrendingUp, TrendingDown, Percent, Edit, Eye, Receipt } from "lucide-react";
-import TransactionModal from "./TransactionModal";
+import { useNavigate } from "@tanstack/react-router";
 
 // 거래 타입 정의 (임시 - 실제 API 타입과 맞춰야 함)
 interface Transaction {
@@ -33,9 +33,7 @@ interface Transaction {
 }
 
 export default function TransactionsPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const navigate = useNavigate();
   const [searchParams] = useState({});
 
   // API 호출
@@ -172,15 +170,16 @@ export default function TransactionsPage() {
   };
 
   const handleCreateTransaction = () => {
-    setSelectedTransaction(null);
-    setModalMode("create");
-    setIsModalOpen(true);
+    console.log('Creating transaction - navigating to /transactions/add');
+    navigate({ to: '/transactions/add' });
   };
 
   const handleEditTransaction = (transaction: Transaction) => {
-    setSelectedTransaction(transaction);
-    setModalMode("edit");
-    setIsModalOpen(true);
+    navigate({ to: `/transactions/${transaction.id}/edit` });
+  };
+
+  const handleViewTransaction = (transaction: Transaction) => {
+    navigate({ to: `/transactions/${transaction.id}` });
   };
 
   const handleDelete = async (transactionId: string) => {
@@ -188,11 +187,6 @@ export default function TransactionsPage() {
       console.log("삭제할 거래 ID:", transactionId);
       // 실제로는 API 호출로 삭제 처리
     }
-  };
-
-  const handleSaveTransaction = (transactionData: any) => {
-    console.log("저장할 거래 데이터:", transactionData);
-    // 실제로는 API 호출로 저장 처리
   };
 
   // DataTable 컬럼 정의
@@ -326,6 +320,7 @@ export default function TransactionsPage() {
             size="sm"
             className="p-2 cursor-pointer"
             title="상세보기"
+            onClick={() => handleViewTransaction(row.original)}
           >
             <Eye className="h-3 w-3 text-gray-600" />
           </Button>
@@ -378,14 +373,6 @@ export default function TransactionsPage() {
         />
       )}
 
-      {/* 거래 등록/수정 모달 */}
-      <TransactionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveTransaction}
-        initialData={selectedTransaction}
-        mode={modalMode}
-      />
     </PageLayout>
   );
 }

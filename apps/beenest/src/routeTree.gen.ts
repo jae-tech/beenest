@@ -23,11 +23,17 @@ import { Route as LayoutDashboardRouteImport } from './routes/_layout/dashboard'
 import { Route as LayoutSuppliersIndexRouteImport } from './routes/_layout/suppliers/index'
 import { Route as LayoutProductsIndexRouteImport } from './routes/_layout/products/index'
 import { Route as LayoutInventoryIndexRouteImport } from './routes/_layout/inventory/index'
+import { Route as LayoutTransactionsAddRouteImport } from './routes/_layout/transactions/add'
+import { Route as LayoutTransactionsTransactionIdRouteImport } from './routes/_layout/transactions/$transactionId'
 import { Route as LayoutSuppliersAddRouteImport } from './routes/_layout/suppliers/add'
+import { Route as LayoutSuppliersSupplierIdRouteImport } from './routes/_layout/suppliers/$supplierId'
 import { Route as LayoutProductsAddRouteImport } from './routes/_layout/products/add'
 import { Route as LayoutProductsProductIdRouteImport } from './routes/_layout/products/$productId'
 import { Route as LayoutInventoryAdjustRouteImport } from './routes/_layout/inventory/adjust'
+import { Route as LayoutTransactionsTransactionIdEditRouteImport } from './routes/_layout/transactions/$transactionId/edit'
+import { Route as LayoutSuppliersSupplierIdEditRouteImport } from './routes/_layout/suppliers/$supplierId/edit'
 import { Route as LayoutProductsProductIdEditRouteImport } from './routes/_layout/products/$productId/edit'
+import { Route as LayoutInventoryHistoryProductIdRouteImport } from './routes/_layout/inventory/history/$productId'
 import { Route as LayoutInventoryProductIdAdjustRouteImport } from './routes/_layout/inventory/$productId/adjust'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -99,11 +105,28 @@ const LayoutInventoryIndexRoute = LayoutInventoryIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutInventoryRoute,
 } as any)
+const LayoutTransactionsAddRoute = LayoutTransactionsAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => LayoutTransactionsRoute,
+} as any)
+const LayoutTransactionsTransactionIdRoute =
+  LayoutTransactionsTransactionIdRouteImport.update({
+    id: '/$transactionId',
+    path: '/$transactionId',
+    getParentRoute: () => LayoutTransactionsRoute,
+  } as any)
 const LayoutSuppliersAddRoute = LayoutSuppliersAddRouteImport.update({
   id: '/suppliers/add',
   path: '/suppliers/add',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutSuppliersSupplierIdRoute =
+  LayoutSuppliersSupplierIdRouteImport.update({
+    id: '/suppliers/$supplierId',
+    path: '/suppliers/$supplierId',
+    getParentRoute: () => LayoutRoute,
+  } as any)
 const LayoutProductsAddRoute = LayoutProductsAddRouteImport.update({
   id: '/products/add',
   path: '/products/add',
@@ -119,11 +142,29 @@ const LayoutInventoryAdjustRoute = LayoutInventoryAdjustRouteImport.update({
   path: '/adjust',
   getParentRoute: () => LayoutInventoryRoute,
 } as any)
+const LayoutTransactionsTransactionIdEditRoute =
+  LayoutTransactionsTransactionIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => LayoutTransactionsTransactionIdRoute,
+  } as any)
+const LayoutSuppliersSupplierIdEditRoute =
+  LayoutSuppliersSupplierIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => LayoutSuppliersSupplierIdRoute,
+  } as any)
 const LayoutProductsProductIdEditRoute =
   LayoutProductsProductIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
     getParentRoute: () => LayoutProductsProductIdRoute,
+  } as any)
+const LayoutInventoryHistoryProductIdRoute =
+  LayoutInventoryHistoryProductIdRouteImport.update({
+    id: '/history/$productId',
+    path: '/history/$productId',
+    getParentRoute: () => LayoutInventoryRoute,
   } as any)
 const LayoutInventoryProductIdAdjustRoute =
   LayoutInventoryProductIdAdjustRouteImport.update({
@@ -142,16 +183,22 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof LayoutInventoryRouteWithChildren
   '/orders': typeof LayoutOrdersRoute
   '/settings': typeof LayoutSettingsRoute
-  '/transactions': typeof LayoutTransactionsRoute
+  '/transactions': typeof LayoutTransactionsRouteWithChildren
   '/inventory/adjust': typeof LayoutInventoryAdjustRoute
   '/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
   '/products/add': typeof LayoutProductsAddRoute
+  '/suppliers/$supplierId': typeof LayoutSuppliersSupplierIdRouteWithChildren
   '/suppliers/add': typeof LayoutSuppliersAddRoute
+  '/transactions/$transactionId': typeof LayoutTransactionsTransactionIdRouteWithChildren
+  '/transactions/add': typeof LayoutTransactionsAddRoute
   '/inventory/': typeof LayoutInventoryIndexRoute
   '/products': typeof LayoutProductsIndexRoute
   '/suppliers': typeof LayoutSuppliersIndexRoute
   '/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
+  '/inventory/history/$productId': typeof LayoutInventoryHistoryProductIdRoute
   '/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
+  '/suppliers/$supplierId/edit': typeof LayoutSuppliersSupplierIdEditRoute
+  '/transactions/$transactionId/edit': typeof LayoutTransactionsTransactionIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -162,16 +209,22 @@ export interface FileRoutesByTo {
   '/dashboard': typeof LayoutDashboardRoute
   '/orders': typeof LayoutOrdersRoute
   '/settings': typeof LayoutSettingsRoute
-  '/transactions': typeof LayoutTransactionsRoute
+  '/transactions': typeof LayoutTransactionsRouteWithChildren
   '/inventory/adjust': typeof LayoutInventoryAdjustRoute
   '/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
   '/products/add': typeof LayoutProductsAddRoute
+  '/suppliers/$supplierId': typeof LayoutSuppliersSupplierIdRouteWithChildren
   '/suppliers/add': typeof LayoutSuppliersAddRoute
+  '/transactions/$transactionId': typeof LayoutTransactionsTransactionIdRouteWithChildren
+  '/transactions/add': typeof LayoutTransactionsAddRoute
   '/inventory': typeof LayoutInventoryIndexRoute
   '/products': typeof LayoutProductsIndexRoute
   '/suppliers': typeof LayoutSuppliersIndexRoute
   '/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
+  '/inventory/history/$productId': typeof LayoutInventoryHistoryProductIdRoute
   '/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
+  '/suppliers/$supplierId/edit': typeof LayoutSuppliersSupplierIdEditRoute
+  '/transactions/$transactionId/edit': typeof LayoutTransactionsTransactionIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -185,16 +238,22 @@ export interface FileRoutesById {
   '/_layout/inventory': typeof LayoutInventoryRouteWithChildren
   '/_layout/orders': typeof LayoutOrdersRoute
   '/_layout/settings': typeof LayoutSettingsRoute
-  '/_layout/transactions': typeof LayoutTransactionsRoute
+  '/_layout/transactions': typeof LayoutTransactionsRouteWithChildren
   '/_layout/inventory/adjust': typeof LayoutInventoryAdjustRoute
   '/_layout/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
   '/_layout/products/add': typeof LayoutProductsAddRoute
+  '/_layout/suppliers/$supplierId': typeof LayoutSuppliersSupplierIdRouteWithChildren
   '/_layout/suppliers/add': typeof LayoutSuppliersAddRoute
+  '/_layout/transactions/$transactionId': typeof LayoutTransactionsTransactionIdRouteWithChildren
+  '/_layout/transactions/add': typeof LayoutTransactionsAddRoute
   '/_layout/inventory/': typeof LayoutInventoryIndexRoute
   '/_layout/products/': typeof LayoutProductsIndexRoute
   '/_layout/suppliers/': typeof LayoutSuppliersIndexRoute
   '/_layout/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
+  '/_layout/inventory/history/$productId': typeof LayoutInventoryHistoryProductIdRoute
   '/_layout/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
+  '/_layout/suppliers/$supplierId/edit': typeof LayoutSuppliersSupplierIdEditRoute
+  '/_layout/transactions/$transactionId/edit': typeof LayoutTransactionsTransactionIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -212,12 +271,18 @@ export interface FileRouteTypes {
     | '/inventory/adjust'
     | '/products/$productId'
     | '/products/add'
+    | '/suppliers/$supplierId'
     | '/suppliers/add'
+    | '/transactions/$transactionId'
+    | '/transactions/add'
     | '/inventory/'
     | '/products'
     | '/suppliers'
     | '/inventory/$productId/adjust'
+    | '/inventory/history/$productId'
     | '/products/$productId/edit'
+    | '/suppliers/$supplierId/edit'
+    | '/transactions/$transactionId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -232,12 +297,18 @@ export interface FileRouteTypes {
     | '/inventory/adjust'
     | '/products/$productId'
     | '/products/add'
+    | '/suppliers/$supplierId'
     | '/suppliers/add'
+    | '/transactions/$transactionId'
+    | '/transactions/add'
     | '/inventory'
     | '/products'
     | '/suppliers'
     | '/inventory/$productId/adjust'
+    | '/inventory/history/$productId'
     | '/products/$productId/edit'
+    | '/suppliers/$supplierId/edit'
+    | '/transactions/$transactionId/edit'
   id:
     | '__root__'
     | '/'
@@ -254,12 +325,18 @@ export interface FileRouteTypes {
     | '/_layout/inventory/adjust'
     | '/_layout/products/$productId'
     | '/_layout/products/add'
+    | '/_layout/suppliers/$supplierId'
     | '/_layout/suppliers/add'
+    | '/_layout/transactions/$transactionId'
+    | '/_layout/transactions/add'
     | '/_layout/inventory/'
     | '/_layout/products/'
     | '/_layout/suppliers/'
     | '/_layout/inventory/$productId/adjust'
+    | '/_layout/inventory/history/$productId'
     | '/_layout/products/$productId/edit'
+    | '/_layout/suppliers/$supplierId/edit'
+    | '/_layout/transactions/$transactionId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -371,11 +448,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutInventoryIndexRouteImport
       parentRoute: typeof LayoutInventoryRoute
     }
+    '/_layout/transactions/add': {
+      id: '/_layout/transactions/add'
+      path: '/add'
+      fullPath: '/transactions/add'
+      preLoaderRoute: typeof LayoutTransactionsAddRouteImport
+      parentRoute: typeof LayoutTransactionsRoute
+    }
+    '/_layout/transactions/$transactionId': {
+      id: '/_layout/transactions/$transactionId'
+      path: '/$transactionId'
+      fullPath: '/transactions/$transactionId'
+      preLoaderRoute: typeof LayoutTransactionsTransactionIdRouteImport
+      parentRoute: typeof LayoutTransactionsRoute
+    }
     '/_layout/suppliers/add': {
       id: '/_layout/suppliers/add'
       path: '/suppliers/add'
       fullPath: '/suppliers/add'
       preLoaderRoute: typeof LayoutSuppliersAddRouteImport
+      parentRoute: typeof LayoutRoute
+    }
+    '/_layout/suppliers/$supplierId': {
+      id: '/_layout/suppliers/$supplierId'
+      path: '/suppliers/$supplierId'
+      fullPath: '/suppliers/$supplierId'
+      preLoaderRoute: typeof LayoutSuppliersSupplierIdRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/products/add': {
@@ -399,12 +497,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutInventoryAdjustRouteImport
       parentRoute: typeof LayoutInventoryRoute
     }
+    '/_layout/transactions/$transactionId/edit': {
+      id: '/_layout/transactions/$transactionId/edit'
+      path: '/edit'
+      fullPath: '/transactions/$transactionId/edit'
+      preLoaderRoute: typeof LayoutTransactionsTransactionIdEditRouteImport
+      parentRoute: typeof LayoutTransactionsTransactionIdRoute
+    }
+    '/_layout/suppliers/$supplierId/edit': {
+      id: '/_layout/suppliers/$supplierId/edit'
+      path: '/edit'
+      fullPath: '/suppliers/$supplierId/edit'
+      preLoaderRoute: typeof LayoutSuppliersSupplierIdEditRouteImport
+      parentRoute: typeof LayoutSuppliersSupplierIdRoute
+    }
     '/_layout/products/$productId/edit': {
       id: '/_layout/products/$productId/edit'
       path: '/edit'
       fullPath: '/products/$productId/edit'
       preLoaderRoute: typeof LayoutProductsProductIdEditRouteImport
       parentRoute: typeof LayoutProductsProductIdRoute
+    }
+    '/_layout/inventory/history/$productId': {
+      id: '/_layout/inventory/history/$productId'
+      path: '/history/$productId'
+      fullPath: '/inventory/history/$productId'
+      preLoaderRoute: typeof LayoutInventoryHistoryProductIdRouteImport
+      parentRoute: typeof LayoutInventoryRoute
     }
     '/_layout/inventory/$productId/adjust': {
       id: '/_layout/inventory/$productId/adjust'
@@ -420,17 +539,48 @@ interface LayoutInventoryRouteChildren {
   LayoutInventoryAdjustRoute: typeof LayoutInventoryAdjustRoute
   LayoutInventoryIndexRoute: typeof LayoutInventoryIndexRoute
   LayoutInventoryProductIdAdjustRoute: typeof LayoutInventoryProductIdAdjustRoute
+  LayoutInventoryHistoryProductIdRoute: typeof LayoutInventoryHistoryProductIdRoute
 }
 
 const LayoutInventoryRouteChildren: LayoutInventoryRouteChildren = {
   LayoutInventoryAdjustRoute: LayoutInventoryAdjustRoute,
   LayoutInventoryIndexRoute: LayoutInventoryIndexRoute,
   LayoutInventoryProductIdAdjustRoute: LayoutInventoryProductIdAdjustRoute,
+  LayoutInventoryHistoryProductIdRoute: LayoutInventoryHistoryProductIdRoute,
 }
 
 const LayoutInventoryRouteWithChildren = LayoutInventoryRoute._addFileChildren(
   LayoutInventoryRouteChildren,
 )
+
+interface LayoutTransactionsTransactionIdRouteChildren {
+  LayoutTransactionsTransactionIdEditRoute: typeof LayoutTransactionsTransactionIdEditRoute
+}
+
+const LayoutTransactionsTransactionIdRouteChildren: LayoutTransactionsTransactionIdRouteChildren =
+  {
+    LayoutTransactionsTransactionIdEditRoute:
+      LayoutTransactionsTransactionIdEditRoute,
+  }
+
+const LayoutTransactionsTransactionIdRouteWithChildren =
+  LayoutTransactionsTransactionIdRoute._addFileChildren(
+    LayoutTransactionsTransactionIdRouteChildren,
+  )
+
+interface LayoutTransactionsRouteChildren {
+  LayoutTransactionsTransactionIdRoute: typeof LayoutTransactionsTransactionIdRouteWithChildren
+  LayoutTransactionsAddRoute: typeof LayoutTransactionsAddRoute
+}
+
+const LayoutTransactionsRouteChildren: LayoutTransactionsRouteChildren = {
+  LayoutTransactionsTransactionIdRoute:
+    LayoutTransactionsTransactionIdRouteWithChildren,
+  LayoutTransactionsAddRoute: LayoutTransactionsAddRoute,
+}
+
+const LayoutTransactionsRouteWithChildren =
+  LayoutTransactionsRoute._addFileChildren(LayoutTransactionsRouteChildren)
 
 interface LayoutProductsProductIdRouteChildren {
   LayoutProductsProductIdEditRoute: typeof LayoutProductsProductIdEditRoute
@@ -446,14 +596,29 @@ const LayoutProductsProductIdRouteWithChildren =
     LayoutProductsProductIdRouteChildren,
   )
 
+interface LayoutSuppliersSupplierIdRouteChildren {
+  LayoutSuppliersSupplierIdEditRoute: typeof LayoutSuppliersSupplierIdEditRoute
+}
+
+const LayoutSuppliersSupplierIdRouteChildren: LayoutSuppliersSupplierIdRouteChildren =
+  {
+    LayoutSuppliersSupplierIdEditRoute: LayoutSuppliersSupplierIdEditRoute,
+  }
+
+const LayoutSuppliersSupplierIdRouteWithChildren =
+  LayoutSuppliersSupplierIdRoute._addFileChildren(
+    LayoutSuppliersSupplierIdRouteChildren,
+  )
+
 interface LayoutRouteChildren {
   LayoutDashboardRoute: typeof LayoutDashboardRoute
   LayoutInventoryRoute: typeof LayoutInventoryRouteWithChildren
   LayoutOrdersRoute: typeof LayoutOrdersRoute
   LayoutSettingsRoute: typeof LayoutSettingsRoute
-  LayoutTransactionsRoute: typeof LayoutTransactionsRoute
+  LayoutTransactionsRoute: typeof LayoutTransactionsRouteWithChildren
   LayoutProductsProductIdRoute: typeof LayoutProductsProductIdRouteWithChildren
   LayoutProductsAddRoute: typeof LayoutProductsAddRoute
+  LayoutSuppliersSupplierIdRoute: typeof LayoutSuppliersSupplierIdRouteWithChildren
   LayoutSuppliersAddRoute: typeof LayoutSuppliersAddRoute
   LayoutProductsIndexRoute: typeof LayoutProductsIndexRoute
   LayoutSuppliersIndexRoute: typeof LayoutSuppliersIndexRoute
@@ -464,9 +629,10 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutInventoryRoute: LayoutInventoryRouteWithChildren,
   LayoutOrdersRoute: LayoutOrdersRoute,
   LayoutSettingsRoute: LayoutSettingsRoute,
-  LayoutTransactionsRoute: LayoutTransactionsRoute,
+  LayoutTransactionsRoute: LayoutTransactionsRouteWithChildren,
   LayoutProductsProductIdRoute: LayoutProductsProductIdRouteWithChildren,
   LayoutProductsAddRoute: LayoutProductsAddRoute,
+  LayoutSuppliersSupplierIdRoute: LayoutSuppliersSupplierIdRouteWithChildren,
   LayoutSuppliersAddRoute: LayoutSuppliersAddRoute,
   LayoutProductsIndexRoute: LayoutProductsIndexRoute,
   LayoutSuppliersIndexRoute: LayoutSuppliersIndexRoute,
