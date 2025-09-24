@@ -56,7 +56,6 @@ export function FormPageFooter({
       </Button>
       <Button
         type="submit"
-        variant="warning"
         onClick={onSubmit}
         disabled={isSubmitting || !isValid}
         className="px-8 py-3 font-semibold text-sm"

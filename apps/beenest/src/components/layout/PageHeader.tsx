@@ -13,7 +13,6 @@ export function PageHeader({ title, actionText, onAction }: PageHeaderProps) {
       <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
       {onAction && (
         <Button
-          variant="warning"
           className="font-semibold whitespace-nowrap cursor-pointer"
           onClick={onAction}
         >

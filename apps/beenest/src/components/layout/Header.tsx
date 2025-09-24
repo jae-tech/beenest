@@ -58,7 +58,6 @@ export const Header = ({ className = "" }: HeaderProps) => {
           </Button>
           <Link to="/products/add">
             <Button
-              variant="warning"
               className="font-semibold whitespace-nowrap cursor-pointer"
               aria-label="새 상품 등록하기"
             >
