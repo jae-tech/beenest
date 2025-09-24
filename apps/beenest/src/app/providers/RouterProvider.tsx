@@ -1,5 +1,5 @@
 import { RouterProvider as TanStackRouterProvider, createRouter } from '@tanstack/react-router'
-import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useAuth } from '@/lib/auth'
 import { useEffect, useMemo, useState } from 'react'
 import { BrandLoadingScreen } from '@/components/loading/BrandLoadingScreen'
 

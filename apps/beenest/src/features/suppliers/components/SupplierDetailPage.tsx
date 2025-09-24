@@ -29,7 +29,7 @@ import {
 
 export function SupplierDetailPage() {
   const navigate = useNavigate();
-  const { supplierId } = useParams({ from: "/_layout/suppliers/$supplierId" });
+  const { supplierId } = useParams({ from: "/_authenticated/suppliers/$supplierId" });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data: supplierResponse, isLoading } = useSupplier(supplierId);

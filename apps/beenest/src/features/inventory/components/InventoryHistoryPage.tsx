@@ -30,7 +30,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 
 export function InventoryHistoryPage() {
   const navigate = useNavigate()
-  const { productId } = useParams({ from: '/_layout/inventory/history/$productId' })
+  const { productId } = useParams({ from: '/_authenticated/inventory/history/$productId' })
 
   // State for filters
   const [selectedDateRange, setSelectedDateRange] = useState('all')

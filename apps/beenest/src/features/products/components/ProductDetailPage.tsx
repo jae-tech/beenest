@@ -29,7 +29,7 @@ import {
 
 export function ProductDetailPage() {
   const navigate = useNavigate();
-  const { productId } = useParams({ from: "/_layout/products/$productId" });
+  const { productId } = useParams({ from: "/_authenticated/products/$productId" });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // API hooks

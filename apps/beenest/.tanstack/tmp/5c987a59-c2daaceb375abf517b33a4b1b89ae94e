@@ -12,29 +12,29 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
-import { Route as LayoutRouteImport } from './routes/_layout'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as LayoutTransactionsRouteImport } from './routes/_layout/transactions'
-import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
-import { Route as LayoutOrdersRouteImport } from './routes/_layout/orders'
-import { Route as LayoutInventoryRouteImport } from './routes/_layout/inventory'
-import { Route as LayoutDashboardRouteImport } from './routes/_layout/dashboard'
-import { Route as LayoutSuppliersIndexRouteImport } from './routes/_layout/suppliers/index'
-import { Route as LayoutProductsIndexRouteImport } from './routes/_layout/products/index'
-import { Route as LayoutInventoryIndexRouteImport } from './routes/_layout/inventory/index'
-import { Route as LayoutTransactionsAddRouteImport } from './routes/_layout/transactions/add'
-import { Route as LayoutTransactionsTransactionIdRouteImport } from './routes/_layout/transactions/$transactionId'
-import { Route as LayoutSuppliersAddRouteImport } from './routes/_layout/suppliers/add'
-import { Route as LayoutSuppliersSupplierIdRouteImport } from './routes/_layout/suppliers/$supplierId'
-import { Route as LayoutProductsAddRouteImport } from './routes/_layout/products/add'
-import { Route as LayoutProductsProductIdRouteImport } from './routes/_layout/products/$productId'
-import { Route as LayoutInventoryAdjustRouteImport } from './routes/_layout/inventory/adjust'
-import { Route as LayoutTransactionsTransactionIdEditRouteImport } from './routes/_layout/transactions/$transactionId/edit'
-import { Route as LayoutSuppliersSupplierIdEditRouteImport } from './routes/_layout/suppliers/$supplierId/edit'
-import { Route as LayoutProductsProductIdEditRouteImport } from './routes/_layout/products/$productId/edit'
-import { Route as LayoutInventoryHistoryProductIdRouteImport } from './routes/_layout/inventory/history/$productId'
-import { Route as LayoutInventoryProductIdAdjustRouteImport } from './routes/_layout/inventory/$productId/adjust'
+import { Route as AuthenticatedTransactionsRouteImport } from './routes/_authenticated/transactions'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
+import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedSuppliersIndexRouteImport } from './routes/_authenticated/suppliers/index'
+import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products/index'
+import { Route as AuthenticatedInventoryIndexRouteImport } from './routes/_authenticated/inventory/index'
+import { Route as AuthenticatedTransactionsAddRouteImport } from './routes/_authenticated/transactions/add'
+import { Route as AuthenticatedTransactionsTransactionIdRouteImport } from './routes/_authenticated/transactions/$transactionId'
+import { Route as AuthenticatedSuppliersAddRouteImport } from './routes/_authenticated/suppliers/add'
+import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_authenticated/suppliers/$supplierId'
+import { Route as AuthenticatedProductsAddRouteImport } from './routes/_authenticated/products/add'
+import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_authenticated/products/$productId'
+import { Route as AuthenticatedInventoryAdjustRouteImport } from './routes/_authenticated/inventory/adjust'
+import { Route as AuthenticatedTransactionsTransactionIdEditRouteImport } from './routes/_authenticated/transactions/$transactionId/edit'
+import { Route as AuthenticatedSuppliersSupplierIdEditRouteImport } from './routes/_authenticated/suppliers/$supplierId/edit'
+import { Route as AuthenticatedProductsProductIdEditRouteImport } from './routes/_authenticated/products/$productId/edit'
+import { Route as AuthenticatedInventoryHistoryProductIdRouteImport } from './routes/_authenticated/inventory/history/$productId'
+import { Route as AuthenticatedInventoryProductIdAdjustRouteImport } from './routes/_authenticated/inventory/$productId/adjust'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -51,8 +51,8 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutRoute = LayoutRouteImport.update({
-  id: '/_layout',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SplatRoute = SplatRouteImport.update({
@@ -65,112 +65,121 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutTransactionsRoute = LayoutTransactionsRouteImport.update({
-  id: '/transactions',
-  path: '/transactions',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
+const AuthenticatedTransactionsRoute =
+  AuthenticatedTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const LayoutOrdersRoute = LayoutOrdersRouteImport.update({
+const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const LayoutInventoryRoute = LayoutInventoryRouteImport.update({
+const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const LayoutDashboardRoute = LayoutDashboardRouteImport.update({
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const LayoutSuppliersIndexRoute = LayoutSuppliersIndexRouteImport.update({
-  id: '/suppliers/',
-  path: '/suppliers/',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutProductsIndexRoute = LayoutProductsIndexRouteImport.update({
-  id: '/products/',
-  path: '/products/',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutInventoryIndexRoute = LayoutInventoryIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => LayoutInventoryRoute,
-} as any)
-const LayoutTransactionsAddRoute = LayoutTransactionsAddRouteImport.update({
-  id: '/add',
-  path: '/add',
-  getParentRoute: () => LayoutTransactionsRoute,
-} as any)
-const LayoutTransactionsTransactionIdRoute =
-  LayoutTransactionsTransactionIdRouteImport.update({
+const AuthenticatedSuppliersIndexRoute =
+  AuthenticatedSuppliersIndexRouteImport.update({
+    id: '/suppliers/',
+    path: '/suppliers/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProductsIndexRoute =
+  AuthenticatedProductsIndexRouteImport.update({
+    id: '/products/',
+    path: '/products/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedInventoryIndexRoute =
+  AuthenticatedInventoryIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedInventoryRoute,
+  } as any)
+const AuthenticatedTransactionsAddRoute =
+  AuthenticatedTransactionsAddRouteImport.update({
+    id: '/add',
+    path: '/add',
+    getParentRoute: () => AuthenticatedTransactionsRoute,
+  } as any)
+const AuthenticatedTransactionsTransactionIdRoute =
+  AuthenticatedTransactionsTransactionIdRouteImport.update({
     id: '/$transactionId',
     path: '/$transactionId',
-    getParentRoute: () => LayoutTransactionsRoute,
+    getParentRoute: () => AuthenticatedTransactionsRoute,
   } as any)
-const LayoutSuppliersAddRoute = LayoutSuppliersAddRouteImport.update({
-  id: '/suppliers/add',
-  path: '/suppliers/add',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutSuppliersSupplierIdRoute =
-  LayoutSuppliersSupplierIdRouteImport.update({
+const AuthenticatedSuppliersAddRoute =
+  AuthenticatedSuppliersAddRouteImport.update({
+    id: '/suppliers/add',
+    path: '/suppliers/add',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSuppliersSupplierIdRoute =
+  AuthenticatedSuppliersSupplierIdRouteImport.update({
     id: '/suppliers/$supplierId',
     path: '/suppliers/$supplierId',
-    getParentRoute: () => LayoutRoute,
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
-const LayoutProductsAddRoute = LayoutProductsAddRouteImport.update({
-  id: '/products/add',
-  path: '/products/add',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutProductsProductIdRoute = LayoutProductsProductIdRouteImport.update({
-  id: '/products/$productId',
-  path: '/products/$productId',
-  getParentRoute: () => LayoutRoute,
-} as any)
-const LayoutInventoryAdjustRoute = LayoutInventoryAdjustRouteImport.update({
-  id: '/adjust',
-  path: '/adjust',
-  getParentRoute: () => LayoutInventoryRoute,
-} as any)
-const LayoutTransactionsTransactionIdEditRoute =
-  LayoutTransactionsTransactionIdEditRouteImport.update({
+const AuthenticatedProductsAddRoute =
+  AuthenticatedProductsAddRouteImport.update({
+    id: '/products/add',
+    path: '/products/add',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProductsProductIdRoute =
+  AuthenticatedProductsProductIdRouteImport.update({
+    id: '/products/$productId',
+    path: '/products/$productId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedInventoryAdjustRoute =
+  AuthenticatedInventoryAdjustRouteImport.update({
+    id: '/adjust',
+    path: '/adjust',
+    getParentRoute: () => AuthenticatedInventoryRoute,
+  } as any)
+const AuthenticatedTransactionsTransactionIdEditRoute =
+  AuthenticatedTransactionsTransactionIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
-    getParentRoute: () => LayoutTransactionsTransactionIdRoute,
+    getParentRoute: () => AuthenticatedTransactionsTransactionIdRoute,
   } as any)
-const LayoutSuppliersSupplierIdEditRoute =
-  LayoutSuppliersSupplierIdEditRouteImport.update({
+const AuthenticatedSuppliersSupplierIdEditRoute =
+  AuthenticatedSuppliersSupplierIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
-    getParentRoute: () => LayoutSuppliersSupplierIdRoute,
+    getParentRoute: () => AuthenticatedSuppliersSupplierIdRoute,
   } as any)
-const LayoutProductsProductIdEditRoute =
-  LayoutProductsProductIdEditRouteImport.update({
+const AuthenticatedProductsProductIdEditRoute =
+  AuthenticatedProductsProductIdEditRouteImport.update({
     id: '/edit',
     path: '/edit',
-    getParentRoute: () => LayoutProductsProductIdRoute,
+    getParentRoute: () => AuthenticatedProductsProductIdRoute,
   } as any)
-const LayoutInventoryHistoryProductIdRoute =
-  LayoutInventoryHistoryProductIdRouteImport.update({
+const AuthenticatedInventoryHistoryProductIdRoute =
+  AuthenticatedInventoryHistoryProductIdRouteImport.update({
     id: '/history/$productId',
     path: '/history/$productId',
-    getParentRoute: () => LayoutInventoryRoute,
+    getParentRoute: () => AuthenticatedInventoryRoute,
   } as any)
-const LayoutInventoryProductIdAdjustRoute =
-  LayoutInventoryProductIdAdjustRouteImport.update({
+const AuthenticatedInventoryProductIdAdjustRoute =
+  AuthenticatedInventoryProductIdAdjustRouteImport.update({
     id: '/$productId/adjust',
     path: '/$productId/adjust',
-    getParentRoute: () => LayoutInventoryRoute,
+    getParentRoute: () => AuthenticatedInventoryRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -179,26 +188,26 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AnalyticsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/dashboard': typeof LayoutDashboardRoute
-  '/inventory': typeof LayoutInventoryRouteWithChildren
-  '/orders': typeof LayoutOrdersRoute
-  '/settings': typeof LayoutSettingsRoute
-  '/transactions': typeof LayoutTransactionsRouteWithChildren
-  '/inventory/adjust': typeof LayoutInventoryAdjustRoute
-  '/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
-  '/products/add': typeof LayoutProductsAddRoute
-  '/suppliers/$supplierId': typeof LayoutSuppliersSupplierIdRouteWithChildren
-  '/suppliers/add': typeof LayoutSuppliersAddRoute
-  '/transactions/$transactionId': typeof LayoutTransactionsTransactionIdRouteWithChildren
-  '/transactions/add': typeof LayoutTransactionsAddRoute
-  '/inventory/': typeof LayoutInventoryIndexRoute
-  '/products': typeof LayoutProductsIndexRoute
-  '/suppliers': typeof LayoutSuppliersIndexRoute
-  '/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
-  '/inventory/history/$productId': typeof LayoutInventoryHistoryProductIdRoute
-  '/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
-  '/suppliers/$supplierId/edit': typeof LayoutSuppliersSupplierIdEditRoute
-  '/transactions/$transactionId/edit': typeof LayoutTransactionsTransactionIdEditRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/inventory': typeof AuthenticatedInventoryRouteWithChildren
+  '/orders': typeof AuthenticatedOrdersRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/transactions': typeof AuthenticatedTransactionsRouteWithChildren
+  '/inventory/adjust': typeof AuthenticatedInventoryAdjustRoute
+  '/products/$productId': typeof AuthenticatedProductsProductIdRouteWithChildren
+  '/products/add': typeof AuthenticatedProductsAddRoute
+  '/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRouteWithChildren
+  '/suppliers/add': typeof AuthenticatedSuppliersAddRoute
+  '/transactions/$transactionId': typeof AuthenticatedTransactionsTransactionIdRouteWithChildren
+  '/transactions/add': typeof AuthenticatedTransactionsAddRoute
+  '/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/products': typeof AuthenticatedProductsIndexRoute
+  '/suppliers': typeof AuthenticatedSuppliersIndexRoute
+  '/inventory/$productId/adjust': typeof AuthenticatedInventoryProductIdAdjustRoute
+  '/inventory/history/$productId': typeof AuthenticatedInventoryHistoryProductIdRoute
+  '/products/$productId/edit': typeof AuthenticatedProductsProductIdEditRoute
+  '/suppliers/$supplierId/edit': typeof AuthenticatedSuppliersSupplierIdEditRoute
+  '/transactions/$transactionId/edit': typeof AuthenticatedTransactionsTransactionIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -206,54 +215,54 @@ export interface FileRoutesByTo {
   '/analytics': typeof AnalyticsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/dashboard': typeof LayoutDashboardRoute
-  '/orders': typeof LayoutOrdersRoute
-  '/settings': typeof LayoutSettingsRoute
-  '/transactions': typeof LayoutTransactionsRouteWithChildren
-  '/inventory/adjust': typeof LayoutInventoryAdjustRoute
-  '/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
-  '/products/add': typeof LayoutProductsAddRoute
-  '/suppliers/$supplierId': typeof LayoutSuppliersSupplierIdRouteWithChildren
-  '/suppliers/add': typeof LayoutSuppliersAddRoute
-  '/transactions/$transactionId': typeof LayoutTransactionsTransactionIdRouteWithChildren
-  '/transactions/add': typeof LayoutTransactionsAddRoute
-  '/inventory': typeof LayoutInventoryIndexRoute
-  '/products': typeof LayoutProductsIndexRoute
-  '/suppliers': typeof LayoutSuppliersIndexRoute
-  '/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
-  '/inventory/history/$productId': typeof LayoutInventoryHistoryProductIdRoute
-  '/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
-  '/suppliers/$supplierId/edit': typeof LayoutSuppliersSupplierIdEditRoute
-  '/transactions/$transactionId/edit': typeof LayoutTransactionsTransactionIdEditRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/orders': typeof AuthenticatedOrdersRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/transactions': typeof AuthenticatedTransactionsRouteWithChildren
+  '/inventory/adjust': typeof AuthenticatedInventoryAdjustRoute
+  '/products/$productId': typeof AuthenticatedProductsProductIdRouteWithChildren
+  '/products/add': typeof AuthenticatedProductsAddRoute
+  '/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRouteWithChildren
+  '/suppliers/add': typeof AuthenticatedSuppliersAddRoute
+  '/transactions/$transactionId': typeof AuthenticatedTransactionsTransactionIdRouteWithChildren
+  '/transactions/add': typeof AuthenticatedTransactionsAddRoute
+  '/inventory': typeof AuthenticatedInventoryIndexRoute
+  '/products': typeof AuthenticatedProductsIndexRoute
+  '/suppliers': typeof AuthenticatedSuppliersIndexRoute
+  '/inventory/$productId/adjust': typeof AuthenticatedInventoryProductIdAdjustRoute
+  '/inventory/history/$productId': typeof AuthenticatedInventoryHistoryProductIdRoute
+  '/products/$productId/edit': typeof AuthenticatedProductsProductIdEditRoute
+  '/suppliers/$supplierId/edit': typeof AuthenticatedSuppliersSupplierIdEditRoute
+  '/transactions/$transactionId/edit': typeof AuthenticatedTransactionsTransactionIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/_layout': typeof LayoutRouteWithChildren
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/analytics': typeof AnalyticsRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/_layout/dashboard': typeof LayoutDashboardRoute
-  '/_layout/inventory': typeof LayoutInventoryRouteWithChildren
-  '/_layout/orders': typeof LayoutOrdersRoute
-  '/_layout/settings': typeof LayoutSettingsRoute
-  '/_layout/transactions': typeof LayoutTransactionsRouteWithChildren
-  '/_layout/inventory/adjust': typeof LayoutInventoryAdjustRoute
-  '/_layout/products/$productId': typeof LayoutProductsProductIdRouteWithChildren
-  '/_layout/products/add': typeof LayoutProductsAddRoute
-  '/_layout/suppliers/$supplierId': typeof LayoutSuppliersSupplierIdRouteWithChildren
-  '/_layout/suppliers/add': typeof LayoutSuppliersAddRoute
-  '/_layout/transactions/$transactionId': typeof LayoutTransactionsTransactionIdRouteWithChildren
-  '/_layout/transactions/add': typeof LayoutTransactionsAddRoute
-  '/_layout/inventory/': typeof LayoutInventoryIndexRoute
-  '/_layout/products/': typeof LayoutProductsIndexRoute
-  '/_layout/suppliers/': typeof LayoutSuppliersIndexRoute
-  '/_layout/inventory/$productId/adjust': typeof LayoutInventoryProductIdAdjustRoute
-  '/_layout/inventory/history/$productId': typeof LayoutInventoryHistoryProductIdRoute
-  '/_layout/products/$productId/edit': typeof LayoutProductsProductIdEditRoute
-  '/_layout/suppliers/$supplierId/edit': typeof LayoutSuppliersSupplierIdEditRoute
-  '/_layout/transactions/$transactionId/edit': typeof LayoutTransactionsTransactionIdEditRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/inventory': typeof AuthenticatedInventoryRouteWithChildren
+  '/_authenticated/orders': typeof AuthenticatedOrdersRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/transactions': typeof AuthenticatedTransactionsRouteWithChildren
+  '/_authenticated/inventory/adjust': typeof AuthenticatedInventoryAdjustRoute
+  '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRouteWithChildren
+  '/_authenticated/products/add': typeof AuthenticatedProductsAddRoute
+  '/_authenticated/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRouteWithChildren
+  '/_authenticated/suppliers/add': typeof AuthenticatedSuppliersAddRoute
+  '/_authenticated/transactions/$transactionId': typeof AuthenticatedTransactionsTransactionIdRouteWithChildren
+  '/_authenticated/transactions/add': typeof AuthenticatedTransactionsAddRoute
+  '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/_authenticated/products/': typeof AuthenticatedProductsIndexRoute
+  '/_authenticated/suppliers/': typeof AuthenticatedSuppliersIndexRoute
+  '/_authenticated/inventory/$productId/adjust': typeof AuthenticatedInventoryProductIdAdjustRoute
+  '/_authenticated/inventory/history/$productId': typeof AuthenticatedInventoryHistoryProductIdRoute
+  '/_authenticated/products/$productId/edit': typeof AuthenticatedProductsProductIdEditRoute
+  '/_authenticated/suppliers/$supplierId/edit': typeof AuthenticatedSuppliersSupplierIdEditRoute
+  '/_authenticated/transactions/$transactionId/edit': typeof AuthenticatedTransactionsTransactionIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -313,36 +322,36 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$'
-    | '/_layout'
+    | '/_authenticated'
     | '/analytics'
     | '/login'
     | '/register'
-    | '/_layout/dashboard'
-    | '/_layout/inventory'
-    | '/_layout/orders'
-    | '/_layout/settings'
-    | '/_layout/transactions'
-    | '/_layout/inventory/adjust'
-    | '/_layout/products/$productId'
-    | '/_layout/products/add'
-    | '/_layout/suppliers/$supplierId'
-    | '/_layout/suppliers/add'
-    | '/_layout/transactions/$transactionId'
-    | '/_layout/transactions/add'
-    | '/_layout/inventory/'
-    | '/_layout/products/'
-    | '/_layout/suppliers/'
-    | '/_layout/inventory/$productId/adjust'
-    | '/_layout/inventory/history/$productId'
-    | '/_layout/products/$productId/edit'
-    | '/_layout/suppliers/$supplierId/edit'
-    | '/_layout/transactions/$transactionId/edit'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/inventory'
+    | '/_authenticated/orders'
+    | '/_authenticated/settings'
+    | '/_authenticated/transactions'
+    | '/_authenticated/inventory/adjust'
+    | '/_authenticated/products/$productId'
+    | '/_authenticated/products/add'
+    | '/_authenticated/suppliers/$supplierId'
+    | '/_authenticated/suppliers/add'
+    | '/_authenticated/transactions/$transactionId'
+    | '/_authenticated/transactions/add'
+    | '/_authenticated/inventory/'
+    | '/_authenticated/products/'
+    | '/_authenticated/suppliers/'
+    | '/_authenticated/inventory/$productId/adjust'
+    | '/_authenticated/inventory/history/$productId'
+    | '/_authenticated/products/$productId/edit'
+    | '/_authenticated/suppliers/$supplierId/edit'
+    | '/_authenticated/transactions/$transactionId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
-  LayoutRoute: typeof LayoutRouteWithChildren
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AnalyticsRoute: typeof AnalyticsRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
@@ -371,11 +380,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_layout': {
-      id: '/_layout'
+    '/_authenticated': {
+      id: '/_authenticated'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof LayoutRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$': {
@@ -392,259 +401,271 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_layout/transactions': {
-      id: '/_layout/transactions'
+    '/_authenticated/transactions': {
+      id: '/_authenticated/transactions'
       path: '/transactions'
       fullPath: '/transactions'
-      preLoaderRoute: typeof LayoutTransactionsRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedTransactionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/settings': {
-      id: '/_layout/settings'
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof LayoutSettingsRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/orders': {
-      id: '/_layout/orders'
+    '/_authenticated/orders': {
+      id: '/_authenticated/orders'
       path: '/orders'
       fullPath: '/orders'
-      preLoaderRoute: typeof LayoutOrdersRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedOrdersRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/inventory': {
-      id: '/_layout/inventory'
+    '/_authenticated/inventory': {
+      id: '/_authenticated/inventory'
       path: '/inventory'
       fullPath: '/inventory'
-      preLoaderRoute: typeof LayoutInventoryRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedInventoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/dashboard': {
-      id: '/_layout/dashboard'
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof LayoutDashboardRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/suppliers/': {
-      id: '/_layout/suppliers/'
+    '/_authenticated/suppliers/': {
+      id: '/_authenticated/suppliers/'
       path: '/suppliers'
       fullPath: '/suppliers'
-      preLoaderRoute: typeof LayoutSuppliersIndexRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedSuppliersIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/products/': {
-      id: '/_layout/products/'
+    '/_authenticated/products/': {
+      id: '/_authenticated/products/'
       path: '/products'
       fullPath: '/products'
-      preLoaderRoute: typeof LayoutProductsIndexRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedProductsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/inventory/': {
-      id: '/_layout/inventory/'
+    '/_authenticated/inventory/': {
+      id: '/_authenticated/inventory/'
       path: '/'
       fullPath: '/inventory/'
-      preLoaderRoute: typeof LayoutInventoryIndexRouteImport
-      parentRoute: typeof LayoutInventoryRoute
+      preLoaderRoute: typeof AuthenticatedInventoryIndexRouteImport
+      parentRoute: typeof AuthenticatedInventoryRoute
     }
-    '/_layout/transactions/add': {
-      id: '/_layout/transactions/add'
+    '/_authenticated/transactions/add': {
+      id: '/_authenticated/transactions/add'
       path: '/add'
       fullPath: '/transactions/add'
-      preLoaderRoute: typeof LayoutTransactionsAddRouteImport
-      parentRoute: typeof LayoutTransactionsRoute
+      preLoaderRoute: typeof AuthenticatedTransactionsAddRouteImport
+      parentRoute: typeof AuthenticatedTransactionsRoute
     }
-    '/_layout/transactions/$transactionId': {
-      id: '/_layout/transactions/$transactionId'
+    '/_authenticated/transactions/$transactionId': {
+      id: '/_authenticated/transactions/$transactionId'
       path: '/$transactionId'
       fullPath: '/transactions/$transactionId'
-      preLoaderRoute: typeof LayoutTransactionsTransactionIdRouteImport
-      parentRoute: typeof LayoutTransactionsRoute
+      preLoaderRoute: typeof AuthenticatedTransactionsTransactionIdRouteImport
+      parentRoute: typeof AuthenticatedTransactionsRoute
     }
-    '/_layout/suppliers/add': {
-      id: '/_layout/suppliers/add'
+    '/_authenticated/suppliers/add': {
+      id: '/_authenticated/suppliers/add'
       path: '/suppliers/add'
       fullPath: '/suppliers/add'
-      preLoaderRoute: typeof LayoutSuppliersAddRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedSuppliersAddRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/suppliers/$supplierId': {
-      id: '/_layout/suppliers/$supplierId'
+    '/_authenticated/suppliers/$supplierId': {
+      id: '/_authenticated/suppliers/$supplierId'
       path: '/suppliers/$supplierId'
       fullPath: '/suppliers/$supplierId'
-      preLoaderRoute: typeof LayoutSuppliersSupplierIdRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedSuppliersSupplierIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/products/add': {
-      id: '/_layout/products/add'
+    '/_authenticated/products/add': {
+      id: '/_authenticated/products/add'
       path: '/products/add'
       fullPath: '/products/add'
-      preLoaderRoute: typeof LayoutProductsAddRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedProductsAddRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/products/$productId': {
-      id: '/_layout/products/$productId'
+    '/_authenticated/products/$productId': {
+      id: '/_authenticated/products/$productId'
       path: '/products/$productId'
       fullPath: '/products/$productId'
-      preLoaderRoute: typeof LayoutProductsProductIdRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof AuthenticatedProductsProductIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_layout/inventory/adjust': {
-      id: '/_layout/inventory/adjust'
+    '/_authenticated/inventory/adjust': {
+      id: '/_authenticated/inventory/adjust'
       path: '/adjust'
       fullPath: '/inventory/adjust'
-      preLoaderRoute: typeof LayoutInventoryAdjustRouteImport
-      parentRoute: typeof LayoutInventoryRoute
+      preLoaderRoute: typeof AuthenticatedInventoryAdjustRouteImport
+      parentRoute: typeof AuthenticatedInventoryRoute
     }
-    '/_layout/transactions/$transactionId/edit': {
-      id: '/_layout/transactions/$transactionId/edit'
+    '/_authenticated/transactions/$transactionId/edit': {
+      id: '/_authenticated/transactions/$transactionId/edit'
       path: '/edit'
       fullPath: '/transactions/$transactionId/edit'
-      preLoaderRoute: typeof LayoutTransactionsTransactionIdEditRouteImport
-      parentRoute: typeof LayoutTransactionsTransactionIdRoute
+      preLoaderRoute: typeof AuthenticatedTransactionsTransactionIdEditRouteImport
+      parentRoute: typeof AuthenticatedTransactionsTransactionIdRoute
     }
-    '/_layout/suppliers/$supplierId/edit': {
-      id: '/_layout/suppliers/$supplierId/edit'
+    '/_authenticated/suppliers/$supplierId/edit': {
+      id: '/_authenticated/suppliers/$supplierId/edit'
       path: '/edit'
       fullPath: '/suppliers/$supplierId/edit'
-      preLoaderRoute: typeof LayoutSuppliersSupplierIdEditRouteImport
-      parentRoute: typeof LayoutSuppliersSupplierIdRoute
+      preLoaderRoute: typeof AuthenticatedSuppliersSupplierIdEditRouteImport
+      parentRoute: typeof AuthenticatedSuppliersSupplierIdRoute
     }
-    '/_layout/products/$productId/edit': {
-      id: '/_layout/products/$productId/edit'
+    '/_authenticated/products/$productId/edit': {
+      id: '/_authenticated/products/$productId/edit'
       path: '/edit'
       fullPath: '/products/$productId/edit'
-      preLoaderRoute: typeof LayoutProductsProductIdEditRouteImport
-      parentRoute: typeof LayoutProductsProductIdRoute
+      preLoaderRoute: typeof AuthenticatedProductsProductIdEditRouteImport
+      parentRoute: typeof AuthenticatedProductsProductIdRoute
     }
-    '/_layout/inventory/history/$productId': {
-      id: '/_layout/inventory/history/$productId'
+    '/_authenticated/inventory/history/$productId': {
+      id: '/_authenticated/inventory/history/$productId'
       path: '/history/$productId'
       fullPath: '/inventory/history/$productId'
-      preLoaderRoute: typeof LayoutInventoryHistoryProductIdRouteImport
-      parentRoute: typeof LayoutInventoryRoute
+      preLoaderRoute: typeof AuthenticatedInventoryHistoryProductIdRouteImport
+      parentRoute: typeof AuthenticatedInventoryRoute
     }
-    '/_layout/inventory/$productId/adjust': {
-      id: '/_layout/inventory/$productId/adjust'
+    '/_authenticated/inventory/$productId/adjust': {
+      id: '/_authenticated/inventory/$productId/adjust'
       path: '/$productId/adjust'
       fullPath: '/inventory/$productId/adjust'
-      preLoaderRoute: typeof LayoutInventoryProductIdAdjustRouteImport
-      parentRoute: typeof LayoutInventoryRoute
+      preLoaderRoute: typeof AuthenticatedInventoryProductIdAdjustRouteImport
+      parentRoute: typeof AuthenticatedInventoryRoute
     }
   }
 }
 
-interface LayoutInventoryRouteChildren {
-  LayoutInventoryAdjustRoute: typeof LayoutInventoryAdjustRoute
-  LayoutInventoryIndexRoute: typeof LayoutInventoryIndexRoute
-  LayoutInventoryProductIdAdjustRoute: typeof LayoutInventoryProductIdAdjustRoute
-  LayoutInventoryHistoryProductIdRoute: typeof LayoutInventoryHistoryProductIdRoute
+interface AuthenticatedInventoryRouteChildren {
+  AuthenticatedInventoryAdjustRoute: typeof AuthenticatedInventoryAdjustRoute
+  AuthenticatedInventoryIndexRoute: typeof AuthenticatedInventoryIndexRoute
+  AuthenticatedInventoryProductIdAdjustRoute: typeof AuthenticatedInventoryProductIdAdjustRoute
+  AuthenticatedInventoryHistoryProductIdRoute: typeof AuthenticatedInventoryHistoryProductIdRoute
 }
 
-const LayoutInventoryRouteChildren: LayoutInventoryRouteChildren = {
-  LayoutInventoryAdjustRoute: LayoutInventoryAdjustRoute,
-  LayoutInventoryIndexRoute: LayoutInventoryIndexRoute,
-  LayoutInventoryProductIdAdjustRoute: LayoutInventoryProductIdAdjustRoute,
-  LayoutInventoryHistoryProductIdRoute: LayoutInventoryHistoryProductIdRoute,
+const AuthenticatedInventoryRouteChildren: AuthenticatedInventoryRouteChildren =
+  {
+    AuthenticatedInventoryAdjustRoute: AuthenticatedInventoryAdjustRoute,
+    AuthenticatedInventoryIndexRoute: AuthenticatedInventoryIndexRoute,
+    AuthenticatedInventoryProductIdAdjustRoute:
+      AuthenticatedInventoryProductIdAdjustRoute,
+    AuthenticatedInventoryHistoryProductIdRoute:
+      AuthenticatedInventoryHistoryProductIdRoute,
+  }
+
+const AuthenticatedInventoryRouteWithChildren =
+  AuthenticatedInventoryRoute._addFileChildren(
+    AuthenticatedInventoryRouteChildren,
+  )
+
+interface AuthenticatedTransactionsTransactionIdRouteChildren {
+  AuthenticatedTransactionsTransactionIdEditRoute: typeof AuthenticatedTransactionsTransactionIdEditRoute
 }
 
-const LayoutInventoryRouteWithChildren = LayoutInventoryRoute._addFileChildren(
-  LayoutInventoryRouteChildren,
+const AuthenticatedTransactionsTransactionIdRouteChildren: AuthenticatedTransactionsTransactionIdRouteChildren =
+  {
+    AuthenticatedTransactionsTransactionIdEditRoute:
+      AuthenticatedTransactionsTransactionIdEditRoute,
+  }
+
+const AuthenticatedTransactionsTransactionIdRouteWithChildren =
+  AuthenticatedTransactionsTransactionIdRoute._addFileChildren(
+    AuthenticatedTransactionsTransactionIdRouteChildren,
+  )
+
+interface AuthenticatedTransactionsRouteChildren {
+  AuthenticatedTransactionsTransactionIdRoute: typeof AuthenticatedTransactionsTransactionIdRouteWithChildren
+  AuthenticatedTransactionsAddRoute: typeof AuthenticatedTransactionsAddRoute
+}
+
+const AuthenticatedTransactionsRouteChildren: AuthenticatedTransactionsRouteChildren =
+  {
+    AuthenticatedTransactionsTransactionIdRoute:
+      AuthenticatedTransactionsTransactionIdRouteWithChildren,
+    AuthenticatedTransactionsAddRoute: AuthenticatedTransactionsAddRoute,
+  }
+
+const AuthenticatedTransactionsRouteWithChildren =
+  AuthenticatedTransactionsRoute._addFileChildren(
+    AuthenticatedTransactionsRouteChildren,
+  )
+
+interface AuthenticatedProductsProductIdRouteChildren {
+  AuthenticatedProductsProductIdEditRoute: typeof AuthenticatedProductsProductIdEditRoute
+}
+
+const AuthenticatedProductsProductIdRouteChildren: AuthenticatedProductsProductIdRouteChildren =
+  {
+    AuthenticatedProductsProductIdEditRoute:
+      AuthenticatedProductsProductIdEditRoute,
+  }
+
+const AuthenticatedProductsProductIdRouteWithChildren =
+  AuthenticatedProductsProductIdRoute._addFileChildren(
+    AuthenticatedProductsProductIdRouteChildren,
+  )
+
+interface AuthenticatedSuppliersSupplierIdRouteChildren {
+  AuthenticatedSuppliersSupplierIdEditRoute: typeof AuthenticatedSuppliersSupplierIdEditRoute
+}
+
+const AuthenticatedSuppliersSupplierIdRouteChildren: AuthenticatedSuppliersSupplierIdRouteChildren =
+  {
+    AuthenticatedSuppliersSupplierIdEditRoute:
+      AuthenticatedSuppliersSupplierIdEditRoute,
+  }
+
+const AuthenticatedSuppliersSupplierIdRouteWithChildren =
+  AuthenticatedSuppliersSupplierIdRoute._addFileChildren(
+    AuthenticatedSuppliersSupplierIdRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRouteWithChildren
+  AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedTransactionsRoute: typeof AuthenticatedTransactionsRouteWithChildren
+  AuthenticatedProductsProductIdRoute: typeof AuthenticatedProductsProductIdRouteWithChildren
+  AuthenticatedProductsAddRoute: typeof AuthenticatedProductsAddRoute
+  AuthenticatedSuppliersSupplierIdRoute: typeof AuthenticatedSuppliersSupplierIdRouteWithChildren
+  AuthenticatedSuppliersAddRoute: typeof AuthenticatedSuppliersAddRoute
+  AuthenticatedProductsIndexRoute: typeof AuthenticatedProductsIndexRoute
+  AuthenticatedSuppliersIndexRoute: typeof AuthenticatedSuppliersIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedInventoryRoute: AuthenticatedInventoryRouteWithChildren,
+  AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedTransactionsRoute: AuthenticatedTransactionsRouteWithChildren,
+  AuthenticatedProductsProductIdRoute:
+    AuthenticatedProductsProductIdRouteWithChildren,
+  AuthenticatedProductsAddRoute: AuthenticatedProductsAddRoute,
+  AuthenticatedSuppliersSupplierIdRoute:
+    AuthenticatedSuppliersSupplierIdRouteWithChildren,
+  AuthenticatedSuppliersAddRoute: AuthenticatedSuppliersAddRoute,
+  AuthenticatedProductsIndexRoute: AuthenticatedProductsIndexRoute,
+  AuthenticatedSuppliersIndexRoute: AuthenticatedSuppliersIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
 )
-
-interface LayoutTransactionsTransactionIdRouteChildren {
-  LayoutTransactionsTransactionIdEditRoute: typeof LayoutTransactionsTransactionIdEditRoute
-}
-
-const LayoutTransactionsTransactionIdRouteChildren: LayoutTransactionsTransactionIdRouteChildren =
-  {
-    LayoutTransactionsTransactionIdEditRoute:
-      LayoutTransactionsTransactionIdEditRoute,
-  }
-
-const LayoutTransactionsTransactionIdRouteWithChildren =
-  LayoutTransactionsTransactionIdRoute._addFileChildren(
-    LayoutTransactionsTransactionIdRouteChildren,
-  )
-
-interface LayoutTransactionsRouteChildren {
-  LayoutTransactionsTransactionIdRoute: typeof LayoutTransactionsTransactionIdRouteWithChildren
-  LayoutTransactionsAddRoute: typeof LayoutTransactionsAddRoute
-}
-
-const LayoutTransactionsRouteChildren: LayoutTransactionsRouteChildren = {
-  LayoutTransactionsTransactionIdRoute:
-    LayoutTransactionsTransactionIdRouteWithChildren,
-  LayoutTransactionsAddRoute: LayoutTransactionsAddRoute,
-}
-
-const LayoutTransactionsRouteWithChildren =
-  LayoutTransactionsRoute._addFileChildren(LayoutTransactionsRouteChildren)
-
-interface LayoutProductsProductIdRouteChildren {
-  LayoutProductsProductIdEditRoute: typeof LayoutProductsProductIdEditRoute
-}
-
-const LayoutProductsProductIdRouteChildren: LayoutProductsProductIdRouteChildren =
-  {
-    LayoutProductsProductIdEditRoute: LayoutProductsProductIdEditRoute,
-  }
-
-const LayoutProductsProductIdRouteWithChildren =
-  LayoutProductsProductIdRoute._addFileChildren(
-    LayoutProductsProductIdRouteChildren,
-  )
-
-interface LayoutSuppliersSupplierIdRouteChildren {
-  LayoutSuppliersSupplierIdEditRoute: typeof LayoutSuppliersSupplierIdEditRoute
-}
-
-const LayoutSuppliersSupplierIdRouteChildren: LayoutSuppliersSupplierIdRouteChildren =
-  {
-    LayoutSuppliersSupplierIdEditRoute: LayoutSuppliersSupplierIdEditRoute,
-  }
-
-const LayoutSuppliersSupplierIdRouteWithChildren =
-  LayoutSuppliersSupplierIdRoute._addFileChildren(
-    LayoutSuppliersSupplierIdRouteChildren,
-  )
-
-interface LayoutRouteChildren {
-  LayoutDashboardRoute: typeof LayoutDashboardRoute
-  LayoutInventoryRoute: typeof LayoutInventoryRouteWithChildren
-  LayoutOrdersRoute: typeof LayoutOrdersRoute
-  LayoutSettingsRoute: typeof LayoutSettingsRoute
-  LayoutTransactionsRoute: typeof LayoutTransactionsRouteWithChildren
-  LayoutProductsProductIdRoute: typeof LayoutProductsProductIdRouteWithChildren
-  LayoutProductsAddRoute: typeof LayoutProductsAddRoute
-  LayoutSuppliersSupplierIdRoute: typeof LayoutSuppliersSupplierIdRouteWithChildren
-  LayoutSuppliersAddRoute: typeof LayoutSuppliersAddRoute
-  LayoutProductsIndexRoute: typeof LayoutProductsIndexRoute
-  LayoutSuppliersIndexRoute: typeof LayoutSuppliersIndexRoute
-}
-
-const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutDashboardRoute: LayoutDashboardRoute,
-  LayoutInventoryRoute: LayoutInventoryRouteWithChildren,
-  LayoutOrdersRoute: LayoutOrdersRoute,
-  LayoutSettingsRoute: LayoutSettingsRoute,
-  LayoutTransactionsRoute: LayoutTransactionsRouteWithChildren,
-  LayoutProductsProductIdRoute: LayoutProductsProductIdRouteWithChildren,
-  LayoutProductsAddRoute: LayoutProductsAddRoute,
-  LayoutSuppliersSupplierIdRoute: LayoutSuppliersSupplierIdRouteWithChildren,
-  LayoutSuppliersAddRoute: LayoutSuppliersAddRoute,
-  LayoutProductsIndexRoute: LayoutProductsIndexRoute,
-  LayoutSuppliersIndexRoute: LayoutSuppliersIndexRoute,
-}
-
-const LayoutRouteWithChildren =
-  LayoutRoute._addFileChildren(LayoutRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
-  LayoutRoute: LayoutRouteWithChildren,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AnalyticsRoute: AnalyticsRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
