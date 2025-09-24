@@ -28,7 +28,7 @@ interface LoadingPageProps {
 
 export function LoadingPage({ message = "로딩 중..." }: LoadingPageProps) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50/50">
       <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center space-y-4">
         <LoadingSpinner size="lg" className="text-yellow-500" />
         <p className="text-gray-600 font-medium">{message}</p>
@@ -122,7 +122,7 @@ export function CardSkeleton() {
 
 export function DashboardSkeleton() {
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen animate-pulse">
+    <div className="min-h-screen bg-gray-50/50 p-8 space-y-8 animate-pulse">
       <div className="h-8 bg-gray-200 rounded w-64 mb-6"></div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">

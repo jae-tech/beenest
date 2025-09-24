@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 export function SupplierEditPage() {
   const navigate = useNavigate();
-  const { supplierId } = useParams({ from: "/_authenticated/suppliers/$supplierId/edit" });
+  const { supplierId } = useParams({ from: "/suppliers/$supplierId/edit" });
 
   const { data: supplierResponse, isLoading } = useSupplier(supplierId);
   const updateSupplier = useUpdateSupplier();

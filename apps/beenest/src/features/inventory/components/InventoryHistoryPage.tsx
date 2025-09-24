@@ -30,7 +30,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 
 export function InventoryHistoryPage() {
   const navigate = useNavigate()
-  const { productId } = useParams({ from: '/_authenticated/inventory/history/$productId' })
+  const { productId } = useParams({ from: '/inventory/history/$productId' })
 
   // State for filters
   const [selectedDateRange, setSelectedDateRange] = useState('all')
@@ -219,7 +219,7 @@ export function InventoryHistoryPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+      <div className="min-h-screen bg-gray-50/50 p-8 space-y-8">
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           <p className="mt-4 text-gray-600">재고 이력을 불러오는 중...</p>
@@ -229,7 +229,7 @@ export function InventoryHistoryPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50/50 p-8 space-y-8">
       {/* Page Header */}
       <DetailPageHeader
         backPath="/products"

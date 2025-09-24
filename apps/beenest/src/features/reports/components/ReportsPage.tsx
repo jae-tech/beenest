@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, TrendingUp, ArrowUp, ShoppingCart, Users, Calendar, ExternalLink, Search, Download, Package, ChartPie } from "lucide-react";
 
 export const ReportsPage = () => (
-  <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+  <div className="min-h-screen bg-gray-50/50 p-8 space-y-8">
     <div className="flex items-center justify-between">
       <h1 className="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
       <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 !rounded-button whitespace-nowrap cursor-pointer">

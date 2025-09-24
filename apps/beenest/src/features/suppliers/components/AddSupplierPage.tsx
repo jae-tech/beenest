@@ -102,7 +102,7 @@ export default function AddSupplierPage() {
       await createSupplier.mutateAsync(supplierData);
 
       // 성공 시 거래처 목록으로 이동
-      navigate({ to: "/_authenticated/suppliers" });
+      navigate({ to: "/suppliers" });
     } catch (error: any) {
       console.error("거래처 저장 실패:", error);
 
@@ -144,7 +144,7 @@ export default function AddSupplierPage() {
   return (
     <FormPageWrapper>
       <FormPageHeader
-        backPath="/_authenticated/suppliers"
+        backPath="/suppliers"
         backText="거래처 관리로 돌아가기"
         title="신규 거래처 등록"
         subtitle="새로운 거래처 정보를 입력하여 등록하세요."
@@ -361,7 +361,7 @@ export default function AddSupplierPage() {
           )}
 
           <FormPageFooter
-            onCancel={() => navigate({ to: "/_authenticated/suppliers" })}
+            onCancel={() => navigate({ to: "/suppliers" })}
             onSubmit={form.handleSubmit(onSubmit)}
             isSubmitting={createSupplier.isPending}
             submitText="거래처 등록"

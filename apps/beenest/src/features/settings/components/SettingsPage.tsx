@@ -211,7 +211,7 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50">
+    <div className="min-h-screen bg-gray-50/50 p-8 space-y-8">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>

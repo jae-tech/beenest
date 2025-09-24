@@ -78,7 +78,7 @@ type ProductFormData = z.infer<typeof productSchema>;
 export default function ProductEditPage() {
   const navigate = useNavigate();
   const { productId } = useParams({
-    from: "/_authenticated/products/$productId/edit",
+    from: "/products/$productId/edit",
   });
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 

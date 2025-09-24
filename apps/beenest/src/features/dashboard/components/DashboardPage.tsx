@@ -187,7 +187,8 @@ export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
   }
 
   return (
-    <div className={`p-6 space-y-6 bg-gray-50 min-h-screen ${className}`}>
+    <div className={`min-h-screen bg-gray-50/50 ${className}`}>
+      <div className="p-8 space-y-8">
       {/* Metrics Cards */}
       <MetricsGrid metrics={metrics} />
 
@@ -311,6 +312,7 @@ export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

@@ -16,44 +16,46 @@ html, body {
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
 
-  /* 브랜드 컬러 */
-  --brand-primary: 221 53% 43%; /* 파란색 */
-  --brand-primary-foreground: 0 0% 98%; /* 거의 흰색 */
-  --brand-secondary: 221 48% 84%; /* 밝은 파란색 */
-  --brand-secondary-foreground: 0 0% 25%; /* 어두운 회색 */
+  /* Beenest 브랜드 컬러 - 노란색 */
+  --brand-primary: 45 93% 58%; /* #FCD34D - 밝은 노란색 */
+  --brand-primary-foreground: 0 0% 9%; /* 어두운 텍스트 */
+  --brand-secondary: 45 96% 64%; /* #FDE047 - 더 밝은 노란색 */
+  --brand-secondary-foreground: 0 0% 15%; /* 어두운 회색 */
+  --brand-accent: 42 87% 55%; /* #F59E0B - 진한 노란색 */
+  --brand-accent-foreground: 0 0% 98%; /* 밝은 텍스트 */
 
   /* 시맨틱 컬러 */
-  --success: 142 44% 43%; /* 초록색 */
+  --success: 142 76% 36%; /* #16A34A - 초록색 */
   --success-foreground: 0 0% 98%;
-  --warning: 32 95% 44%; /* 주황색 */
-  --warning-foreground: 0 0% 15%;
-  --error: 0 62% 50%; /* 빨간색 */
+  --warning: 25 95% 53%; /* #F97316 - 주황색 */
+  --warning-foreground: 0 0% 98%;
+  --error: 0 84% 60%; /* #EF4444 - 빨간색 */
   --error-foreground: 0 0% 98%;
-  --info: 221 53% 54%; /* 파란색 */
+  --info: 217 91% 60%; /* #3B82F6 - 파란색 */
   --info-foreground: 0 0% 98%;
 
   /* 기본 색상 */
   --background: 0 0% 100%;
-  --foreground: 0 0% 15%;
+  --foreground: 0 0% 9%; /* 더 어두운 텍스트 */
   --card: 0 0% 100%;
-  --card-foreground: 0 0% 15%;
+  --card-foreground: 0 0% 9%;
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 15%;
+  --popover-foreground: 0 0% 9%;
   --primary: var(--brand-primary);
   --primary-foreground: var(--brand-primary-foreground);
-  --secondary: var(--brand-secondary);
-  --secondary-foreground: var(--brand-secondary-foreground);
-  --muted: 0 0% 96%;
+  --secondary: 0 0% 96%; /* 연한 회색 */
+  --secondary-foreground: 0 0% 15%;
+  --muted: 0 0% 96%; /* 연한 회색 배경 */
   --muted-foreground: 0 0% 46%;
-  --accent: 0 0% 96%;
-  --accent-foreground: 0 0% 20%;
+  --accent: var(--brand-secondary);
+  --accent-foreground: var(--brand-secondary-foreground);
   --destructive: var(--error);
   --destructive-foreground: var(--error-foreground);
-  --border: 0 0% 90%;
-  --input: 0 0% 90%;
-  --ring: 0 0% 63%;
+  --border: 0 0% 94%; /* 더 연한 테두리 */
+  --input: 0 0% 98%; /* 더 부드러운 입력 필드 */
+  --ring: var(--brand-primary); /* 포커스 링을 브랜드 컬러로 */
 
   /* 차트 색상 */
   --chart-1: var(--brand-primary);
@@ -74,21 +76,23 @@ html, body {
 }
 
 .dark {
-  /* 브랜드 컬러 (다크 모드용) */
-  --brand-primary: 221 70% 70%; /* 더 밝은 파란색 */
-  --brand-primary-foreground: 0 0% 15%; /* 어두운 배경 */
-  --brand-secondary: 221 20% 28%; /* 어두운 파란색 */
-  --brand-secondary-foreground: 0 0% 92%; /* 밝은 텍스트 */
+  /* Beenest 브랜드 컬러 (다크 모드용) */
+  --brand-primary: 45 93% 58%; /* 노란색 유지 */
+  --brand-primary-foreground: 0 0% 9%; /* 어두운 텍스트 */
+  --brand-secondary: 45 84% 48%; /* 더 어두운 노란색 */
+  --brand-secondary-foreground: 0 0% 98%; /* 밝은 텍스트 */
+  --brand-accent: 42 87% 55%; /* 진한 노란색 유지 */
+  --brand-accent-foreground: 0 0% 9%;
 
   /* 시맨틱 컬러 (다크 모드용) */
-  --success: 142 50% 58%; /* 더 밝은 초록색 */
-  --success-foreground: 0 0% 15%;
-  --warning: 32 95% 58%; /* 주황색 유지 */
-  --warning-foreground: 0 0% 15%;
-  --error: 0 72% 65%; /* 더 밝은 빨간색 */
+  --success: 142 76% 36%; /* 초록색 유지 */
+  --success-foreground: 0 0% 98%;
+  --warning: 25 95% 53%; /* 주황색 유지 */
+  --warning-foreground: 0 0% 98%;
+  --error: 0 84% 60%; /* 빨간색 유지 */
   --error-foreground: 0 0% 98%;
-  --info: 221 70% 70%; /* 더 밝은 파란색 */
-  --info-foreground: 0 0% 15%;
+  --info: 217 91% 60%; /* 파란색 유지 */
+  --info-foreground: 0 0% 98%;
 
   /* 기본 색상 */
   --background: 0 0% 9%;
@@ -99,17 +103,17 @@ html, body {
   --popover-foreground: 0 0% 98%;
   --primary: var(--brand-primary);
   --primary-foreground: var(--brand-primary-foreground);
-  --secondary: var(--brand-secondary);
-  --secondary-foreground: var(--brand-secondary-foreground);
+  --secondary: 0 0% 21%;
+  --secondary-foreground: 0 0% 98%;
   --muted: 0 0% 21%;
   --muted-foreground: 0 0% 71%;
-  --accent: 0 0% 21%;
-  --accent-foreground: 0 0% 98%;
+  --accent: var(--brand-secondary);
+  --accent-foreground: var(--brand-secondary-foreground);
   --destructive: var(--error);
   --destructive-foreground: var(--error-foreground);
-  --border: 0 0% 100% / 10%;
-  --input: 0 0% 100% / 15%;
-  --ring: 0 0% 56%;
+  --border: 0 0% 100% / 15%; /* 더 명확한 테두리 */
+  --input: 0 0% 100% / 20%; /* 더 명확한 입력 필드 */
+  --ring: var(--brand-primary); /* 포커스 링을 브랜드 컬러로 */
 
   /* 차트 색상 (다크 모드용) */
   --chart-1: var(--brand-primary);
@@ -126,5 +130,268 @@ html, body {
   --sidebar-accent: 0 0% 21%;
   --sidebar-accent-foreground: 0 0% 98%;
   --sidebar-border: 0 0% 100% / 10%;
-  --sidebar-ring: 0 0% 56%;
+  --sidebar-ring: var(--brand-primary);
+}
+
+/* ===== 표준화된 디자인 토큰 ===== */
+
+/* 타이포그래피 스케일 */
+.typography-h1 {
+  font-size: 2.25rem; /* 36px */
+  line-height: 2.5rem; /* 40px */
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.typography-h2 {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.typography-h3 {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem; /* 32px */
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.typography-h4 {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.75rem; /* 28px */
+  font-weight: 600;
+}
+
+.typography-body {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5rem; /* 24px */
+  font-weight: 400;
+}
+
+.typography-small {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1rem; /* 16px */
+  font-weight: 400;
+}
+
+/* 표준 간격 (4px 기준) */
+.spacing-xs { padding: 0.25rem; } /* 4px */
+.spacing-sm { padding: 0.5rem; } /* 8px */
+.spacing-md { padding: 0.75rem; } /* 12px */
+.spacing-lg { padding: 1rem; } /* 16px */
+.spacing-xl { padding: 1.5rem; } /* 24px */
+.spacing-2xl { padding: 2rem; } /* 32px */
+
+/* 표준 그림자 */
+.shadow-beenest-sm {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.shadow-beenest-md {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.shadow-beenest-lg {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* 표준 포커스 스타일 */
+.focus-beenest {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+/* 버튼 표준화 */
+.btn-beenest-primary {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid hsl(var(--primary));
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-beenest-primary:hover {
+  background-color: hsl(var(--brand-accent));
+  border-color: hsl(var(--brand-accent));
+}
+
+.btn-beenest-primary:focus {
+  @apply focus-beenest;
+}
+
+.btn-beenest-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-beenest-secondary:hover {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--brand-primary));
+}
+
+.btn-beenest-secondary:focus {
+  @apply focus-beenest;
+}
+
+/* 카드 표준화 */
+.card-beenest {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  padding: 1.5rem;
+}
+
+/* 입력 필드 표준화 */
+.input-beenest {
+  display: flex;
+  height: 2.5rem; /* 40px */
+  width: 100%;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--background));
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.input-beenest:focus {
+  outline: none;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+.input-beenest::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+/* 테이블 표준화 */
+.table-beenest {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: hsl(var(--background));
+}
+
+.table-beenest th {
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table-beenest td {
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0.875rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.table-beenest tr:hover {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+/* 상태별 색상 유틸리티 */
+.status-success {
+  color: hsl(var(--success));
+  background-color: hsl(var(--success) / 0.1);
+}
+
+.status-warning {
+  color: hsl(var(--warning));
+  background-color: hsl(var(--warning) / 0.1);
+}
+
+.status-error {
+  color: hsl(var(--error));
+  background-color: hsl(var(--error) / 0.1);
+}
+
+.status-info {
+  color: hsl(var(--info));
+  background-color: hsl(var(--info) / 0.1);
+}
+
+/* 애니메이션 */
+.animate-beenest-fade-in {
+  animation: beenest-fade-in 0.2s ease-out;
+}
+
+.animate-beenest-slide-up {
+  animation: beenest-slide-up 0.3s ease-out;
+}
+
+@keyframes beenest-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes beenest-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 유틸리티 */
+.container-beenest {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 640px) {
+  .container-beenest {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container-beenest {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-beenest {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-beenest {
+    max-width: 1280px;
+  }
 }

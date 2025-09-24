@@ -7,7 +7,7 @@ export function FormPageWrapper({
 }: FormPageWrapperProps) {
   return (
     <div className={cn(
-      "p-6 space-y-6 bg-gray-50",
+      "min-h-screen bg-gray-50/50 p-8 space-y-8",
       className
     )}>
       {children}

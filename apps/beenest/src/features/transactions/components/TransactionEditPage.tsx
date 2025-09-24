@@ -31,7 +31,7 @@ interface TransactionItem {
 
 export function TransactionEditPage() {
   const navigate = useNavigate();
-  const { transactionId } = useParams({ from: "/_authenticated/transactions/$transactionId/edit" });
+  const { transactionId } = useParams({ from: "/transactions/$transactionId/edit" });
 
   const { data: transactionResponse, isLoading } = useTransaction(transactionId);
   const updateTransaction = useUpdateTransaction();

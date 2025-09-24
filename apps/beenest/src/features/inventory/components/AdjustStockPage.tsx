@@ -70,9 +70,9 @@ interface SearchParams {
 
 export default function AdjustStockPage() {
   const navigate = useNavigate();
-  const params = useParams({ from: "/_authenticated/inventory/$productId/adjust" });
+  const params = useParams({ from: "/inventory/$productId/adjust" });
   const search = useSearch({
-    from: "/_authenticated/inventory/adjust",
+    from: "/inventory/adjust",
   }) as SearchParams;
 
   // URL에서 productId 가져오기 (파라미터 또는 쿼리스트링)

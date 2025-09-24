@@ -29,7 +29,7 @@ import {
 
 export function ProductDetailPage() {
   const navigate = useNavigate();
-  const { productId } = useParams({ from: "/_authenticated/products/$productId" });
+  const { productId } = useParams({ from: "/products/$productId" });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // API hooks
@@ -138,7 +138,7 @@ export function ProductDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+      <div className="min-h-screen bg-gray-50/50 p-8 space-y-8">
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           <p className="mt-4 text-gray-600">상품 정보를 불러오는 중...</p>
@@ -148,7 +148,7 @@ export function ProductDetailPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50/50 p-8 space-y-8">
       <DetailPageHeader
         backPath="/products"
         breadcrumbs={[

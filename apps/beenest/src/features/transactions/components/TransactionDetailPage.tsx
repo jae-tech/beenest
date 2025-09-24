@@ -30,7 +30,7 @@ import { TransactionType } from "@beenest/types";
 
 export function TransactionDetailPage() {
   const navigate = useNavigate();
-  const { transactionId } = useParams({ from: "/_authenticated/transactions/$transactionId" });
+  const { transactionId } = useParams({ from: "/transactions/$transactionId" });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data: transactionResponse, isLoading } = useTransaction(transactionId);

@@ -1,28 +1,48 @@
 import { PageLayout } from "@/components/layout";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { useSuppliers, useSupplierStats } from "@/hooks/useSuppliers";
-import { type StatItem } from "@/types/design-system";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useSuppliers, useCreateSupplier, useUpdateSupplier } from "@/hooks/useSuppliers";
 import { type Supplier } from "@beenest/types";
 import { useNavigate } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   Building,
-  CheckCircle,
-  Clock,
   Edit,
   Eye,
   Mail,
-  Star,
-  Truck,
+  Plus,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+// 간소화된 거래처 등록 스키마
+const supplierFormSchema = z.object({
+  companyName: z.string().min(1, "회사명을 입력해주세요."),
+  contactPerson: z.string().optional(),
+  email: z.string().email("올바른 이메일을 입력해주세요.").optional().or(z.literal("")),
+  phone: z.string().optional(),
+  address: z.string().min(1, "주소를 입력해주세요."),
+  taxNumber: z.string().min(1, "사업자등록번호를 입력해주세요."),
+  notes: z.string().optional(),
+});
+
+type SupplierFormData = z.infer<typeof supplierFormSchema>;
 
 export function SuppliersPage() {
   const navigate = useNavigate();
   const [search] = useState("");
   const [page] = useState(1);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const createSupplier = useCreateSupplier();
+  const updateSupplier = useUpdateSupplier();
 
   const { data: suppliersResponse } = useSuppliers({
     page,
@@ -30,83 +50,67 @@ export function SuppliersPage() {
     search: search || undefined,
   });
 
-  const { data: statsResponse } = useSupplierStats();
-  console.log(statsResponse);
-  console.log(suppliersResponse);
-
   const suppliers = suppliersResponse?.data || [];
-  const statsData = statsResponse;
 
-  const stats: StatItem[] = useMemo(() => {
-    if (!statsData) {
-      return [
-        {
-          title: "전체 공급업체",
-          value: "0",
-          description: "전체 공급업체",
-          icon: Truck,
-          color: "blue",
-        },
-        {
-          title: "활성 공급업체",
-          value: "0",
-          description: "활성 공급업체",
-          icon: CheckCircle,
-          color: "green",
-        },
-        {
-          title: "비활성 공급업체",
-          value: "0",
-          description: "비활성 공급업체",
-          icon: Clock,
-          color: "yellow",
-        },
-        {
-          title: "상위 공급업체",
-          value: "0",
-          description: "상위 공급업체",
-          icon: Star,
-          color: "purple",
-        },
-      ];
+
+  const form = useForm<SupplierFormData>({
+    resolver: zodResolver(supplierFormSchema),
+    defaultValues: {
+      companyName: "",
+      contactPerson: "",
+      email: "",
+      phone: "",
+      address: "",
+      taxNumber: "",
+      notes: "",
+    },
+  });
+
+  const handleAddSupplier = async (data: SupplierFormData) => {
+    try {
+      const supplierData = {
+        companyName: data.companyName.trim(),
+        contactPerson: data.contactPerson?.trim() || undefined,
+        email: data.email?.trim().toLowerCase() || undefined,
+        phone: data.phone?.trim() || undefined,
+        address: data.address.trim(),
+        taxNumber: data.taxNumber.trim(),
+        notes: data.notes?.trim() || undefined,
+        isActive: true,
+        rating: 0,
+      };
+
+      await createSupplier.mutateAsync(supplierData);
+      setIsAddModalOpen(false);
+      form.reset();
+    } catch (error: any) {
+      console.error("거래처 등록 실패:", error);
+      form.setError("root", {
+        type: "manual",
+        message: error?.error?.message || "거래처 등록 중 오류가 발생했습니다.",
+      });
     }
+  };
 
-    return [
-      {
-        title: "전체 공급업체",
-        value: statsData.totalSuppliers?.toString() || "0",
-        description: "전체 공급업체",
-        icon: Truck,
-        color: "blue",
-      },
-      {
-        title: "활성 공급업체",
-        value: statsData.activeSuppliers?.toString() || "0",
-        description: "활성 공급업체",
-        icon: CheckCircle,
-        color: "green",
-      },
-      {
-        title: "비활성 공급업체",
-        value: statsData.inactiveSuppliers?.toString() || "0",
-        description: "비활성 공급업체",
-        icon: Clock,
-        color: "yellow",
-      },
-      {
-        title: "상위 공급업체",
-        value: statsData.topSuppliers?.length?.toString() || "0",
-        description: "상위 공급업체",
-        icon: Star,
-        color: "purple",
-      },
-    ];
-  }, [statsData]);
+  const handleStatusToggle = async (supplier: Supplier, newStatus: boolean) => {
+    try {
+      await updateSupplier.mutateAsync({
+        id: supplier.id,
+        data: {
+          ...supplier,
+          isActive: newStatus,
+          supplierStatus: newStatus ? 'active' : 'inactive',
+        },
+      });
+    } catch (error) {
+      console.error("상태 변경 실패:", error);
+    }
+  };
 
   const columns: ColumnDef<Supplier>[] = [
     {
       accessorKey: "companyName",
-      header: "공급업체",
+      header: "거래처명",
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -149,38 +153,25 @@ export function SuppliersPage() {
       ),
     },
     {
-      accessorKey: "rating",
-      header: "평점",
-      cell: ({ row }) => (
-        <div className="flex items-center space-x-1">
-          <Star className="w-3 h-3 text-yellow-400 fill-current" />
-          <span className="text-sm font-medium text-gray-900">
-            {row.getValue("rating")}
-          </span>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "supplierStatus",
+      accessorKey: "isActive",
       header: "상태",
       cell: ({ row }) => {
-        const status = row.getValue("supplierStatus") as string;
+        const isActive = row.getValue("isActive") as boolean;
+        const supplier = row.original;
+
         return (
-          <Badge
-            className={`${
-              status === "active"
-                ? "bg-green-100 text-green-800"
-                : status === "pending"
-                  ? "bg-yellow-100 text-yellow-800"
-                  : "bg-gray-100 text-gray-800"
-            } text-xs font-medium px-2 py-1 rounded-full`}
-          >
-            {status === "active"
-              ? "활성"
-              : status === "pending"
-                ? "대기"
-                : "비활성"}
-          </Badge>
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={isActive}
+              onCheckedChange={(checked) => handleStatusToggle(supplier, checked)}
+              disabled={updateSupplier.isPending}
+            />
+            <span className={`text-xs font-medium ${
+              isActive ? "text-green-600" : "text-gray-400"
+            }`}>
+              {isActive ? "활성" : "비활성"}
+            </span>
+          </div>
         );
       },
     },
@@ -223,19 +214,170 @@ export function SuppliersPage() {
   ];
 
   return (
-    <PageLayout
-      title="공급업체 관리"
-      actionText="신규 추가"
-      stats={stats}
-      onAction={() => navigate({ to: "/suppliers/add" })}
-      onFilter={() => {}}
-    >
-      <DataTable
-        columns={columns}
-        data={suppliers}
-        searchKey="companyName"
-        searchPlaceholder="공사명 또는 코드 검색..."
-      />
-    </PageLayout>
+    <>
+      <PageLayout
+        title="거래처 관리"
+        actionText="신규 등록"
+        onAction={() => setIsAddModalOpen(true)}
+        onFilter={() => {}}
+      >
+        <DataTable
+          columns={columns}
+          data={suppliers}
+          searchKey="companyName"
+          searchPlaceholder="거래처명 또는 코드 검색..."
+        />
+      </PageLayout>
+
+      {/* 신규 거래처 등록 모달 */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>신규 거래처 등록</DialogTitle>
+            <DialogDescription>
+              새로운 거래처 정보를 입력해주세요.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleAddSupplier)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="companyName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>거래처명 *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="거래처명을 입력하세요" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="contactPerson"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>담당자명</FormLabel>
+                      <FormControl>
+                        <Input placeholder="담당자명을 입력하세요" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>이메일</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="이메일을 입력하세요" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>전화번호</FormLabel>
+                      <FormControl>
+                        <Input placeholder="전화번호를 입력하세요" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="taxNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>사업자등록번호 *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123-45-67890" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>주소 *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="주소를 입력하세요" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>메모</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="추가 메모사항을 입력하세요..."
+                        className="min-h-[80px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.formState.errors.root && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600">
+                    {form.formState.errors.root.message}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    form.reset();
+                  }}
+                  disabled={createSupplier.isPending}
+                >
+                  취소
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={createSupplier.isPending}
+                  className="bg-yellow-500 hover:bg-yellow-600"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {createSupplier.isPending ? "등록 중..." : "등록"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
