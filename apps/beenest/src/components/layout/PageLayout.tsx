@@ -15,19 +15,19 @@ export function PageLayout({
   onExport,
 }: PageLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      <div className="p-8 space-y-8">
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-8 space-y-6">
         <PageHeader title={title} actionText={actionText} onAction={onAction} />
 
         {stats && <StatsGrid stats={stats} />}
 
-        <Card className="overflow-hidden">
+        <Card className="bg-white shadow-sm rounded-lg overflow-hidden">
           <SearchFilter
             showExport={showExport}
             onFilter={onFilter}
             onExport={onExport}
           />
-          <div className="px-0">
+          <div className="p-6">
             {children}
           </div>
         </Card>

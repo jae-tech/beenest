@@ -58,7 +58,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
     <div className="w-full">
       {/* Search Bar */}
       {searchKey && (
-        <div className="mb-4">
+        <div className="mb-6">
           <Input
             placeholder={searchPlaceholder}
             value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
@@ -71,15 +71,15 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-6">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-gray-100">
+              <tr key={headerGroup.id} className="border-b border-gray-200">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="text-left py-3 px-4 font-medium text-muted-foreground text-sm"
+                    className="text-left py-4 px-6 text-sm font-medium text-gray-500"
                   >
                     {header.isPlaceholder
                       ? null
@@ -97,10 +97,10 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-gray-100 hover:bg-muted/50"
+                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="py-4 px-4">
+                    <td key={cell.id} className="py-4 px-6">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -110,7 +110,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
+                  className="h-24 text-center text-gray-500 py-8"
                 >
                   데이터가 없습니다.
                 </td>
