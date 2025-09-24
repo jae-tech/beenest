@@ -9,6 +9,8 @@ import {
   Trash2,
   TrendingUp,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useDashboard } from "../hooks/useDashboard";
 import { MetricsGrid } from "./MetricsGrid";
 import { RevenueChart } from "./RevenueChart";
@@ -40,12 +42,12 @@ const ErrorState = ({
 }) => (
   <div className="text-center py-12">
     <div className="text-red-600 text-lg mb-4">{error}</div>
-    <button
+    <Button
       onClick={onRetry}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+      className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700"
     >
       다시 시도
-    </button>
+    </Button>
   </div>
 );
 
@@ -127,12 +129,20 @@ const RecentOrdersTable = ({ orders }: { orders: any[] }) => (
             </td>
             <td className="py-4 px-4">
               <div className="flex items-center space-x-2">
-                <button className="border border-gray-100 p-1 rounded cursor-pointer hover:bg-gray-50">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                >
                   <Edit className="w-3 h-3 text-gray-600" />
-                </button>
-                <button className="border border-gray-100 p-1 rounded cursor-pointer hover:bg-gray-50">
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                >
                   <Trash2 className="w-3 h-3 text-red-600" />
-                </button>
+                </Button>
               </div>
             </td>
           </tr>
@@ -216,9 +226,9 @@ export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
               ></div>
             </div>
           </div>
-          <button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white !rounded-button whitespace-nowrap cursor-pointer py-2 px-4 font-semibold">
+          <Button className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white font-semibold">
             전체 보기
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -231,16 +241,20 @@ export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
             </h3>
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <input
+                <Input
                   placeholder="상품 검색..."
-                  className="pl-8 pr-4 py-2 w-64 text-sm border border-gray-100 rounded-md focus:border-yellow-400 focus:ring-yellow-400"
+                  className="pl-8 pr-4 py-2 w-64 text-sm border-gray-100 focus:border-yellow-400 focus:ring-yellow-400"
                 />
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
-              <button className="border border-gray-100 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer whitespace-nowrap">
-                <Calendar className="w-4 h-4 mr-2 inline" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="px-3 py-2 whitespace-nowrap"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
                 월별
-              </button>
+              </Button>
             </div>
           </div>
           <RecentOrdersTable orders={salesData} />
@@ -252,9 +266,13 @@ export const DashboardPage = ({ className = "" }: DashboardPageProps) => {
               <h3 className="text-lg font-semibold text-gray-900">
                 베스트셀러 상품
               </h3>
-              <button className="border border-gray-100 p-1 rounded cursor-pointer">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 w-7 p-0"
+              >
                 <ExternalLink className="w-3 h-3" />
-              </button>
+              </Button>
             </div>
             <div className="h-48 bg-gray-100 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
               <TrendingUp className="w-16 h-16 text-gray-400" />

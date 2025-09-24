@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 
 interface RevenueData {
@@ -74,10 +75,14 @@ export const RevenueChart = ({
             </span>
           </div>
         </div>
-        <button className="border border-gray-100 px-3 py-1 rounded text-sm cursor-pointer whitespace-nowrap hover:bg-gray-50">
+        <Button
+          variant="outline"
+          size="sm"
+          className="px-3 py-1 text-sm whitespace-nowrap"
+        >
           <Calendar className="w-4 h-4 mr-2" />
           Monthly
-        </button>
+        </Button>
       </div>
 
       <div style={{ width: "100%", height: height }}>
