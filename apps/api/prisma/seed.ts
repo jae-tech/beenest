@@ -44,7 +44,10 @@ async function main() {
     },
   });
 
-  console.log('👤 사용자 생성 완료:', `${adminUser.email}, ${generalUser.email}`);
+  console.log(
+    '👤 사용자 생성 완료:',
+    `${adminUser.email}, ${generalUser.email}`,
+  );
 
   // 상품 카테고리 생성 (계층 구조)
   const electronicsCategory = await prisma.productCategory.create({
@@ -87,7 +90,7 @@ async function main() {
 
   console.log('📂 카테고리 생성 완료');
 
-  // 공급업체 생성
+  // 거래처 생성
   const suppliers = await Promise.all([
     prisma.supplier.create({
       data: {
@@ -151,7 +154,7 @@ async function main() {
       },
     }),
   ]);
-  console.log('🏢 공급업체 생성 완료:', suppliers.length + '개');
+  console.log('🏢 거래처 생성 완료:', suppliers.length + '개');
 
   // 상품 생성
   const products = await Promise.all([
@@ -159,7 +162,8 @@ async function main() {
       data: {
         productCode: 'PRD001',
         productName: '무선 블루투스 헤드폰 WH-1000XM5',
-        description: '업계 최고 수준의 노이즈 캔슬링과 고음질을 자랑하는 프리미엄 헤드폰',
+        description:
+          '업계 최고 수준의 노이즈 캔슬링과 고음질을 자랑하는 프리미엄 헤드폰',
         categoryId: accessoryCategory.id,
         unitPrice: 399000,
         costPrice: 280000,
@@ -189,7 +193,8 @@ async function main() {
       data: {
         productCode: 'PRD003',
         productName: '비즈니스 노트북 백팩 15.6인치',
-        description: '15.6인치 노트북과 각종 업무용품을 수납할 수 있는 고급 백팩',
+        description:
+          '15.6인치 노트북과 각종 업무용품을 수납할 수 있는 고급 백팩',
         categoryId: accessoryCategory.id,
         unitPrice: 89000,
         costPrice: 55000,
@@ -288,7 +293,7 @@ async function main() {
   ]);
   console.log('📊 재고 정보 생성 완료');
 
-  // 공급업체-상품 연결 정보
+  // 거래처-상품 연결 정보
   await Promise.all([
     // 테크노 일렉트로닉스 - 전자제품들
     prisma.supplierProduct.create({
@@ -636,7 +641,7 @@ async function main() {
   console.log('📊 생성된 데이터:');
   console.log(`   - 사용자: 2명`);
   console.log(`   - 카테고리: 5개 (계층 구조)`);
-  console.log(`   - 공급업체: ${suppliers.length}개`);
+  console.log(`   - 거래처: ${suppliers.length}개`);
   console.log(`   - 상품: ${products.length}개`);
   console.log(`   - 재고 정보: ${inventories.length}개`);
   console.log(`   - 재고 부족: 1개 (티셔츠)`);
@@ -647,7 +652,7 @@ async function main() {
   console.log('   매입 거래: 3건 / 총 2,266,000원');
   console.log('   매출 총이익: -1,304,600원 (창업 초기 재고 확보 단계)');
   console.log('   주요 고객: 카페 온더코너, 청년 창업 카페, 스마트오피스 등');
-  console.log('   주요 공급업체: 테크노 일렉트로닉스, 패션플러스, 스포츠월드');
+  console.log('   주요 거래처: 테크노 일렉트로닉스, 패션플러스, 스포츠월드');
 }
 
 main()

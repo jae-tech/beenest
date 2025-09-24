@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsEnum, IsString, IsDateString, IsNumber } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
-import { TransactionType, TransactionStatus } from '@prisma/client';
+import { TransactionStatus, TransactionType } from '@prisma/client';
+import { Type } from 'class-transformer';
+import {
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class TransactionQueryDto {
   @ApiProperty({
@@ -72,7 +78,7 @@ export class TransactionQueryDto {
   endDate?: string;
 
   @ApiProperty({
-    description: '공급업체 ID',
+    description: '거래처 ID',
     example: 1,
     required: false,
   })

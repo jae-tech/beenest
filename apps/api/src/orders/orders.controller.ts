@@ -1,25 +1,25 @@
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { CreateOrderDto, UpdateOrderDto } from '@/orders/dto';
+import { OrdersService } from '@/orders/orders.service';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Request,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
-import { OrdersService } from '@/orders/orders.service';
-import { CreateOrderDto, UpdateOrderDto } from '@/orders/dto';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('주문 관리')
 @ApiBearerAuth()
@@ -32,7 +32,7 @@ export class OrdersController {
   @ApiOperation({ summary: '새 주문 생성' })
   @ApiResponse({ status: 201, description: '주문 생성 성공' })
   @ApiResponse({ status: 400, description: '잘못된 요청' })
-  @ApiResponse({ status: 404, description: '공급업체 또는 상품을 찾을 수 없음' })
+  @ApiResponse({ status: 404, description: '거래처 또는 상품을 찾을 수 없음' })
   async create(@Body() createOrderDto: CreateOrderDto, @Request() req) {
     const result = await this.ordersService.create(req.user.id, createOrderDto);
     return {
@@ -44,9 +44,22 @@ export class OrdersController {
 
   @Get()
   @ApiOperation({ summary: '주문 목록 조회' })
-  @ApiQuery({ name: 'page', required: false, description: '페이지 번호 (기본값: 1)' })
-  @ApiQuery({ name: 'limit', required: false, description: '페이지당 항목 수 (기본값: 20)' })
-  @ApiQuery({ name: 'status', required: false, description: '주문 상태 필터 (PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED)' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: '페이지 번호 (기본값: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: '페이지당 항목 수 (기본값: 20)',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description:
+      '주문 상태 필터 (PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED)',
+  })
   @ApiResponse({ status: 200, description: '주문 목록 조회 성공' })
   async findAll(
     @Request() req,
@@ -103,7 +116,11 @@ export class OrdersController {
     @Body() updateOrderDto: UpdateOrderDto,
     @Request() req,
   ) {
-    const result = await this.ordersService.update(id, req.user.id, updateOrderDto);
+    const result = await this.ordersService.update(
+      id,
+      req.user.id,
+      updateOrderDto,
+    );
     return {
       success: true,
       data: result,

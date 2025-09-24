@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsEnum,
-  IsArray,
-  ValidateNested,
-  IsDateString,
-  IsNumber,
-} from 'class-validator';
-import { Type } from 'class-transformer';
 import { TransactionType } from '@prisma/client';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { CreateTransactionItemDto } from './create-transaction-item.dto';
 
 export class CreateTransactionDto {
@@ -32,7 +32,7 @@ export class CreateTransactionDto {
   transactionDate: string;
 
   @ApiProperty({
-    description: '공급업체 ID (매입 거래시 필수)',
+    description: '거래처 ID (매입 거래시 필수)',
     example: 1,
     required: false,
   })

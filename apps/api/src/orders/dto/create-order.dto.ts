@@ -1,10 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional, IsArray, ValidateNested, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { OrderItemDto } from './order-types.dto';
 
 export class CreateOrderDto {
-  @ApiProperty({ description: '공급업체 ID' })
+  @ApiProperty({ description: '거래처 ID' })
   @IsNotEmpty()
   @IsString()
   supplierId: string;
@@ -12,7 +19,7 @@ export class CreateOrderDto {
   @ApiProperty({
     description: '주문 항목 목록',
     type: () => [OrderItemDto],
-    isArray: true
+    isArray: true,
   })
   @IsArray()
   @ValidateNested({ each: true })

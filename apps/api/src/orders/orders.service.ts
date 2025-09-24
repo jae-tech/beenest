@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
 import { CreateOrderDto, UpdateOrderDto } from '@/orders/dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 @Injectable()
 export class OrdersService {
@@ -10,7 +14,7 @@ export class OrdersService {
     const { supplierId, items, expectedDeliveryDate, notes } = createOrderDto;
 
     return this.prisma.$transaction(async (prisma) => {
-      // 공급업체 확인
+      // 거래처 확인
       const supplier = await prisma.supplier.findFirst({
         where: {
           id: BigInt(supplierId),
@@ -21,7 +25,7 @@ export class OrdersService {
       });
 
       if (!supplier) {
-        throw new NotFoundException('공급업체를 찾을 수 없습니다');
+        throw new NotFoundException('거래처를 찾을 수 없습니다');
       }
 
       // 상품들 확인 및 가격 계산
@@ -44,7 +48,9 @@ export class OrdersService {
         });
 
         if (!product) {
-          throw new NotFoundException(`상품 ID ${item.productId}를 찾을 수 없습니다`);
+          throw new NotFoundException(
+            `상품 ID ${item.productId}를 찾을 수 없습니다`,
+          );
         }
 
         const unitPrice = item.unitPrice || Number(product.unitPrice) || 0;
@@ -78,7 +84,9 @@ export class OrdersService {
           supplierId: BigInt(supplierId),
           status: 'PENDING',
           totalAmount,
-          expectedDeliveryDate: expectedDeliveryDate ? new Date(expectedDeliveryDate) : null,
+          expectedDeliveryDate: expectedDeliveryDate
+            ? new Date(expectedDeliveryDate)
+            : null,
           notes,
           createdBy: BigInt(userId),
         },
@@ -95,7 +103,7 @@ export class OrdersService {
 
       // 주문 항목들 생성
       const orderItems = await Promise.all(
-        validatedItems.map(item =>
+        validatedItems.map((item) =>
           prisma.purchaseOrderItem.create({
             data: {
               orderId: order.id,
@@ -110,8 +118,8 @@ export class OrdersService {
                 },
               },
             },
-          })
-        )
+          }),
+        ),
       );
 
       return {
@@ -125,7 +133,7 @@ export class OrdersService {
             id: order.supplier.id.toString(),
           },
         },
-        items: orderItems.map(item => ({
+        items: orderItems.map((item) => ({
           ...item,
           id: item.id.toString(),
           orderId: item.orderId.toString(),
@@ -180,7 +188,7 @@ export class OrdersService {
     ]);
 
     return {
-      data: orders.map(order => ({
+      data: orders.map((order) => ({
         ...order,
         id: order.id.toString(),
         supplierId: order.supplierId.toString(),
@@ -189,7 +197,7 @@ export class OrdersService {
           ...order.supplier,
           id: order.supplier.id.toString(),
         },
-        items: order.items.map(item => ({
+        items: order.items.map((item) => ({
           ...item,
           id: item.id.toString(),
           orderId: item.orderId.toString(),
@@ -254,7 +262,7 @@ export class OrdersService {
         ...order.supplier,
         id: order.supplier.id.toString(),
       },
-      items: order.items.map(item => ({
+      items: order.items.map((item) => ({
         ...item,
         id: item.id.toString(),
         orderId: item.orderId.toString(),
@@ -341,7 +349,9 @@ export class OrdersService {
           });
 
           if (!product) {
-            throw new NotFoundException(`상품 ID ${item.productId}를 찾을 수 없습니다`);
+            throw new NotFoundException(
+              `상품 ID ${item.productId}를 찾을 수 없습니다`,
+            );
           }
 
           const unitPrice = item.unitPrice || Number(product.unitPrice) || 0;
@@ -449,7 +459,13 @@ export class OrdersService {
   }
 
   async getOrderStats(userId: string) {
-    const [totalOrders, pendingOrders, confirmedOrders, deliveredOrders, monthlyTotal] = await Promise.all([
+    const [
+      totalOrders,
+      pendingOrders,
+      confirmedOrders,
+      deliveredOrders,
+      monthlyTotal,
+    ] = await Promise.all([
       this.prisma.purchaseOrder.count({
         where: { createdBy: BigInt(userId) },
       }),

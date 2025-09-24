@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateSupplierDto, UpdateSupplierDto } from '@/suppliers/dto';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 @Injectable()
 export class SuppliersService {
@@ -9,13 +13,13 @@ export class SuppliersService {
   async create(userId: string, createSupplierDto: CreateSupplierDto) {
     const { supplierCode, ...data } = createSupplierDto;
 
-    // 공급업체 코드 중복 확인
+    // 거래처 코드 중복 확인
     const existingSupplier = await this.prisma.supplier.findUnique({
       where: { supplierCode },
     });
 
     if (existingSupplier) {
-      throw new BadRequestException('이미 존재하는 공급업체 코드입니다');
+      throw new BadRequestException('이미 존재하는 거래처 코드입니다');
     }
 
     const supplier = await this.prisma.supplier.create({
@@ -52,7 +56,13 @@ export class SuppliersService {
     };
   }
 
-  async findAll(userId: string, page = 1, limit = 10, search?: string, status?: string) {
+  async findAll(
+    userId: string,
+    page = 1,
+    limit = 10,
+    search?: string,
+    status?: string,
+  ) {
     const skip = (page - 1) * limit;
 
     const where = {
@@ -89,7 +99,7 @@ export class SuppliersService {
       this.prisma.supplier.count({ where }),
     ]);
 
-    const formattedSuppliers = suppliers.map(supplier => ({
+    const formattedSuppliers = suppliers.map((supplier) => ({
       ...supplier,
       id: supplier.id.toString(),
       createdBy: supplier.createdBy.toString(),
@@ -148,7 +158,7 @@ export class SuppliersService {
     });
 
     if (!supplier) {
-      throw new NotFoundException('공급업체를 찾을 수 없습니다');
+      throw new NotFoundException('거래처를 찾을 수 없습니다');
     }
 
     return {
@@ -159,7 +169,7 @@ export class SuppliersService {
         ...supplier.creator,
         id: supplier.creator.id.toString(),
       },
-      supplierProducts: supplier.supplierProducts.map(sp => ({
+      supplierProducts: supplier.supplierProducts.map((sp) => ({
         ...sp,
         id: sp.id.toString(),
         supplierId: sp.supplierId.toString(),
@@ -173,7 +183,11 @@ export class SuppliersService {
     };
   }
 
-  async update(id: string, userId: string, updateSupplierDto: UpdateSupplierDto) {
+  async update(
+    id: string,
+    userId: string,
+    updateSupplierDto: UpdateSupplierDto,
+  ) {
     const existingSupplier = await this.prisma.supplier.findFirst({
       where: {
         id: BigInt(id),
@@ -183,17 +197,20 @@ export class SuppliersService {
     });
 
     if (!existingSupplier) {
-      throw new NotFoundException('공급업체를 찾을 수 없습니다');
+      throw new NotFoundException('거래처를 찾을 수 없습니다');
     }
 
-    // 공급업체 코드 변경 시 중복 확인
-    if (updateSupplierDto.supplierCode && updateSupplierDto.supplierCode !== existingSupplier.supplierCode) {
+    // 거래처 코드 변경 시 중복 확인
+    if (
+      updateSupplierDto.supplierCode &&
+      updateSupplierDto.supplierCode !== existingSupplier.supplierCode
+    ) {
       const duplicateSupplier = await this.prisma.supplier.findUnique({
         where: { supplierCode: updateSupplierDto.supplierCode },
       });
 
       if (duplicateSupplier) {
-        throw new BadRequestException('이미 존재하는 공급업체 코드입니다');
+        throw new BadRequestException('이미 존재하는 거래처 코드입니다');
       }
     }
 
@@ -230,7 +247,7 @@ export class SuppliersService {
     });
 
     if (!existingSupplier) {
-      throw new NotFoundException('공급업체를 찾을 수 없습니다');
+      throw new NotFoundException('거래처를 찾을 수 없습니다');
     }
 
     // 연결된 상품이 있는지 확인
@@ -239,7 +256,9 @@ export class SuppliersService {
     });
 
     if (productCount > 0) {
-      throw new BadRequestException('연결된 상품이 있는 공급업체는 삭제할 수 없습니다. 먼저 상품 연결을 해제해주세요.');
+      throw new BadRequestException(
+        '연결된 상품이 있는 거래처는 삭제할 수 없습니다. 먼저 상품 연결을 해제해주세요.',
+      );
     }
 
     // 소프트 삭제
@@ -254,14 +273,14 @@ export class SuppliersService {
 
   async getSupplierStats(userId: string) {
     const [totalSuppliers, activeSuppliers, topSuppliers] = await Promise.all([
-      // 전체 공급업체 수
+      // 전체 거래처 수
       this.prisma.supplier.count({
         where: {
           createdBy: BigInt(userId),
           deletedAt: null,
         },
       }),
-      // 활성 공급업체 수
+      // 활성 거래처 수
       this.prisma.supplier.count({
         where: {
           createdBy: BigInt(userId),
@@ -270,7 +289,7 @@ export class SuppliersService {
           deletedAt: null,
         },
       }),
-      // 상위 공급업체 (상품 수 기준)
+      // 상위 거래처 (상품 수 기준)
       this.prisma.supplier.findMany({
         where: {
           createdBy: BigInt(userId),
@@ -297,7 +316,7 @@ export class SuppliersService {
       totalSuppliers,
       activeSuppliers,
       inactiveSuppliers: totalSuppliers - activeSuppliers,
-      topSuppliers: topSuppliers.map(supplier => ({
+      topSuppliers: topSuppliers.map((supplier) => ({
         id: supplier.id.toString(),
         companyName: supplier.companyName,
         supplierCode: supplier.supplierCode,
@@ -319,7 +338,7 @@ export class SuppliersService {
       isPreferred?: boolean;
     },
   ) {
-    // 공급업체와 상품 존재 확인
+    // 거래처와 상품 존재 확인
     const [supplier, product] = await Promise.all([
       this.prisma.supplier.findFirst({
         where: {
@@ -338,7 +357,7 @@ export class SuppliersService {
     ]);
 
     if (!supplier) {
-      throw new NotFoundException('공급업체를 찾을 수 없습니다');
+      throw new NotFoundException('거래처를 찾을 수 없습니다');
     }
 
     if (!product) {
@@ -356,7 +375,7 @@ export class SuppliersService {
     });
 
     if (existingRelation) {
-      throw new BadRequestException('이미 연결된 공급업체-상품 관계입니다');
+      throw new BadRequestException('이미 연결된 거래처-상품 관계입니다');
     }
 
     const supplierProduct = await this.prisma.supplierProduct.create({

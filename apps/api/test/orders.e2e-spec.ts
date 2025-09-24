@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request from 'supertest';
 import { AppModule } from '@/app.module';
 import { PrismaService } from '@/prisma/prisma.service';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import request from 'supertest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 describe('Orders (e2e)', () => {
   let app: INestApplication;
@@ -22,13 +22,13 @@ describe('Orders (e2e)', () => {
   };
 
   const testSupplier = {
-    companyName: '테스트 공급업체',
+    companyName: '테스트 거래처',
     supplierCode: 'SUP001',
     contactPerson: '담당자',
     phone: '010-1234-5678',
     email: 'supplier@example.com',
     location: '서울시 강남구',
-    description: '테스트용 공급업체',
+    description: '테스트용 거래처',
   };
 
   const testCategory = {
@@ -121,7 +121,7 @@ describe('Orders (e2e)', () => {
 
     const categoryId = categoryResponse.body.data.id;
 
-    // 공급업체 생성
+    // 거래처 생성
     const supplierResponse = await request(app.getHttpServer())
       .post('/suppliers')
       .set('Authorization', `Bearer ${accessToken}`)
@@ -402,9 +402,7 @@ describe('Orders (e2e)', () => {
     });
 
     it('should fail without authentication', async () => {
-      await request(app.getHttpServer())
-        .get('/orders')
-        .expect(401);
+      await request(app.getHttpServer()).get('/orders').expect(401);
     });
   });
 
@@ -492,9 +490,7 @@ describe('Orders (e2e)', () => {
     });
 
     it('should fail without authentication', async () => {
-      await request(app.getHttpServer())
-        .get(`/orders/${orderId}`)
-        .expect(401);
+      await request(app.getHttpServer()).get(`/orders/${orderId}`).expect(401);
     });
   });
 
@@ -729,9 +725,7 @@ describe('Orders (e2e)', () => {
     });
 
     it('should fail without authentication', async () => {
-      await request(app.getHttpServer())
-        .get('/orders/stats')
-        .expect(401);
+      await request(app.getHttpServer()).get('/orders/stats').expect(401);
     });
   });
 

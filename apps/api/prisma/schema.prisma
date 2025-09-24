@@ -156,7 +156,7 @@ model StockMovement {
   @@index([createdAt])
 }
 
-// 공급업체 관리 (완전한 비즈니스 정보)
+// 거래처 관리 (완전한 비즈니스 정보)
 model Supplier {
   id                   BigInt    @id @default(autoincrement())
   supplierCode         String    @unique @map("supplier_code") @db.VarChar(100)
@@ -199,12 +199,12 @@ model Supplier {
   @@index([isActive])
 }
 
-// 공급업체-상품 연결 테이블 (다대다 관계, 공급업체별 상품 정보)
+// 거래처-상품 연결 테이블 (다대다 관계, 거래처별 상품 정보)
 model SupplierProduct {
   id               BigInt    @id @default(autoincrement())
   supplierId       BigInt    @map("supplier_id")
   productId        BigInt    @map("product_id")
-  supplierProductCode String? @map("supplier_product_code") @db.VarChar(100) // 공급업체 상품코드
+  supplierProductCode String? @map("supplier_product_code") @db.VarChar(100) // 거래처 상품코드
   supplierPrice    Decimal?  @map("supplier_price") @db.Decimal(10, 2)
   minimumOrderQty  Int?      @map("minimum_order_qty")
   leadTimeDays     Int?      @map("lead_time_days")

@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DashboardService {
@@ -22,7 +22,7 @@ export class DashboardService {
           deletedAt: null,
         },
       }),
-      // 전체 공급업체 수
+      // 전체 거래처 수
       this.prisma.supplier.count({
         where: {
           createdBy: BigInt(userId),
@@ -77,7 +77,7 @@ export class DashboardService {
     // 재고 가치 계산
     const inventoryValue = totalInventoryValue.reduce((sum, product) => {
       if (product.inventory && product.costPrice) {
-        return sum + (Number(product.costPrice) * product.inventory.currentStock);
+        return sum + Number(product.costPrice) * product.inventory.currentStock;
       }
       return sum;
     }, 0);
@@ -124,7 +124,7 @@ export class DashboardService {
     // 카테고리별로 재고 집계
     const categoryMap = new Map();
 
-    products.forEach(product => {
+    products.forEach((product) => {
       const categoryName = product.category?.categoryName || '미분류';
       const currentStock = product.inventory?.currentStock || 0;
 
@@ -175,7 +175,7 @@ export class DashboardService {
       dailyData.set(dateKey, { date: dateKey, in: 0, out: 0, adjust: 0 });
     }
 
-    movements.forEach(movement => {
+    movements.forEach((movement) => {
       const dateKey = movement.createdAt.toISOString().split('T')[0];
       const dayData = dailyData.get(dateKey);
 
@@ -207,7 +207,9 @@ export class DashboardService {
         inventory: {
           OR: [
             { currentStock: { lte: 0 } },
-            { currentStock: { lte: this.prisma.inventory.fields.minimumStock } },
+            {
+              currentStock: { lte: this.prisma.inventory.fields.minimumStock },
+            },
           ],
         },
       },
@@ -230,7 +232,7 @@ export class DashboardService {
       },
     });
 
-    return lowStockProducts.map(product => ({
+    return lowStockProducts.map((product) => ({
       id: product.id.toString(),
       type: product.inventory!.currentStock <= 0 ? 'OUT_OF_STOCK' : 'LOW_STOCK',
       title: `${product.productName} 재고 ${product.inventory!.currentStock <= 0 ? '품절' : '부족'}`,

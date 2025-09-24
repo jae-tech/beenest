@@ -1,22 +1,21 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsEmail,
-  IsNumber,
-  Min,
-  Max,
-  IsBoolean,
-  IsDecimal,
-  IsEnum,
-} from 'class-validator';
-import { Type } from 'class-transformer';
 import { SupplierStatus } from '@beenest/types';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class CreateSupplierDto {
   @ApiProperty({
-    description: '공급업체 코드 (유니크)',
+    description: '거래처 코드 (유니크)',
     example: 'SUP001',
   })
   @IsString()
@@ -183,7 +182,7 @@ export class CreateSupplierDto {
   rating?: number;
 
   @ApiProperty({
-    description: '공급업체 상태',
+    description: '거래처 상태',
     example: 'active',
     enum: SupplierStatus,
     default: 'active',
