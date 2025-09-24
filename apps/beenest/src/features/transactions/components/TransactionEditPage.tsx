@@ -1,9 +1,9 @@
-import { useNavigate, useParams } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
 import { useTransaction, useUpdateTransaction } from "@/hooks/useTransactions";
-import { transactionSchema, type TransactionFormData } from "@/schemas/transactionSchema";
+import { transactionSchema } from "@/schemas/transactionSchema";
+import { useNavigate, useParams } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { DetailPageHeader } from "@/components/layout/DetailPageHeader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { DetailPageHeader } from "@/components/layout/DetailPageHeader";
 import { TransactionType } from "@beenest/types";
 import { toast } from "sonner";
 
@@ -31,9 +30,12 @@ interface TransactionItem {
 
 export function TransactionEditPage() {
   const navigate = useNavigate();
-  const { transactionId } = useParams({ from: "/transactions/$transactionId/edit" });
+  const { transactionId } = useParams({
+    from: "/transactions/$transactionId/edit",
+  });
 
-  const { data: transactionResponse, isLoading } = useTransaction(transactionId);
+  const { data: transactionResponse, isLoading } =
+    useTransaction(transactionId);
   const updateTransaction = useUpdateTransaction();
 
   const transaction = transactionResponse?.data;
@@ -68,7 +70,7 @@ export function TransactionEditPage() {
     { id: "3", name: "상품 C", price: 20000 },
   ];
 
-  // 임시 공급업체 목록
+  // 임시 거래처 목록
   const mockSuppliers = [
     { id: "1", name: "㈜한국자재" },
     { id: "2", name: "대한장비㈜" },
@@ -109,7 +111,11 @@ export function TransactionEditPage() {
     }));
   };
 
-  const handleItemChange = (index: number, field: string, value: string | number) => {
+  const handleItemChange = (
+    index: number,
+    field: string,
+    value: string | number
+  ) => {
     const updatedItems = [...items];
     updatedItems[index] = {
       ...updatedItems[index],
@@ -234,7 +240,9 @@ export function TransactionEditPage() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => navigate({ to: `/transactions/${transactionId}` })}
+                onClick={() =>
+                  navigate({ to: `/transactions/${transactionId}` })
+                }
                 className="cursor-pointer"
               >
                 취소
@@ -242,7 +250,11 @@ export function TransactionEditPage() {
               <Button
                 onClick={handleSave}
                 className="bg-yellow-400 hover:bg-yellow-500 text-black cursor-pointer"
-                disabled={isSubmitting || items.length === 0 || !items.some(item => item.productId)}
+                disabled={
+                  isSubmitting ||
+                  items.length === 0 ||
+                  !items.some((item) => item.productId)
+                }
               >
                 {isSubmitting ? "수정 중..." : "수정"}
               </Button>
@@ -262,11 +274,15 @@ export function TransactionEditPage() {
                     id="transactionDate"
                     type="date"
                     value={formData.transactionDate}
-                    onChange={(e) => handleFormChange("transactionDate", e.target.value)}
+                    onChange={(e) =>
+                      handleFormChange("transactionDate", e.target.value)
+                    }
                     className={`mt-1 ${errors.transactionDate ? "border-red-500" : ""}`}
                   />
                   {errors.transactionDate && (
-                    <p className="text-red-500 text-sm mt-1">{errors.transactionDate}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.transactionDate}
+                    </p>
                   )}
                 </div>
 
@@ -274,7 +290,9 @@ export function TransactionEditPage() {
                   <Label htmlFor="transactionType">거래 구분</Label>
                   <Select
                     value={formData.transactionType}
-                    onValueChange={(value) => handleFormChange("transactionType", value)}
+                    onValueChange={(value) =>
+                      handleFormChange("transactionType", value)
+                    }
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="거래 구분 선택" />
@@ -288,13 +306,15 @@ export function TransactionEditPage() {
 
                 {formData.transactionType === "PURCHASE" ? (
                   <div>
-                    <Label htmlFor="supplierId">공급업체</Label>
+                    <Label htmlFor="supplierId">거래처</Label>
                     <Select
                       value={formData.supplierId}
-                      onValueChange={(value) => handleFormChange("supplierId", value)}
+                      onValueChange={(value) =>
+                        handleFormChange("supplierId", value)
+                      }
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="공급업체 선택" />
+                        <SelectValue placeholder="거래처 선택" />
                       </SelectTrigger>
                       <SelectContent>
                         {mockSuppliers.map((supplier) => (
@@ -312,12 +332,16 @@ export function TransactionEditPage() {
                       <Input
                         id="customerName"
                         value={formData.customerName}
-                        onChange={(e) => handleFormChange("customerName", e.target.value)}
+                        onChange={(e) =>
+                          handleFormChange("customerName", e.target.value)
+                        }
                         placeholder="고객명을 입력하세요"
                         className={`mt-1 ${errors.customerName ? "border-red-500" : ""}`}
                       />
                       {errors.customerName && (
-                        <p className="text-red-500 text-sm mt-1">{errors.customerName}</p>
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.customerName}
+                        </p>
                       )}
                     </div>
                     <div>
@@ -325,7 +349,9 @@ export function TransactionEditPage() {
                       <Input
                         id="customerPhone"
                         value={formData.customerPhone}
-                        onChange={(e) => handleFormChange("customerPhone", e.target.value)}
+                        onChange={(e) =>
+                          handleFormChange("customerPhone", e.target.value)
+                        }
                         placeholder="연락처를 입력하세요"
                         className={`mt-1 ${errors.customerPhone ? "border-red-500" : ""}`}
                       />
@@ -364,13 +390,18 @@ export function TransactionEditPage() {
 
               <div className="space-y-4">
                 {items.map((item, index) => (
-                  <div key={item.id} className="border rounded-lg p-4 bg-gray-50">
+                  <div
+                    key={item.id}
+                    className="border rounded-lg p-4 bg-gray-50"
+                  >
                     <div className="grid grid-cols-12 gap-4 items-end">
                       <div className="col-span-5">
                         <Label>상품</Label>
                         <Select
                           value={item.productId}
-                          onValueChange={(value) => handleItemChange(index, "productId", value)}
+                          onValueChange={(value) =>
+                            handleItemChange(index, "productId", value)
+                          }
                         >
                           <SelectTrigger className="mt-1">
                             <SelectValue placeholder="상품 선택" />
@@ -392,7 +423,11 @@ export function TransactionEditPage() {
                           min="1"
                           value={item.quantity}
                           onChange={(e) =>
-                            handleItemChange(index, "quantity", parseInt(e.target.value) || 1)
+                            handleItemChange(
+                              index,
+                              "quantity",
+                              parseInt(e.target.value) || 1
+                            )
                           }
                           className="mt-1"
                         />
@@ -405,7 +440,11 @@ export function TransactionEditPage() {
                           min="0"
                           value={item.unitPrice}
                           onChange={(e) =>
-                            handleItemChange(index, "unitPrice", parseInt(e.target.value) || 0)
+                            handleItemChange(
+                              index,
+                              "unitPrice",
+                              parseInt(e.target.value) || 0
+                            )
                           }
                           className="mt-1"
                         />
@@ -442,16 +481,22 @@ export function TransactionEditPage() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>공급가액:</span>
-                  <span className="font-medium">{formatCurrency(calculateSubtotal())}</span>
+                  <span className="font-medium">
+                    {formatCurrency(calculateSubtotal())}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>부가세 (10%):</span>
-                  <span className="font-medium">{formatCurrency(calculateVAT())}</span>
+                  <span className="font-medium">
+                    {formatCurrency(calculateVAT())}
+                  </span>
                 </div>
                 <div className="border-t pt-2">
                   <div className="flex justify-between text-lg font-bold">
                     <span>총액:</span>
-                    <span className="text-yellow-600">{formatCurrency(calculateTotal())}</span>
+                    <span className="text-yellow-600">
+                      {formatCurrency(calculateTotal())}
+                    </span>
                   </div>
                 </div>
               </div>

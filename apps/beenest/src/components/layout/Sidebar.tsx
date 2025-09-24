@@ -27,7 +27,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
     { icon: DollarSign, label: "매입/매출", path: "/transactions" },
     // { icon: ShoppingCart, label: "주문관리", path: "/orders" },
     // { icon: Users, label: "고객관리", path: "/customers" },
-    { icon: Store, label: "공급업체", path: "/suppliers" },
+    { icon: Store, label: "거래처", path: "/suppliers" },
     // { icon: Truck, label: "배송관리", path: "/shipment" },
     // { icon: FileBarChart, label: "보고서", path: "/reports" },
   ];
@@ -95,9 +95,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
             title="설정"
           >
             <Settings className="w-4 h-4 flex-shrink-0" />
-            {!isCollapsed && (
-              <span className="text-sm font-medium">설정</span>
-            )}
+            {!isCollapsed && <span className="text-sm font-medium">설정</span>}
           </Link>
           <button
             className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-yellow-400"

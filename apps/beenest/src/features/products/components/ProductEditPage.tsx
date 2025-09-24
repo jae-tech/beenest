@@ -294,7 +294,7 @@ export default function ProductEditPage() {
               데이터 로딩 실패
             </h3>
             <p className="text-gray-600 mb-4">
-              카테고리 또는 공급업체 정보를 불러오는데 실패했습니다.
+              카테고리 또는 거래처 정보를 불러오는데 실패했습니다.
             </p>
             <button
               onClick={() => window.location.reload()}

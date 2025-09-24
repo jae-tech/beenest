@@ -41,12 +41,12 @@
   - 재고 부족 알림
   - 상품 검색 및 필터링
 
-### 5. 공급업체 API 연동 ✅
+### 5. 거래처 API 연동 ✅
 
 - **파일**: `src/hooks/useSuppliers.ts`, `src/services/suppliers.service.ts`
 - **기능**:
-  - 공급업체 CRUD 작업
-  - 공급업체별 통계
+  - 거래처 CRUD 작업
+  - 거래처별 통계
   - 검색 및 자동완성
 
 ### 6. 대시보드 실시간 데이터 ✅
@@ -147,11 +147,11 @@ pnpm dev
 - [ ] 상품 삭제 (DELETE /products/:id)
 - [ ] 재고 조정 (POST /products/:id/stock)
 
-#### 공급업체 테스트
+#### 거래처 테스트
 
-- [ ] 공급업체 목록 (GET /suppliers)
-- [ ] 공급업체 등록 (POST /suppliers)
-- [ ] 공급업체 검색 (GET /suppliers/search)
+- [ ] 거래처 목록 (GET /suppliers)
+- [ ] 거래처 등록 (POST /suppliers)
+- [ ] 거래처 검색 (GET /suppliers/search)
 
 #### 대시보드 테스트
 
@@ -193,14 +193,14 @@ pnpm dev
 - `POST /products/:id/stock` - 재고 조정
 - `GET /products/low-stock` - 재고 부족 상품
 
-### 공급업체 API
+### 거래처 API
 
-- `GET /suppliers` - 공급업체 목록
-- `POST /suppliers` - 공급업체 등록
-- `GET /suppliers/:id` - 공급업체 상세
-- `PUT /suppliers/:id` - 공급업체 수정
-- `DELETE /suppliers/:id` - 공급업체 삭제
-- `GET /suppliers/search` - 공급업체 검색
+- `GET /suppliers` - 거래처 목록
+- `POST /suppliers` - 거래처 등록
+- `GET /suppliers/:id` - 거래처 상세
+- `PUT /suppliers/:id` - 거래처 수정
+- `DELETE /suppliers/:id` - 거래처 삭제
+- `GET /suppliers/search` - 거래처 검색
 
 ### 대시보드 API
 
