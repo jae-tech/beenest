@@ -58,9 +58,11 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
               <Link
                 key={index}
                 to={item.path}
-                className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap text-gray-300 hover:bg-gray-800 [&.active]:bg-yellow-400 [&.active]:text-black"
+                className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap text-gray-300 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 [&.active]:bg-yellow-400 [&.active]:text-black"
+                aria-label={item.label}
+                title={item.label}
               >
-                <IconComponent className="w-4 h-4" />
+                <IconComponent className="w-4 h-4 flex-shrink-0" />
                 {!isCollapsed && (
                   <span className="text-sm font-medium">{item.label}</span>
                 )}
@@ -76,23 +78,33 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           )}
         </div>
         <nav className="space-y-1 px-2">
-          <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap">
-            <HelpCircle className="w-4 h-4" />
+          <button
+            className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            aria-label="도움말"
+            title="도움말"
+          >
+            <HelpCircle className="w-4 h-4 flex-shrink-0" />
             {!isCollapsed && (
               <span className="text-sm font-medium">도움말</span>
             )}
           </button>
           <Link
             to="/settings"
-            className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap text-gray-300 hover:bg-gray-800 [&.active]:bg-yellow-400 [&.active]:text-black"
+            className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer whitespace-nowrap text-gray-300 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400 [&.active]:bg-yellow-400 [&.active]:text-black"
+            aria-label="설정"
+            title="설정"
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-4 h-4 flex-shrink-0" />
             {!isCollapsed && (
               <span className="text-sm font-medium">설정</span>
             )}
           </Link>
-          <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap">
-            <Shield className="w-4 h-4" />
+          <button
+            className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            aria-label="개인정보 설정"
+            title="개인정보 설정"
+          >
+            <Shield className="w-4 h-4 flex-shrink-0" />
             {!isCollapsed && (
               <span className="text-sm font-medium">개인정보</span>
             )}
@@ -100,15 +112,17 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         </nav>
       </div>
       <div className="p-4 border-t border-gray-800">
-        <div
-          className={`flex items-center space-x-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer ${isCollapsed ? "justify-center" : ""}`}
+        <button
+          className={`w-full flex items-center space-x-3 px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 ${isCollapsed ? "justify-center" : ""}`}
           onClick={logout}
+          aria-label="로그아웃"
+          title="로그아웃"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 flex-shrink-0" />
           {!isCollapsed && (
             <span className="text-sm font-medium">로그아웃</span>
           )}
-        </div>
+        </button>
       </div>
     </div>
   );

@@ -19,6 +19,7 @@ export function FormPageHeader({
           variant="outline"
           onClick={() => navigate({ to: backPath })}
           className="flex items-center space-x-2"
+          aria-label={`${backText} - ${title} 페이지에서 나가기`}
         >
           <ArrowLeft className="h-4 w-4" />
           <span>{backText}</span>

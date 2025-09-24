@@ -56,9 +56,10 @@ export function FormPageFooter({
       </Button>
       <Button
         type="submit"
+        variant="warning"
         onClick={onSubmit}
         disabled={isSubmitting || !isValid}
-        className="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-sm"
+        className="px-8 py-3 font-semibold text-sm"
         aria-label={isSticky ? `${submitText} (하단 고정 버튼)` : submitText}
         tabIndex={isSticky ? -1 : 0} // 스티키 버튼은 탭 순서에서 제외
       >
