@@ -225,7 +225,7 @@ export const RegisterPage = ({
             <Button
               type="submit"
               disabled={isSubmitting || isLoading}
-              className="w-full h-12 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold !rounded-button whitespace-nowrap cursor-pointer"
+              className="w-full h-12 font-semibold whitespace-nowrap cursor-pointer"
             >
               {isSubmitting || isLoading ? (
                 <span className="flex items-center">
