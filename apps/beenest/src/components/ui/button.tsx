@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground rounded-xl shadow-sm hover:bg-[hsl(var(--brand-accent))] hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] focus-visible:ring-[hsl(var(--brand-primary))]",
+          "bg-yellow-400 text-black rounded-lg shadow-md hover:bg-yellow-500 active:scale-[0.98] focus-visible:ring-yellow-400",
         destructive:
           "bg-destructive text-destructive-foreground rounded-md shadow-sm hover:bg-destructive/90 hover:shadow-md active:scale-[0.98] focus-visible:ring-destructive",
         outline:
-          "border-0 bg-background shadow-sm rounded-xl hover:bg-accent hover:text-accent-foreground hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] focus-visible:ring-[hsl(var(--brand-primary))]",
+          "border border-border bg-background rounded-lg hover:bg-accent hover:text-accent-foreground active:scale-[0.98] focus-visible:ring-ring",
         secondary:
-          "bg-secondary text-secondary-foreground rounded-xl shadow-sm hover:bg-secondary/80 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] focus-visible:ring-secondary",
+          "bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 active:scale-[0.98] focus-visible:ring-secondary",
         ghost:
           "rounded-xl hover:bg-accent hover:text-accent-foreground hover:shadow-sm active:scale-[0.98] focus-visible:ring-accent",
         link:
@@ -47,8 +47,8 @@ const buttonVariants = cva(
 
 function Button({
   className,
-  variant,
-  size,
+  variant = "default",
+  size = "default",
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
