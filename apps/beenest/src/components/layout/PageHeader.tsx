@@ -13,7 +13,7 @@ export function PageHeader({ title, actionText, onAction }: PageHeaderProps) {
       <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
       {onAction && (
         <Button
-          className="font-semibold whitespace-nowrap cursor-pointer"
+          className="font-semibold whitespace-nowrap cursor-pointer shadow-md"
           onClick={onAction}
         >
           <Plus className="h-4 w-4 mr-2" />

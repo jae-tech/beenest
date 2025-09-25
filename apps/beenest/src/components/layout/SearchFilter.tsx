@@ -13,15 +13,15 @@ export function SearchFilter({
   onExport,
 }: SearchFilterProps) {
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center justify-between">
       <div className="flex items-center space-x-4">
-        <Button variant="outline" className="cursor-pointer whitespace-nowrap" onClick={onFilter}>
+        <Button variant="outline" className="cursor-pointer whitespace-nowrap rounded-lg" onClick={onFilter}>
           <Filter className="h-4 w-4 mr-2" />
           필터
         </Button>
       </div>
       {showExport && (
-        <Button variant="outline" className="cursor-pointer whitespace-nowrap" onClick={onExport}>
+        <Button variant="outline" className="cursor-pointer whitespace-nowrap rounded-lg" onClick={onExport}>
           <Download className="h-4 w-4 mr-2" />
           내보내기
         </Button>

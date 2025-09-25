@@ -21,7 +21,7 @@ interface SidebarProps {
 export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const logout = useAuthStore((state) => state.logout);
   const menuItems = [
-    { icon: BarChart3, label: "대시보드", path: "/dashboard" },
+    // { icon: BarChart3, label: "대시보드", path: "/dashboard" }, // 추후 오픈 예정
     { icon: Package, label: "상품관리", path: "/products" },
     { icon: ClipboardList, label: "재고현황", path: "/inventory" },
     { icon: DollarSign, label: "매입/매출", path: "/transactions" },
