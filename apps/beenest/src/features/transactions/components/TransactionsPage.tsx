@@ -318,7 +318,7 @@ export default function TransactionsPage() {
           <Button
             variant="outline"
             size="sm"
-            className="p-2 cursor-pointer"
+            className="p-2 cursor-pointer rounded-md"
             title="상세보기"
             onClick={() => handleViewTransaction(row.original)}
           >
@@ -327,7 +327,7 @@ export default function TransactionsPage() {
           <Button
             variant="outline"
             size="sm"
-            className="p-2 cursor-pointer"
+            className="p-2 cursor-pointer rounded-md"
             title="수정"
             onClick={() => handleEditTransaction(row.original)}
           >
@@ -336,7 +336,7 @@ export default function TransactionsPage() {
           <Button
             variant="outline"
             size="sm"
-            className="p-2 cursor-pointer"
+            className="p-2 cursor-pointer rounded-md"
             title="영수증 출력"
           >
             <Receipt className="h-3 w-3 text-gray-600" />

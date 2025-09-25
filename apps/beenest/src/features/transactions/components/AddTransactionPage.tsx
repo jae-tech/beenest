@@ -211,8 +211,9 @@ export function AddTransactionPage() {
                 취소
               </Button>
               <Button
+                variant="default"
                 onClick={handleSave}
-                className="bg-yellow-400 hover:bg-yellow-500 text-black cursor-pointer"
+                className="cursor-pointer"
                 disabled={
                   isSubmitting ||
                   items.length === 0 ||
@@ -268,21 +269,23 @@ export function AddTransactionPage() {
 
                 {/* 거래 구분 */}
                 <div>
-                  <Label htmlFor="transactionType">거래 구분</Label>
-                  <Select
-                    value={formData.transactionType}
-                    onValueChange={(value) =>
-                      handleFormChange("transactionType", value)
-                    }
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="거래 구분 선택" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="SALE">매출</SelectItem>
-                      <SelectItem value="PURCHASE">매입</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="transactionType" className="form-label">거래 구분</Label>
+                  <div className="transaction-type-selector">
+                    <div
+                      className={`transaction-type-card ${formData.transactionType === "PURCHASE" ? "selected" : ""}`}
+                      onClick={() => handleFormChange("transactionType", "PURCHASE")}
+                    >
+                      <div className="transaction-type-icon">📦</div>
+                      <div className="transaction-type-label">매입</div>
+                    </div>
+                    <div
+                      className={`transaction-type-card ${formData.transactionType === "SALE" ? "selected" : ""}`}
+                      onClick={() => handleFormChange("transactionType", "SALE")}
+                    >
+                      <div className="transaction-type-icon">💰</div>
+                      <div className="transaction-type-label">매출</div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* 2. 누구와 - 거래처 */}

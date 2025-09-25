@@ -166,9 +166,7 @@ export function SuppliersPage() {
               onCheckedChange={(checked) => handleStatusToggle(supplier, checked)}
               disabled={updateSupplier.isPending}
             />
-            <span className={`text-xs font-medium ${
-              isActive ? "text-green-600" : "text-gray-400"
-            }`}>
+            <span className={`status-pill ${isActive ? 'active' : 'inactive'}`}>
               {isActive ? "활성" : "비활성"}
             </span>
           </div>
@@ -179,35 +177,33 @@ export function SuppliersPage() {
       id: "actions",
       header: "관리",
       cell: ({ row }) => (
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="p-2 cursor-pointer"
+        <div className="btn-group">
+          <button
+            className="btn-icon"
             onClick={() =>
               navigate({ to: `/suppliers/${row.original.id}/edit` })
             }
+            title="수정"
           >
-            <Edit className="w-3 h-3 text-gray-600" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="p-2 cursor-pointer"
+            <Edit className="w-4 h-4" />
+          </button>
+          <button
+            className="btn-icon"
             onClick={() => navigate({ to: `/suppliers/${row.original.id}` })}
+            title="보기"
           >
-            <Eye className="w-3 h-3 text-gray-600" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="p-2 cursor-pointer"
+            <Eye className="w-4 h-4" />
+          </button>
+          <button
+            className="btn-icon"
             onClick={() =>
               window.open(`mailto:${row.original.email}`, "_blank")
             }
+            title="이메일 보내기"
+            disabled={!row.original.email}
           >
-            <Mail className="w-3 h-3 text-gray-600" />
-          </Button>
+            <Mail className="w-4 h-4" />
+          </button>
         </div>
       ),
     },
@@ -354,9 +350,9 @@ export function SuppliersPage() {
               )}
 
               <div className="flex justify-end space-x-3 pt-4">
-                <Button
+                <button
                   type="button"
-                  variant="outline"
+                  className="btn-beenest-secondary"
                   onClick={() => {
                     setIsAddModalOpen(false);
                     form.reset();
@@ -364,15 +360,15 @@ export function SuppliersPage() {
                   disabled={createSupplier.isPending}
                 >
                   취소
-                </Button>
-                <Button
+                </button>
+                <button
                   type="submit"
+                  className="btn-beenest-primary"
                   disabled={createSupplier.isPending}
-                  className="bg-yellow-500 hover:bg-yellow-600"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className="w-4 h-4" />
                   {createSupplier.isPending ? "등록 중..." : "등록"}
-                </Button>
+                </button>
               </div>
             </form>
           </Form>
