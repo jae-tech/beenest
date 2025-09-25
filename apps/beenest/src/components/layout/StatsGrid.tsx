@@ -25,15 +25,19 @@ export function StatsGrid({ stats }: StatsGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
       {stats.map((stat, index) => (
-        <Card key={index} className="p-4 text-center">
+        <div key={index} className="stat-card text-center bg-white rounded-xl shadow-md p-6">
           <div
             className={`w-12 h-12 ${colorMap[stat.color]} rounded-xl flex items-center justify-center mx-auto mb-3`}
           >
             <stat.icon className="w-5 h-5 text-white" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-          <p className="text-sm text-gray-600">{stat.description}</p>
-        </Card>
+          <p className="text-2xl font-bold" style={{ color: 'hsl(var(--foreground))' }}>
+            {stat.value}
+          </p>
+          <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
+            {stat.description}
+          </p>
+        </div>
       ))}
     </div>
   );

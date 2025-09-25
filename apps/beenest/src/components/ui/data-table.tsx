@@ -71,15 +71,15 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto -mx-6">
-        <table className="w-full">
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse bg-card rounded-lg overflow-hidden">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-gray-200">
+              <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="text-left py-4 px-6 text-sm font-medium text-gray-500"
+                    className="bg-gray-100 border-b border-border/40 px-3 py-4 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wider"
                   >
                     {header.isPlaceholder
                       ? null
@@ -94,13 +94,18 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
           </thead>
           <tbody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, index) => (
                 <tr
                   key={row.id}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  className={`border-b border-border/20 last:border-b-0 hover:bg-primary/4 transition-colors duration-150 ease-in-out ${
+                    index % 2 === 1 ? 'bg-muted/2' : ''
+                  }`}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="py-4 px-6">
+                    <td
+                      key={cell.id}
+                      className="px-3 py-3 text-sm align-middle"
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -110,7 +115,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="h-24 text-center text-gray-500 py-8"
+                  className="h-24 text-center text-muted-foreground py-8 px-3"
                 >
                   데이터가 없습니다.
                 </td>
@@ -127,7 +132,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
         </div>
         <div className="flex space-x-2">
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
@@ -136,7 +141,7 @@ export const DataTable = React.memo(function DataTable<TData, TValue>({
             이전
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
