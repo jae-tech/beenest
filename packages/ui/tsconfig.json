@@ -2,7 +2,8 @@
   "extends": "@beenest/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "dist",
-    "moduleResolution": "bundler"
+    "module": "ES2020",
+    "moduleResolution": "node"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
